@@ -1,49 +1,41 @@
-# Hugo Breeze Manager (iPhone app starter)
+# Hugo Breeze Manager (native Xcode + SwiftUI)
 
-A fresh mobile app repository built with Expo + React Native + TypeScript.
+This repository is now a **native iOS app** that you can edit directly in **Xcode**.
 
-This app is designed for iPhone use and lets you:
+Main features:
 
-- Link your GitHub account (device login flow)
-- Connect to a Hugo blog repository used for GitHub Pages
+- GitHub account linking via **OAuth Device Flow**
+- Connect to your Hugo blog repository (GitHub Pages)
 - List markdown posts from `content/posts` (or custom path)
 - Create new posts
 - Edit existing posts
 - Delete posts
+- White/light-blue playful theme with gentle bubble + button animations
 
-UI style: white + light-blue, playful/cute animations.
+## Open and run in Xcode
 
-## Quick start
+1. Open `HugoBreezeManager.xcodeproj` in Xcode.
+2. Select the `HugoBreezeManager` scheme.
+3. Set your Signing Team and Bundle Identifier in target settings.
+4. Choose your iPhone device.
+5. Run.
 
-```bash
-npm install
-npm run start
-```
+## GitHub OAuth setup (required once)
 
-Scan the QR code in Expo Go on your iPhone.
+1. GitHub -> Settings -> Developer settings -> OAuth Apps.
+2. Create a new OAuth App and copy the **Client ID**.
+3. In the app, paste Client ID and tap **Link GitHub**.
+4. Finish device authorization in browser.
 
-## GitHub setup (required once)
+No client secret is stored in the app.
 
-1. Go to GitHub Developer Settings -> OAuth Apps.
-2. Create a new OAuth App.
-3. Copy the **Client ID**.
-4. In the app login screen, paste the Client ID and tap **Link GitHub**.
-5. Complete device authorization in browser.
+## Configure blog repository in the app
 
-No client secret is stored in the mobile app.
+After login, set:
 
-## Repo settings in app
-
-After login, configure:
-
-- Owner (GitHub username or org)
+- Owner (username/org)
 - Repository name
 - Branch (usually `main`)
 - Hugo content path (default `content/posts`)
 
 Then save settings and manage posts.
-
-## Notes
-
-- The app uses GitHub Contents API and commits directly to your repo.
-- For private repos, make sure your OAuth token has repo access.
