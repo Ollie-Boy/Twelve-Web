@@ -155,6 +155,10 @@ a {
   isolation: isolate;
 }
 
+.hero--list {
+  min-height: 44vh;
+}
+
 .hero__content {
   position: relative;
   z-index: 5;
@@ -298,6 +302,25 @@ a {
   max-width: 80ch;
 }
 
+.prose {
+  color: #dbe4fa;
+}
+
+.prose :is(h2, h3, h4) {
+  margin-top: 1.7em;
+  margin-bottom: 0.45em;
+  line-height: 1.2;
+  color: #f4f7ff;
+}
+
+.prose :is(ul, ol) {
+  padding-left: 1.35em;
+}
+
+.prose a {
+  color: #a8d0ff;
+}
+
 .cards {
   grid-column: span 12;
   display: grid;
@@ -343,6 +366,12 @@ a {
   line-height: 1.6;
 }
 
+.card__meta {
+  margin: 12px 0 0;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
 .site-footer {
   margin-top: 20px;
   padding: 22px;
@@ -359,6 +388,102 @@ a {
 
 .site-footer__credit:hover {
   color: var(--text);
+}
+
+.site-shell--content {
+  max-width: 900px;
+}
+
+.prose-panel {
+  margin-top: 18px;
+  padding: 30px;
+}
+
+.prose-title {
+  margin: 14px 0 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: -0.02em;
+}
+
+.prose-body {
+  color: #dbe4fa;
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+.prose-body a {
+  color: #a8d0ff;
+}
+
+.prose-body h2,
+.prose-body h3,
+.prose-body h4 {
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+.prose-body ul,
+.prose-body ol {
+  padding-left: 1.3em;
+}
+
+.prose-body blockquote {
+  margin: 1.4em 0;
+  padding: 0.4em 1em;
+  border-left: 3px solid rgba(255, 255, 255, 0.4);
+  color: #cdd8f4;
+}
+
+.post-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.post-list__item {
+  margin: 0;
+}
+
+.post-list__link {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 14px;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.post-list__link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.post-list__title {
+  color: #eef4ff;
+}
+
+.post-list__date {
+  color: var(--text-dim);
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+
+.pagination {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.pagination a {
+  text-decoration: none;
 }
 
 @media (min-width: 760px) {
@@ -389,6 +514,15 @@ a {
   }
 
   .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .prose-panel {
+    padding: 22px;
+  }
+
+  .post-list__link {
     flex-direction: column;
     align-items: flex-start;
   }

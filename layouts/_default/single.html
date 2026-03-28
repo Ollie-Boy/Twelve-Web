@@ -1,0 +1,19 @@
+{{ define "main" }}
+  <div class="site-shell site-shell--content">
+    <header class="top-nav">
+      <a class="top-nav__brand" href="{{ "/" | relURL }}">The Web Can Do What!?</a>
+      <nav class="top-nav__actions" aria-label="Site links">
+        <a class="chip" href="{{ "/blog/" | relURL }}">Blog</a>
+        <a class="chip" href="{{ "/#about" | relURL }}">About</a>
+      </nav>
+    </header>
+
+    <main class="panel prose-panel">
+      <p class="eyebrow">{{ with .Section }}{{ . | title }}{{ else }}Page{{ end }}</p>
+      <h1 class="prose-title">{{ .Title }}</h1>
+      <div class="prose-body">
+        {{ .Content }}
+      </div>
+    </main>
+  </div>
+{{ end }}

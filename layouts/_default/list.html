@@ -1,0 +1,56 @@
+{{ define "main" }}
+  <div class="site-shell">
+    <header class="top-nav">
+      <a class="top-nav__brand" href="{{ "/" | relURL }}">The Web Can Do What!?</a>
+      <nav class="top-nav__actions" aria-label="Site links">
+        <a class="chip" href="{{ "/" | relURL }}">Home</a>
+        <a class="chip" href="#all-posts">Posts</a>
+      </nav>
+    </header>
+
+    <section class="hero hero--list">
+      <div class="shape-field" aria-hidden="true">
+        <span class="shape shape--blue">{{ partial "shape-blue.html" . }}</span>
+        <span class="shape shape--red">{{ partial "shape-red.html" . }}</span>
+        <span class="shape shape--yellow">{{ partial "shape-yellow.html" . }}</span>
+        <span class="shape shape--green">{{ partial "shape-green.html" . }}</span>
+      </div>
+      <div class="hero__content">
+        <h1 class="hero__title">{{ .Title }}</h1>
+        {{ with .Content }}
+          <div class="hero__description">{{ . }}</div>
+        {{ else }}
+          <p class="hero__description">Browse latest entries and explore the complete archive.</p>
+        {{ end }}
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel about" id="all-posts">
+        <p class="eyebrow">Entries</p>
+        <h2 class="about__title">All Posts</h2>
+        <ul class="post-list">
+          {{ range .Paginator.Pages }}
+            <li class="post-list__item">
+              <a class="post-list__link" href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <time class="post-list__date" datetime="{{ .Date.Format "2006-01-02" }}">
+                {{ .Date.Format "02 Jan, 2006" }}
+              </time>
+            </li>
+          {{ end }}
+        </ul>
+
+        {{ if gt .Paginator.TotalPages 1 }}
+          <nav class="pagination" aria-label="Pagination">
+            {{ if .Paginator.HasPrev }}
+              <a class="chip" href="{{ .Paginator.Prev.URL }}">Prev</a>
+            {{ end }}
+            {{ if .Paginator.HasNext }}
+              <a class="chip" href="{{ .Paginator.Next.URL }}">Next</a>
+            {{ end }}
+          </nav>
+        {{ end }}
+      </section>
+    </div>
+  </div>
+{{ end }}

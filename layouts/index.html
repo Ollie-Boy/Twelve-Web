@@ -19,6 +19,9 @@
       <a class="top-nav__brand" href="{{ "/" | relURL }}">The Web Can Do What!?</a>
       <nav class="top-nav__actions" aria-label="Site links">
         <a class="chip" href="#about">About</a>
+        {{ with .Site.GetPage "/blog" }}
+          <a class="chip" href="{{ .RelPermalink }}">Blog</a>
+        {{ end }}
         <a class="chip" href="{{ .Site.Params.footerCreditUrl }}" target="_blank" rel="noopener noreferrer">Credits</a>
       </nav>
     </header>
@@ -40,24 +43,31 @@
     <div class="content-grid">
       <section class="panel about" id="about">
         <p class="eyebrow">About</p>
-        <h2 class="about__title">The Web Can Do What!?</h2>
-        <p class="about__text">
-          Showcase the incredible capabilities of the modern web by the Chrome for Developers team. As passionate web
-          enthusiasts, our goal is to inspire creators to build better, more engaging, and innovative web experiences.
-        </p>
-        <p class="about__text">
-          At the heart of this project is a commitment to openness, collaboration, and continuous improvement. We invite
-          you to explore, learn from examples, and shape the future of the web.
-        </p>
+        <h2 class="about__title">{{ .Title }}</h2>
+        <div class="about__text prose">
+          {{ .Content }}
+        </div>
       </section>
 
       <section class="cards" aria-label="Showcase cards">
-        {{ range .Site.Params.cards }}
-          <article class="card">
-            <div class="card__dot card__dot--{{ .accent }}" aria-hidden="true"></div>
-            <h3 class="card__title">{{ .title }}</h3>
-            <p class="card__description">{{ .description }}</p>
-          </article>
+        {{ $posts := (where .Site.RegularPages "Section" "blog") }}
+        {{ if gt (len $posts) 0 }}
+          {{ range first 6 $posts.ByDate.Reverse }}
+            <article class="card">
+              <div class="card__dot card__dot--blue" aria-hidden="true"></div>
+              <h3 class="card__title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+              <p class="card__description">{{ .Summary }}</p>
+              <p class="card__meta">{{ .Date.Format "02 Jan, 2006" }}</p>
+            </article>
+          {{ end }}
+        {{ else }}
+          {{ range .Site.Params.cards }}
+            <article class="card">
+              <div class="card__dot card__dot--{{ .accent }}" aria-hidden="true"></div>
+              <h3 class="card__title">{{ .title }}</h3>
+              <p class="card__description">{{ .description }}</p>
+            </article>
+          {{ end }}
         {{ end }}
       </section>
     </div>
