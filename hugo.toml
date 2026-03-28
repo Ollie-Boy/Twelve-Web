@@ -1,0 +1,40 @@
+baseURL = "https://lixiang.dev/"
+languageCode = "en-us"
+title = "lixiang.dev"
+
+[params]
+  heroTitle = "The Web Can Do What!?"
+  heroSubtitle = "lixiang.dev"
+  heroDescription = "A personal web showcase inspired by the visual language of The Web Can Do What!? - bold typography, playful geometry, and modern web-first storytelling."
+  footerCreditText = "Inspired by modern web showcases"
+  footerCreditUrl = "https://developer.chrome.com/"
+
+[[params.cards]]
+title = "Fast App-like Interactions"
+description = "Fluid transitions, shared element motion, and tactile hover states that make the web feel native."
+accent = "blue"
+
+[[params.cards]]
+title = "Playful Visual Systems"
+description = "Rounded geometry, bold color pairings, and expressive typography built for storytelling."
+accent = "yellow"
+
+[[params.cards]]
+title = "High-fidelity Interfaces"
+description = "Crisp surfaces, subtle gradients, and layered depth that hold up across screen sizes."
+accent = "red"
+
+[[params.cards]]
+title = "Performance by Default"
+description = "Optimized rendering paths and lightweight interaction design for consistently snappy pages."
+accent = "green"
+
+[[params.cards]]
+title = "Progressive Enhancements"
+description = "Core content remains accessible, while modern capabilities elevate the full experience."
+accent = "blue"
+
+[[params.cards]]
+title = "Open, Evolving Platform"
+description = "Build with standards, iterate quickly, and ship features to users without app-store gates."
+accent = "yellow"

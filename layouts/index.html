@@ -1,0 +1,72 @@
+{{ define "main" }}
+  <div class="intro-splash" aria-hidden="true">
+    <div class="intro-splash__inner">
+      <h1 class="intro-splash__headline">
+        <span>The Web Can </span><span>Do What!?</span>
+      </h1>
+      <p class="intro-splash__text">with Google</p>
+      <div class="intro-splash__shapes">
+        <span class="shape shape--blue">{{ partial "shape-blue.html" . }}</span>
+        <span class="shape shape--red">{{ partial "shape-red.html" . }}</span>
+        <span class="shape shape--yellow">{{ partial "shape-yellow.html" . }}</span>
+        <span class="shape shape--green">{{ partial "shape-green.html" . }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-shell">
+    <header class="top-nav">
+      <a class="top-nav__brand" href="{{ "/" | relURL }}">The Web Can Do What!?</a>
+      <nav class="top-nav__actions" aria-label="Site links">
+        <a class="chip" href="#about">About</a>
+        <a class="chip" href="{{ .Site.Params.footerCreditUrl }}" target="_blank" rel="noopener noreferrer">Credits</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="shape-field" aria-hidden="true">
+        <span class="shape shape--blue">{{ partial "shape-blue.html" . }}</span>
+        <span class="shape shape--red">{{ partial "shape-red.html" . }}</span>
+        <span class="shape shape--yellow">{{ partial "shape-yellow.html" . }}</span>
+        <span class="shape shape--green">{{ partial "shape-green.html" . }}</span>
+      </div>
+      <div class="hero__content">
+        <h1 class="hero__title">{{ .Site.Params.heroTitle }}</h1>
+        <p class="hero__subtitle">{{ .Site.Params.heroSubtitle }}</p>
+        <p class="hero__description">{{ .Site.Params.heroDescription }}</p>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel about" id="about">
+        <p class="eyebrow">About</p>
+        <h2 class="about__title">The Web Can Do What!?</h2>
+        <p class="about__text">
+          Showcase the incredible capabilities of the modern web by the Chrome for Developers team. As passionate web
+          enthusiasts, our goal is to inspire creators to build better, more engaging, and innovative web experiences.
+        </p>
+        <p class="about__text">
+          At the heart of this project is a commitment to openness, collaboration, and continuous improvement. We invite
+          you to explore, learn from examples, and shape the future of the web.
+        </p>
+      </section>
+
+      <section class="cards" aria-label="Showcase cards">
+        {{ range .Site.Params.cards }}
+          <article class="card">
+            <div class="card__dot card__dot--{{ .accent }}" aria-hidden="true"></div>
+            <h3 class="card__title">{{ .title }}</h3>
+            <p class="card__description">{{ .description }}</p>
+          </article>
+        {{ end }}
+      </section>
+    </div>
+
+    <footer class="panel site-footer">
+      <strong>lixiang.dev</strong>
+      <a class="site-footer__credit" href="{{ .Site.Params.footerCreditUrl }}" target="_blank" rel="noopener noreferrer">
+        {{ .Site.Params.footerCreditText }}
+      </a>
+    </footer>
+  </div>
+{{ end }}
