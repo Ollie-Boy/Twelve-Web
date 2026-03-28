@@ -15,7 +15,7 @@ struct ContentView: View {
                 VStack(spacing: 12) {
                     ProgressView().tint(.breezePrimary)
                     Text("Warming up your blog manager...")
-                        .foregroundStyle(.breezeMuted)
+                        .foregroundColor(Color.breezeMuted)
                 }
             } else {
                 ScrollView {
@@ -86,13 +86,13 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Hugo Breeze Manager")
                 .font(.system(size: 30, weight: .black, design: .rounded))
-                .foregroundStyle(.breezeText)
+                .foregroundColor(Color.breezeText)
             Text("Cute iPhone dashboard for your GitHub Pages Hugo blog.")
-                .foregroundStyle(.breezeMuted)
+                .foregroundColor(Color.breezeMuted)
             if !vm.username.isEmpty {
                 Text("@\(vm.username)")
                     .font(.headline)
-                    .foregroundStyle(.breezeText)
+                    .foregroundColor(Color.breezeText)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
                     .background(Color.breezeSecondary)
@@ -113,9 +113,9 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("1) Link your GitHub account")
                 .font(.title3.bold())
-                .foregroundStyle(.breezeText)
+                .foregroundColor(Color.breezeText)
             Text("Use your GitHub OAuth App Client ID. Device flow keeps client secret out of the app.")
-                .foregroundStyle(.breezeMuted)
+                .foregroundColor(Color.breezeMuted)
 
             TextField("GitHub OAuth Client ID", text: $vm.clientIdInput)
                 .textInputAutocapitalization(.never)
@@ -138,7 +138,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("2) Blog repository settings")
                 .font(.title3.bold())
-                .foregroundStyle(.breezeText)
+                .foregroundColor(Color.breezeText)
 
             breezeInput("Owner", text: Binding(
                 get: { vm.repoSettings.owner },
@@ -174,7 +174,7 @@ struct ContentView: View {
             HStack {
                 Text("3) Manage Hugo posts")
                     .font(.title3.bold())
-                    .foregroundStyle(.breezeText)
+                    .foregroundColor(Color.breezeText)
                 Spacer()
                 BouncyButton(title: "Refresh", variant: .ghost, disabled: vm.postsBusy) {
                     Task { await vm.refreshPosts() }
@@ -189,16 +189,16 @@ struct ContentView: View {
                 ProgressView().tint(.breezePrimary)
             } else if vm.posts.isEmpty {
                 Text("No markdown files found. Save settings and create your first post.")
-                    .foregroundStyle(.breezeMuted)
+                    .foregroundColor(Color.breezeMuted)
             } else {
                 ForEach(vm.posts) { post in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(post.name)
                             .font(.headline)
-                            .foregroundStyle(.breezeText)
+                            .foregroundColor(Color.breezeText)
                         Text(post.path)
                             .font(.caption)
-                            .foregroundStyle(.breezeMuted)
+                            .foregroundColor(Color.breezeMuted)
                         HStack(spacing: 8) {
                             BouncyButton(title: "Edit", variant: .ghost) {
                                 Task { await vm.openPost(post) }
@@ -243,7 +243,7 @@ private struct EditorView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(vm.editor?.mode == .create ? "Create new post" : "Edit post")
                         .font(.title.bold())
-                        .foregroundStyle(.breezeText)
+                        .foregroundColor(Color.breezeText)
 
                     if vm.editor?.mode == .create {
                         TextField("post-slug", text: Binding(
@@ -262,7 +262,7 @@ private struct EditorView: View {
 
                     Text(vm.editor?.path ?? "")
                         .font(.caption)
-                        .foregroundStyle(.breezeMuted)
+                        .foregroundColor(Color.breezeMuted)
 
                     TextEditor(text: Binding(
                         get: { vm.editor?.content ?? "" },
