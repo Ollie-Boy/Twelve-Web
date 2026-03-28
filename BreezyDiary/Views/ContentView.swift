@@ -117,9 +117,12 @@ struct ContentView: View {
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundStyle(BreezyTheme.deepBlue)
 
-                DatePicker("Entry Date", selection: $entryDate)
+                DatePicker(
+                    "Entry Date",
+                    selection: $entryDate,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
                     .datePickerStyle(.compact)
-                    .displayedComponents([.date, .hourAndMinute])
                     .labelsHidden()
 
                 HStack {
