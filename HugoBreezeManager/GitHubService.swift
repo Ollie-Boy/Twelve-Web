@@ -20,6 +20,19 @@ enum GitHubError: LocalizedError {
     }
 }
 
+private struct GitHubWriteBody: Encodable {
+    let message: String
+    let content: String
+    let branch: String
+    let sha: String?
+}
+
+private struct GitHubDeleteBody: Encodable {
+    let message: String
+    let sha: String
+    let branch: String
+}
+
 final class GitHubService {
     static let shared = GitHubService()
 
