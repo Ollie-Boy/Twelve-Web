@@ -68,6 +68,7 @@ struct GitHubUser: Codable {
 }
 
 enum EditorMode: String, Codable {
+    case newPost
     case create
     case edit
 }
