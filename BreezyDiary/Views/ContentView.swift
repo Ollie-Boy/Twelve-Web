@@ -84,6 +84,7 @@ struct ContentView: View {
 
                 DatePicker("Entry Date", selection: $entryDate)
                     .datePickerStyle(.compact)
+                    .displayedComponents([.date, .hourAndMinute])
                     .labelsHidden()
 
                 HStack {

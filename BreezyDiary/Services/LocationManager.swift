@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import Combine
 
 final class LocationManager: NSObject, ObservableObject {
     @Published var currentLocationText: String = "Unknown Place"
