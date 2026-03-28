@@ -2,6 +2,8 @@ import SwiftUI
 
 struct EntryCardView: View {
     let entry: DiaryEntry
+    let onEdit: () -> Void
+    let onDelete: () -> Void
 
     private var dateText: String {
         entry.selectedDate.formatted(
@@ -44,6 +46,16 @@ struct EntryCardView: View {
                 .font(.body)
                 .foregroundStyle(.primary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 10) {
+                Button("Edit", action: onEdit)
+                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.skyBlue))
+
+                Button("Delete", role: .destructive, action: onDelete)
+                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+
+                Spacer()
+            }
         }
         .padding(16)
         .background(

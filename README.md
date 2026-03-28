@@ -1,54 +1,58 @@
 # Breezy Diary (iPhone Offline Journal App)
 
-This repository contains a ready-to-use SwiftUI source implementation for an offline iPhone diary app with:
+This repository now includes a complete Xcode project (`BreezyDiary.xcodeproj`) for an offline iPhone diary app.
 
-- Card-style cartoon UI
-- Main color tone: light blue + white, with soft yellow accents
-- Automatic current date/time recognition
-- Editable date/time
-- Weather selection (offline)
-- Location option:
-  - Use current coordinates (CoreLocation, no network required)
-  - Manual location input
-- Typing animation (wiggle + bounce) for playful, windy/kids feeling
+## Implemented Features
+
+- Cartoon card-style UI
+- Light blue + white base palette with soft yellow accents
+- Automatic current date/time + manual date/time editing
+- Offline weather picker
+- Location options:
+  - Current coordinates (CoreLocation, no network required)
+  - Manual location text
+- Playful typing animation (wiggle + bounce)
+- Entry management:
+  - Create
+  - Edit
+  - Delete (with confirmation)
+- Windy animated background (floating clouds + breezy streaks)
+- Adaptive layout for modern iPhone screens (including iPhone 17 class sizes)
 - English-only in-app text
+- Fully offline local persistence (`UserDefaults`)
 
 ---
 
 ## Project Structure
 
-All app source files are under:
-
-`BreezyDiary/`
-
-- `App/` - App entry
-- `Views/` - Main screens and cards
-- `Models/` - Diary and weather models
-- `Services/` - Local storage and location manager
-- `UI/` - Theme, button styles, text animation
+- `BreezyDiary.xcodeproj` - Ready-to-open Xcode project
+- `BreezyDiary/` - App source
+  - `App/` - App entry
+  - `Views/` - Main screens and cards
+  - `Models/` - Diary and weather models
+  - `Services/` - Local storage and location manager
+  - `UI/` - Theme, button styles, text animation, windy background
+  - `Assets.xcassets/` - Accent color and app icon set template
+  - `Info.plist` - Includes location usage description
 
 ---
 
-## Run on iPhone (Xcode)
+## Run on iPhone 17 (Xcode)
 
-Because this repo stores source files only, create a SwiftUI iOS app shell in Xcode and drop in these files:
+1. Open `BreezyDiary.xcodeproj` in Xcode.
+2. Select target **BreezyDiary**.
+3. In **Signing & Capabilities**:
+   - choose your Apple Team
+   - set a unique Bundle Identifier (for example `com.yourname.BreezyDiary`)
+4. Choose your **iPhone 17** device from the run destination list.
+5. Build and Run (`Cmd + R`).
 
-1. Open Xcode -> **File > New > Project...**
-2. Choose **iOS > App**
-3. Product Name: `BreezyDiary` (or any name)
-4. Interface: **SwiftUI**, Language: **Swift**
-5. Create project, then drag all files from `BreezyDiary/` into the Xcode project navigator.
-6. Ensure target membership is checked for all added files.
-7. In target **Info** (or `Info.plist`), add:
-   - `Privacy - Location When In Use Usage Description`
-   - Example value: `Used to attach current coordinates to your diary entry.`
-8. Select your iPhone device/simulator and run.
+If prompted on first run, allow location permission to use current coordinates in entries.
 
 ---
 
 ## Notes
 
 - Works fully offline.
-- Diary entries are saved locally via `UserDefaults`.
 - No backend and no internet requirement.
-- Location feature uses system GPS permission only.
+- You can keep using manual location input even if location permission is denied.

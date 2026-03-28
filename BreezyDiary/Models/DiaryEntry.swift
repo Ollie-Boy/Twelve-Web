@@ -1,6 +1,6 @@
 import Foundation
 
-struct DiaryEntry: Identifiable, Codable {
+struct DiaryEntry: Identifiable, Codable, Equatable {
     let id: UUID
     var createdAt: Date
     var selectedDate: Date

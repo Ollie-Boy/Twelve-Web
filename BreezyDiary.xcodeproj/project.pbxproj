@@ -1,0 +1,410 @@
+// !$*UTF8*$!
+{
+    archiveVersion = 1;
+    classes = {
+    };
+    objectVersion = 60;
+    objects = {
+
+/* Begin PBXBuildFile section */
+        9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000001A100000100000001 /* BreezyDiaryApp.swift */; };
+        9A100002A100000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000002A100000100000001 /* ContentView.swift */; };
+        9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
+        9A100004A100000100000001 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000004A100000100000001 /* DiaryEntry.swift */; };
+        9A100005A100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
+        9A100006A100000100000001 /* DiaryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000006A100000100000001 /* DiaryStorage.swift */; };
+        9A100007A100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
+        9A100008A100000100000001 /* BreezyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000008A100000100000001 /* BreezyTheme.swift */; };
+        9A100009A100000100000001 /* WiggleTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000009A100000100000001 /* WiggleTextEditor.swift */; };
+        9A10000AA100000100000001 /* BreezyButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000AA100000100000001 /* BreezyButtonStyles.swift */; };
+        9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000BA100000100000001 /* WindyBackgroundView.swift */; };
+        9A10000CA100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A00000CA100000100000001 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+        9A000001A100000100000001 /* BreezyDiaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezyDiaryApp.swift; sourceTree = "<group>"; };
+        9A000002A100000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+        9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
+        9A000004A100000100000001 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
+        9A000005A100000100000001 /* WeatherOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherOption.swift; sourceTree = "<group>"; };
+        9A000006A100000100000001 /* DiaryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryStorage.swift; sourceTree = "<group>"; };
+        9A000007A100000100000001 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+        9A000008A100000100000001 /* BreezyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezyTheme.swift; sourceTree = "<group>"; };
+        9A000009A100000100000001 /* WiggleTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiggleTextEditor.swift; sourceTree = "<group>"; };
+        9A00000AA100000100000001 /* BreezyButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezyButtonStyles.swift; sourceTree = "<group>"; };
+        9A00000BA100000100000001 /* WindyBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindyBackgroundView.swift; sourceTree = "<group>"; };
+        9A00000CA100000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        9A00000DA100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        9A00000EA100000100000001 /* BreezyDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreezyDiary.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+        9A200001A100000100000001 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+        9A300001A100000100000001 = {
+            isa = PBXGroup;
+            children = (
+                9A300002A100000100000001 /* BreezyDiary */,
+                9A300003A100000100000001 /* Products */,
+            );
+            sourceTree = "<group>";
+        };
+        9A300002A100000100000001 /* BreezyDiary */ = {
+            isa = PBXGroup;
+            children = (
+                9A300004A100000100000001 /* App */,
+                9A300005A100000100000001 /* Views */,
+                9A300006A100000100000001 /* Models */,
+                9A300007A100000100000001 /* Services */,
+                9A300008A100000100000001 /* UI */,
+                9A00000CA100000100000001 /* Assets.xcassets */,
+                9A00000DA100000100000001 /* Info.plist */,
+            );
+            path = BreezyDiary;
+            sourceTree = "<group>";
+        };
+        9A300003A100000100000001 /* Products */ = {
+            isa = PBXGroup;
+            children = (
+                9A00000EA100000100000001 /* BreezyDiary.app */,
+            );
+            name = Products;
+            sourceTree = "<group>";
+        };
+        9A300004A100000100000001 /* App */ = {
+            isa = PBXGroup;
+            children = (
+                9A000001A100000100000001 /* BreezyDiaryApp.swift */,
+            );
+            path = App;
+            sourceTree = "<group>";
+        };
+        9A300005A100000100000001 /* Views */ = {
+            isa = PBXGroup;
+            children = (
+                9A000002A100000100000001 /* ContentView.swift */,
+                9A000003A100000100000001 /* EntryCardView.swift */,
+            );
+            path = Views;
+            sourceTree = "<group>";
+        };
+        9A300006A100000100000001 /* Models */ = {
+            isa = PBXGroup;
+            children = (
+                9A000004A100000100000001 /* DiaryEntry.swift */,
+                9A000005A100000100000001 /* WeatherOption.swift */,
+            );
+            path = Models;
+            sourceTree = "<group>";
+        };
+        9A300007A100000100000001 /* Services */ = {
+            isa = PBXGroup;
+            children = (
+                9A000006A100000100000001 /* DiaryStorage.swift */,
+                9A000007A100000100000001 /* LocationManager.swift */,
+            );
+            path = Services;
+            sourceTree = "<group>";
+        };
+        9A300008A100000100000001 /* UI */ = {
+            isa = PBXGroup;
+            children = (
+                9A000008A100000100000001 /* BreezyTheme.swift */,
+                9A000009A100000100000001 /* WiggleTextEditor.swift */,
+                9A00000AA100000100000001 /* BreezyButtonStyles.swift */,
+                9A00000BA100000100000001 /* WindyBackgroundView.swift */,
+            );
+            path = UI;
+            sourceTree = "<group>";
+        };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+        9A400001A100000100000001 /* BreezyDiary */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = 9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "BreezyDiary" */;
+            buildPhases = (
+                9A600001A100000100000001 /* Sources */,
+                9A200001A100000100000001 /* Frameworks */,
+                9A600002A100000100000001 /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+            );
+            name = BreezyDiary;
+            productName = BreezyDiary;
+            productReference = 9A00000EA100000100000001 /* BreezyDiary.app */;
+            productType = "com.apple.product-type.application";
+        };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+        9A500001A100000100000001 /* Project object */ = {
+            isa = PBXProject;
+            attributes = {
+                BuildIndependentTargetsInParallel = 1;
+                LastUpgradeCheck = 1610;
+                TargetAttributes = {
+                    9A400001A100000100000001 = {
+                        CreatedOnToolsVersion = 16.1;
+                    };
+                };
+            };
+            buildConfigurationList = 9A500003A100000100000001 /* Build configuration list for PBXProject "BreezyDiary" */;
+            compatibilityVersion = "Xcode 16.0";
+            developmentRegion = en;
+            hasScannedForEncodings = 0;
+            knownRegions = (
+                en,
+                Base,
+            );
+            mainGroup = 9A300001A100000100000001;
+            productRefGroup = 9A300003A100000100000001 /* Products */;
+            projectDirPath = "";
+            projectRoot = "";
+            targets = (
+                9A400001A100000100000001 /* BreezyDiary */,
+            );
+        };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+        9A600002A100000100000001 /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                9A10000CA100000100000001 /* Assets.xcassets in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+        9A600001A100000100000001 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */,
+                9A100002A100000100000001 /* ContentView.swift in Sources */,
+                9A100003A100000100000001 /* EntryCardView.swift in Sources */,
+                9A100004A100000100000001 /* DiaryEntry.swift in Sources */,
+                9A100005A100000100000001 /* WeatherOption.swift in Sources */,
+                9A100006A100000100000001 /* DiaryStorage.swift in Sources */,
+                9A100007A100000100000001 /* LocationManager.swift in Sources */,
+                9A100008A100000100000001 /* BreezyTheme.swift in Sources */,
+                9A100009A100000100000001 /* WiggleTextEditor.swift in Sources */,
+                9A10000AA100000100000001 /* BreezyButtonStyles.swift in Sources */,
+                9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+        9A700001A100000100000001 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ANALYZER_NONNULL = YES;
+                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_ENABLE_OBJC_ARC = YES;
+                CLANG_ENABLE_OBJC_WEAK = YES;
+                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                CLANG_WARN_BOOL_CONVERSION = YES;
+                CLANG_WARN_COMMA = YES;
+                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                CLANG_WARN_EMPTY_BODY = YES;
+                CLANG_WARN_ENUM_CONVERSION = YES;
+                CLANG_WARN_INFINITE_RECURSION = YES;
+                CLANG_WARN_INT_CONVERSION = YES;
+                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                CLANG_WARN_UNREACHABLE_CODE = YES;
+                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = dwarf;
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                ENABLE_TESTABILITY = YES;
+                GCC_C_LANGUAGE_STANDARD = gnu17;
+                GCC_DYNAMIC_NO_PIC = NO;
+                GCC_NO_COMMON_BLOCKS = YES;
+                GCC_OPTIMIZATION_LEVEL = 0;
+                GCC_PREPROCESSOR_DEFINITIONS = (
+                    "DEBUG=1",
+                    "$(inherited)",
+                );
+                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                GCC_WARN_UNUSED_FUNCTION = YES;
+                GCC_WARN_UNUSED_VARIABLE = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+                MTL_FAST_MATH = YES;
+                ONLY_ACTIVE_ARCH = YES;
+                SDKROOT = iphoneos;
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+            };
+            name = Debug;
+        };
+        9A700002A100000100000001 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ANALYZER_NONNULL = YES;
+                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_ENABLE_OBJC_ARC = YES;
+                CLANG_ENABLE_OBJC_WEAK = YES;
+                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                CLANG_WARN_BOOL_CONVERSION = YES;
+                CLANG_WARN_COMMA = YES;
+                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                CLANG_WARN_EMPTY_BODY = YES;
+                CLANG_WARN_ENUM_CONVERSION = YES;
+                CLANG_WARN_INFINITE_RECURSION = YES;
+                CLANG_WARN_INT_CONVERSION = YES;
+                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                CLANG_WARN_UNREACHABLE_CODE = YES;
+                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+                ENABLE_NS_ASSERTIONS = NO;
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                GCC_C_LANGUAGE_STANDARD = gnu17;
+                GCC_NO_COMMON_BLOCKS = YES;
+                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                GCC_WARN_UNUSED_FUNCTION = YES;
+                GCC_WARN_UNUSED_VARIABLE = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                MTL_ENABLE_DEBUG_INFO = NO;
+                MTL_FAST_MATH = YES;
+                SDKROOT = iphoneos;
+                SWIFT_COMPILATION_MODE = wholemodule;
+                VALIDATE_PRODUCT = YES;
+            };
+            name = Release;
+        };
+        9A700003A100000100000001 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                ENABLE_PREVIEWS = YES;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = BreezyDiary/Info.plist;
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.BreezyDiary;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Debug;
+        };
+        9A700004A100000100000001 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                ENABLE_PREVIEWS = YES;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = BreezyDiary/Info.plist;
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.BreezyDiary;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Release;
+        };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+        9A500003A100000100000001 /* Build configuration list for PBXProject "BreezyDiary" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                9A700001A100000100000001 /* Debug */,
+                9A700002A100000100000001 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "BreezyDiary" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                9A700003A100000100000001 /* Debug */,
+                9A700004A100000100000001 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+/* End XCConfigurationList section */
+    };
+    rootObject = 9A500001A100000100000001 /* Project object */;
+}

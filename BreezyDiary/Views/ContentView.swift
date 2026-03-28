@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum LocationMode {
+enum LocationMode: Hashable {
     case currentLocation
     case manualInput
 }
@@ -8,6 +8,8 @@ enum LocationMode {
 struct ContentView: View {
     @StateObject private var locationManager = LocationManager()
     @State private var entries: [DiaryEntry] = []
+    @State private var editingEntryID: UUID?
+    @State private var pendingDeletionEntry: DiaryEntry?
 
     @State private var titleText: String = ""
     @State private var bodyText: String = ""
@@ -28,23 +30,56 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             BreezyTheme.softBlueBackground.ignoresSafeArea()
+            WindyBackgroundView()
 
             ScrollView {
-                VStack(spacing: 18) {
-                    headerCard
-                    editorCard
-                    historySection
-                }
+                adaptiveLayout
                 .padding(.horizontal, 16)
                 .padding(.vertical, 20)
+                .frame(maxWidth: 980)
+                .frame(maxWidth: .infinity)
             }
         }
         .onAppear {
             entries = storage.loadEntries()
+            sortEntries()
         }
-        .onReceive(locationManager.$statusText) { coordinateText in
+        .onReceive(locationManager.$currentLocationText) { coordinateText in
             if locationMode == .currentLocation {
                 locationText = coordinateText
+            }
+        }
+        .alert(item: $pendingDeletionEntry) { entry in
+            Alert(
+                title: Text("Delete this entry?"),
+                message: Text("This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
+                    deleteEntry(entry)
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var adaptiveLayout: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 18) {
+                VStack(spacing: 18) {
+                    headerCard
+                    editorCard
+                }
+                .frame(minWidth: 340, idealWidth: 390, maxWidth: 430, alignment: .top)
+
+                historySection
+                    .frame(minWidth: 330, maxWidth: .infinity, alignment: .topLeading)
+            }
+            .frame(maxWidth: .infinity, alignment: .top)
+
+            VStack(spacing: 18) {
+                headerCard
+                editorCard
+                historySection
             }
         }
     }
@@ -68,7 +103,7 @@ struct ContentView: View {
     private var editorCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             Group {
-                Text("New Entry")
+                Text(isEditing ? "Edit Entry" : "New Entry")
                     .font(.system(size: 23, weight: .bold, design: .rounded))
                     .foregroundStyle(BreezyTheme.deepBlue)
 
@@ -155,14 +190,21 @@ struct ContentView: View {
                 saveEntry()
             } label: {
                 HStack {
-                    Image(systemName: "square.and.arrow.down.fill")
-                    Text("Save Entry")
+                    Image(systemName: isEditing ? "pencil.circle.fill" : "square.and.arrow.down.fill")
+                    Text(isEditing ? "Update Entry" : "Save Entry")
                         .fontWeight(.bold)
                 }
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(BreezyPrimaryButtonStyle())
             .disabled(bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+            if isEditing {
+                Button("Cancel Editing") {
+                    cancelEditing()
+                }
+                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.skyBlue))
+            }
         }
         .padding(16)
         .background(BreezyTheme.whiteCard)
@@ -194,11 +236,19 @@ struct ContentView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             } else {
                 ForEach(entries) { entry in
-                    EntryCardView(entry: entry)
+                    EntryCardView(
+                        entry: entry,
+                        onEdit: { beginEditing(entry) },
+                        onDelete: { pendingDeletionEntry = entry }
+                    )
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var isEditing: Bool {
+        editingEntryID != nil
     }
 
     private func saveEntry() {
@@ -213,24 +263,68 @@ struct ContentView: View {
         let trimmedTitle = titleText.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedTitle = trimmedTitle.isEmpty ? "Untitled Day" : trimmedTitle
 
-        let entry = DiaryEntry(
-            id: UUID(),
-            createdAt: Date(),
-            selectedDate: entryDate,
-            title: normalizedTitle,
-            body: bodyText,
-            weather: weather,
-            location: resolvedLocation
-        )
+        if let editingEntryID, let index = entries.firstIndex(where: { $0.id == editingEntryID }) {
+            entries[index].selectedDate = entryDate
+            entries[index].title = normalizedTitle
+            entries[index].body = bodyText
+            entries[index].weather = weather
+            entries[index].location = resolvedLocation
+        } else {
+            let entry = DiaryEntry(
+                id: UUID(),
+                createdAt: Date(),
+                selectedDate: entryDate,
+                title: normalizedTitle,
+                body: bodyText,
+                weather: weather,
+                location: resolvedLocation
+            )
+            entries.insert(entry, at: 0)
+        }
 
-        entries.insert(entry, at: 0)
+        sortEntries()
         storage.saveEntries(entries)
+        clearEditor(keepLocationMode: false)
+    }
 
+    private func beginEditing(_ entry: DiaryEntry) {
+        editingEntryID = entry.id
+        titleText = entry.title
+        bodyText = entry.body
+        entryDate = entry.selectedDate
+        weather = entry.weather
+        locationMode = .manualInput
+        manualLocation = entry.location
+        locationText = entry.location
+    }
+
+    private func cancelEditing() {
+        clearEditor(keepLocationMode: false)
+    }
+
+    private func deleteEntry(_ entry: DiaryEntry) {
+        entries.removeAll { $0.id == entry.id }
+        storage.saveEntries(entries)
+        if editingEntryID == entry.id {
+            clearEditor(keepLocationMode: false)
+        }
+    }
+
+    private func clearEditor(keepLocationMode: Bool) {
+        editingEntryID = nil
         titleText = ""
         bodyText = ""
         manualLocation = ""
         entryDate = Date()
         weather = .sunny
+        if !keepLocationMode {
+            locationMode = .currentLocation
+            locationText = locationManager.currentLocationText
+        }
+    }
+
+    private func sortEntries() {
+        entries.sort { $0.selectedDate > $1.selectedDate }
     }
 }
 
