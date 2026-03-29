@@ -53,7 +53,7 @@ extension LocationManager: CLLocationManagerDelegate {
                     placemark.administrativeArea,
                     placemark.country
                 ]
-                let pieces = fields.compactMap { field -> String? in
+                let pieces: [String] = fields.compactMap { field in
                     guard let raw = field else { return nil }
                     let value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
                     return value.isEmpty ? nil : value
