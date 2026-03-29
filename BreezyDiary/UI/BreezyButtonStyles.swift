@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BreezyPrimaryButtonStyle: ButtonStyle {
+    var cornerRadius: CGFloat = 14
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 17, weight: .semibold, design: .rounded))
@@ -8,7 +10,7 @@ struct BreezyPrimaryButtonStyle: ButtonStyle {
             .padding(.vertical, 13)
             .padding(.horizontal, 14)
             .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -21,7 +23,7 @@ struct BreezyPrimaryButtonStyle: ButtonStyle {
                     )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .stroke(.white.opacity(0.18), lineWidth: 0.8)
             )
             .shadow(color: BreezyTheme.primaryBlue.opacity(configuration.isPressed ? 0.1 : 0.24), radius: 12, y: 8)

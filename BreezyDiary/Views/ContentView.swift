@@ -46,7 +46,12 @@ struct ContentView: View {
             }
 
             if isFeatureCardPresented {
-                TodayFeatureCardOverlay(isPresented: $isFeatureCardPresented)
+                TodayFeatureCardOverlay(
+                    isPresented: $isFeatureCardPresented,
+                    onStartWriting: {
+                        // Keep focus on the editor area once onboarding card closes.
+                    }
+                )
                     .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
                     .zIndex(10)
             }

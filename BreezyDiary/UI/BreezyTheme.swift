@@ -29,6 +29,7 @@ enum BreezyTheme {
     static let shadow = Color.black.opacity(0.08)
     static let cardShadow = Color.black.opacity(0.08)
     static let overlayDim = Color.black.opacity(0.34)
+    static let todayFeatureScrim = Color.black.opacity(0.40)
 
     static let cardBackground = Color.white
     static let cardSurface = Color.white
@@ -39,4 +40,10 @@ enum BreezyTheme {
     static let todayCardBlueStart = Color(red: 0.80, green: 0.90, blue: 1.00)
     static let todayCardBlueEnd = Color(red: 0.92, green: 0.96, blue: 1.00)
     static let todayCardYellow = Color(red: 1.00, green: 0.95, blue: 0.82)
+    static let todayCardTextOnImage = Color.white
+    static let todayFeatureDetailBackground = Color(red: 0.96, green: 0.97, blue: 1.00)
+    static let todayFeatureDetailCard = Color.white
+    static let todayFeatureDetailStroke = Color.black.opacity(0.08)
+    static let todayFeatureCloseBackground = Color.black.opacity(0.24)
+    static let todayFeatureCloseIcon = Color.white
 }
