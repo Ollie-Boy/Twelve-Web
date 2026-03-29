@@ -1,10 +1,18 @@
 import SwiftUI
 
+private struct DetailHeroOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct TodayFeatureCardOverlay: View {
     @Binding var isPresented: Bool
     var onStartWriting: () -> Void = {}
     @State private var dragOffset: CGFloat = 0
     @State private var showDetail: Bool = false
+    @State private var detailHeroOffset: CGFloat = 0
     @Namespace private var todayCardNamespace
 
     var body: some View {
@@ -109,58 +117,21 @@ struct TodayFeatureCardOverlay: View {
 
     private var detailCard: some View {
         VStack(spacing: 0) {
-            heroArtwork(isDetail: true)
-                .frame(height: 410)
-                .matchedGeometryEffect(id: "today.hero.container", in: todayCardNamespace)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text("Create with App Store-inspired calm.")
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-
-                    Text("Breezy Diary keeps your entries fully offline while offering a playful writing feel. Use time and weather controls, pick location source, and maintain your own private moment log with smooth card interactions.")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(BreezyTheme.textSecondary)
-                        .lineSpacing(3)
-
-                    Label("Edit and delete entries anytime", systemImage: "square.and.pencil")
-                    Label("Windy ambient animation with subtle motion", systemImage: "wind")
-                    Label("No account and no network required", systemImage: "lock.shield")
-                }
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(BreezyTheme.textPrimary)
-                .padding(.horizontal, 24)
-                .padding(.top, 24)
-                .padding(.bottom, 16)
-            }
-            .frame(maxHeight: 270)
-            .background(BreezyTheme.todayFeatureDetailBackground)
-
-            HStack {
-                Button("Back") {
-                    withAnimation(.spring(response: 0.42, dampingFraction: 0.88)) {
-                        showDetail = false
+            ZStack(alignment: .top) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        detailHeroParallax
+                        detailContent
                     }
                 }
-                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                .coordinateSpace(name: "todayDetailScroll")
+                .onPreferenceChange(DetailHeroOffsetKey.self) { detailHeroOffset = $0 }
 
-                Spacer()
-
-                Button {
-                    withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
-                        isPresented = false
-                    }
-                    onStartWriting()
-                } label: {
-                    Label("Start Writing", systemImage: "sparkles")
-                }
-                .buttonStyle(BreezyPrimaryButtonStyle())
+                detailStickyHeader
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 16)
-            .background(BreezyTheme.todayFeatureDetailCard)
-            .matchedGeometryEffect(id: "today.body.container", in: todayCardNamespace)
+            .frame(maxHeight: 560)
+
+            detailFooter
         }
         .frame(maxWidth: 700)
         .background(BreezyTheme.todayFeatureDetailCard)
@@ -190,6 +161,104 @@ struct TodayFeatureCardOverlay: View {
         .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
     }
 
+    private var detailHeroParallax: some View {
+        GeometryReader { proxy in
+            let minY = proxy.frame(in: .named("todayDetailScroll")).minY
+            let stretch = max(0, minY)
+            let parallax = minY < 0 ? -minY * 0.18 : 0
+
+            heroArtwork(isDetail: true)
+                .frame(height: 410 + stretch)
+                .offset(y: minY > 0 ? -minY : parallax)
+                .preference(key: DetailHeroOffsetKey.self, value: minY)
+                .matchedGeometryEffect(id: "today.hero.container", in: todayCardNamespace)
+        }
+        .frame(height: 410)
+    }
+
+    private var detailContent: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("Create with App Store-inspired calm.")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+
+                Text("Breezy Diary keeps your entries fully offline while offering a playful writing feel. Use time and weather controls, pick location source, and maintain your own private moment log with smooth card interactions.")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .lineSpacing(3)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
+            .padding(.bottom, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(BreezyTheme.todayFeatureDetailCard)
+            .matchedGeometryEffect(id: "today.body.container", in: todayCardNamespace)
+
+            VStack(alignment: .leading, spacing: 14) {
+                Label("Edit and delete entries anytime", systemImage: "square.and.pencil")
+                Label("Windy ambient animation with subtle motion", systemImage: "wind")
+                Label("No account and no network required", systemImage: "lock.shield")
+            }
+            .font(.system(size: 15, weight: .medium))
+            .foregroundStyle(BreezyTheme.textPrimary)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(BreezyTheme.todayFeatureDetailBackground)
+        }
+    }
+
+    private var detailFooter: some View {
+        HStack {
+            Button("Back") {
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.88)) {
+                    showDetail = false
+                }
+            }
+            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+
+            Spacer()
+
+            Button {
+                withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
+                    isPresented = false
+                }
+                onStartWriting()
+            } label: {
+                Label("Start Writing", systemImage: "sparkles")
+            }
+            .buttonStyle(BreezyPrimaryButtonStyle())
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 16)
+        .background(BreezyTheme.todayFeatureDetailCard)
+    }
+
+    private var detailStickyHeader: some View {
+        let progress = min(max((-detailHeroOffset - 90) / 70, 0), 1)
+        return VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Text("TODAY")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                Text("Breezy Diary")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 11)
+            .background(.ultraThinMaterial)
+
+            Rectangle()
+                .fill(BreezyTheme.todayFeatureDetailStroke)
+                .frame(height: 0.6)
+        }
+        .opacity(progress)
+        .allowsHitTesting(false)
+    }
+
     private func heroArtwork(isDetail: Bool) -> some View {
         ZStack(alignment: .topLeading) {
             LinearGradient(
@@ -200,6 +269,15 @@ struct TodayFeatureCardOverlay: View {
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
+            )
+
+            LinearGradient(
+                colors: [
+                    Color.clear,
+                    BreezyTheme.todayFeatureScrim.opacity(isDetail ? 0.44 : 0.28)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
             )
 
             // Illustration-like layers to mimic App Store Today hero art.
