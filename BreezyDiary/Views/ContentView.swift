@@ -10,6 +10,7 @@ struct ContentView: View {
     @State private var entries: [DiaryEntry] = []
     @State private var editingEntryID: UUID?
     @State private var pendingDeletionEntry: DiaryEntry?
+    @State private var isFeatureCardPresented: Bool = true
 
     @State private var titleText: String = ""
     @State private var bodyText: String = ""
@@ -42,6 +43,12 @@ struct ContentView: View {
                 .padding(.vertical, 22)
                 .frame(maxWidth: 920)
                 .frame(maxWidth: .infinity)
+            }
+
+            if isFeatureCardPresented {
+                TodayFeatureCardOverlay(isPresented: $isFeatureCardPresented)
+                    .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
+                    .zIndex(10)
             }
         }
         .onAppear {

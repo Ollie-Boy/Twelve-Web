@@ -15,7 +15,6 @@ enum BreezyTheme {
 
     static let primaryBlue = Color(red: 0.00, green: 0.48, blue: 1.00)
     static let primaryBlueDark = Color(red: 0.02, green: 0.35, blue: 0.88)
-    static let accentBlue = primaryBlue
     static let softBlue = Color(red: 0.90, green: 0.95, blue: 1.00)
     static let accentYellow = Color(red: 1.00, green: 0.95, blue: 0.80)
     static let softYellow = Color(red: 1.00, green: 0.96, blue: 0.86)
@@ -29,10 +28,15 @@ enum BreezyTheme {
     static let cardBorder = Color.black.opacity(0.06)
     static let shadow = Color.black.opacity(0.08)
     static let cardShadow = Color.black.opacity(0.08)
+    static let overlayDim = Color.black.opacity(0.34)
 
     static let cardBackground = Color.white
     static let cardSurface = Color.white
 
     static let cloudTint = Color.white
     static let windLine = Color(red: 0.80, green: 0.87, blue: 0.96)
+
+    static let todayCardBlueStart = Color(red: 0.80, green: 0.90, blue: 1.00)
+    static let todayCardBlueEnd = Color(red: 0.92, green: 0.96, blue: 1.00)
+    static let todayCardYellow = Color(red: 1.00, green: 0.95, blue: 0.82)
 }
