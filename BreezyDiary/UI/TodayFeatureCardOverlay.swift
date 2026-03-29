@@ -19,6 +19,7 @@ struct TodayFeatureCardOverlay: View {
     var body: some View {
         ZStack {
             BreezyTheme.overlayDim
+                .opacity(1 - Double(interactionProgress * 0.35))
                 .ignoresSafeArea()
                 .transition(.opacity)
                 .onTapGesture {
@@ -32,6 +33,18 @@ struct TodayFeatureCardOverlay: View {
             }
         }
         .animation(.spring(response: 0.46, dampingFraction: 0.88), value: showDetail)
+    }
+
+    private var verticalDismissProgress: CGFloat {
+        min(max(dragOffset / 220, 0), 1)
+    }
+
+    private var horizontalBackProgress: CGFloat {
+        min(max(detailBackOffset / 280, 0), 1)
+    }
+
+    private var interactionProgress: CGFloat {
+        max(verticalDismissProgress, horizontalBackProgress)
     }
 
     private func dismiss() {
@@ -113,6 +126,7 @@ struct TodayFeatureCardOverlay: View {
                     .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
                     .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
             }
+            .opacity(1 - Double(verticalDismissProgress * 0.6))
             .padding(14)
         }
         .offset(y: dragOffset)
@@ -157,6 +171,8 @@ struct TodayFeatureCardOverlay: View {
                         .stroke(BreezyTheme.todayFeatureDetailStroke.opacity(0.7), lineWidth: 0.6)
                 )
                 .offset(x: detailBackOffset, y: dragOffset)
+                .scaleEffect(1 - (horizontalBackProgress * 0.055))
+                .opacity(1 - Double(horizontalBackProgress * 0.1))
                 .gesture(dismissDragGesture)
                 .simultaneousGesture(detailBackSwipeGesture)
                 .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
@@ -171,6 +187,7 @@ struct TodayFeatureCardOverlay: View {
                         .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
                         .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
                 }
+                .opacity(1 - Double(interactionProgress * 0.7))
                 .padding(.top, topInset + 8)
                 .padding(.trailing, 16)
             }
@@ -253,6 +270,7 @@ struct TodayFeatureCardOverlay: View {
 
     private var detailStickyHeader: some View {
         let progress = min(max((-detailHeroOffset - 90) / 70, 0), 1)
+        let gestureFade = max(0, 1 - interactionProgress * 0.9)
         return VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Text("TODAY")
@@ -271,7 +289,8 @@ struct TodayFeatureCardOverlay: View {
                 .fill(BreezyTheme.todayFeatureDetailStroke)
                 .frame(height: 0.6)
         }
-        .opacity(progress)
+        .opacity(progress * gestureFade)
+        .offset(x: detailBackOffset * 0.08, y: dragOffset * 0.05)
         .allowsHitTesting(false)
     }
 
