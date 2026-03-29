@@ -1,20 +1,38 @@
 import SwiftUI
 
 enum BreezyTheme {
-    static let skyBlue = Color(red: 0.84, green: 0.93, blue: 1.0)
-    static let softBlueBackground = Color(red: 0.90, green: 0.95, blue: 1.0)
-    static let cardWhite = Color.white
-    static let whiteCard = Color.white
-    static let softYellow = Color(red: 1.0, green: 0.96, blue: 0.76)
-    static let accentYellow = Color(red: 1.0, green: 0.94, blue: 0.70)
-    static let deepBlue = Color(red: 0.16, green: 0.27, blue: 0.45)
-    static let skyBlueDark = Color(red: 0.23, green: 0.45, blue: 0.72)
-    static let textPrimary = deepBlue
-    static let textSecondary = Color(red: 0.35, green: 0.47, blue: 0.64)
-
-    static let cardGradient = LinearGradient(
-        colors: [Color.white, Color(red: 0.94, green: 0.97, blue: 1.0)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
+    static let backgroundTop = Color(red: 0.97, green: 0.98, blue: 1.00)
+    static let backgroundBottom = Color(red: 0.95, green: 0.97, blue: 1.00)
+    static let background = LinearGradient(
+        colors: [backgroundTop, backgroundBottom],
+        startPoint: .top,
+        endPoint: .bottom
     )
+
+    static let surface = Color.white
+    static let secondarySurface = Color(red: 0.98, green: 0.99, blue: 1.00)
+    static let surfaceTintBlue = Color(red: 0.92, green: 0.96, blue: 1.00)
+
+    static let primaryBlue = Color(red: 0.00, green: 0.48, blue: 1.00)
+    static let primaryBlueDark = Color(red: 0.02, green: 0.35, blue: 0.88)
+    static let accentBlue = primaryBlue
+    static let softBlue = Color(red: 0.90, green: 0.95, blue: 1.00)
+    static let accentYellow = Color(red: 1.00, green: 0.95, blue: 0.80)
+    static let softYellow = Color(red: 1.00, green: 0.96, blue: 0.86)
+
+    static let textPrimary = Color(red: 0.11, green: 0.11, blue: 0.12)
+    static let textSecondary = Color(red: 0.41, green: 0.43, blue: 0.47)
+    static let textTertiary = Color(red: 0.56, green: 0.58, blue: 0.62)
+
+    static let hairline = Color.black.opacity(0.06)
+    static let strokeSoft = Color.black.opacity(0.08)
+    static let cardBorder = Color.black.opacity(0.06)
+    static let shadow = Color.black.opacity(0.08)
+    static let cardShadow = Color.black.opacity(0.08)
+
+    static let cardBackground = Color.white
+    static let cardSurface = Color.white
+
+    static let cloudTint = Color.white
+    static let windLine = Color(red: 0.80, green: 0.87, blue: 0.96)
 }

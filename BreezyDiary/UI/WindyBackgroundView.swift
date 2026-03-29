@@ -2,43 +2,52 @@ import SwiftUI
 
 struct WindyBackgroundView: View {
     private let cloudConfigs: [CloudConfig] = [
-        .init(size: 82, y: 110, speed: 17, opacity: 0.2),
-        .init(size: 58, y: 220, speed: 24, opacity: 0.22),
-        .init(size: 100, y: 340, speed: 19, opacity: 0.17),
-        .init(size: 66, y: 500, speed: 26, opacity: 0.19),
-        .init(size: 76, y: 660, speed: 21, opacity: 0.18)
+        .init(size: 80, yRatio: 0.16, speed: 24, opacity: 0.15),
+        .init(size: 58, yRatio: 0.30, speed: 31, opacity: 0.13),
+        .init(size: 96, yRatio: 0.48, speed: 28, opacity: 0.12),
+        .init(size: 64, yRatio: 0.67, speed: 35, opacity: 0.14)
     ]
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 45.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 40.0)) { timeline in
             GeometryReader { proxy in
-                let width = proxy.size.width
+                let size = proxy.size
                 let time = timeline.date.timeIntervalSinceReferenceDate
 
                 ZStack {
+                    LinearGradient(
+                        colors: [
+                            BreezyTheme.backgroundTop,
+                            BreezyTheme.backgroundBottom
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+
                     ForEach(Array(cloudConfigs.enumerated()), id: \.offset) { index, cloud in
-                        let base = CGFloat((time / cloud.speed).truncatingRemainder(dividingBy: 1))
-                        let x = ((base * (width + cloud.size + 80)) - cloud.size - 40)
-                        let yDrift = CGFloat(sin((time * 0.9) + Double(index) * 1.2)) * 8
+                        let phase = (time / cloud.speed).truncatingRemainder(dividingBy: 1.0)
+                        let x = CGFloat(phase) * (size.width + cloud.size + 80) - cloud.size - 40
+                        let yBase = size.height * cloud.yRatio
+                        let y = yBase + CGFloat(sin(time * 0.6 + Double(index) * 0.9) * 7)
 
                         Image(systemName: "cloud.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: cloud.size, height: cloud.size * 0.62)
-                            .foregroundStyle(BreezyTheme.whiteCard.opacity(cloud.opacity))
-                            .position(x: x, y: cloud.y + yDrift)
+                            .foregroundStyle(BreezyTheme.cloudTint.opacity(cloud.opacity))
+                            .position(x: x, y: y)
                     }
 
-                    ForEach(0..<5, id: \.self) { i in
-                        let y = CGFloat(160 + i * 130)
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(BreezyTheme.whiteCard.opacity(0.12))
-                            .frame(width: 120, height: 5)
-                            .blur(radius: 0.7)
-                            .offset(x: CGFloat(sin(time * 0.7 + Double(i)) * 26), y: y)
+                    ForEach(0..<4, id: \.self) { i in
+                        Capsule(style: .continuous)
+                            .fill(BreezyTheme.windLine.opacity(0.16))
+                            .frame(width: 110, height: 3.5)
+                            .offset(
+                                x: CGFloat(sin(time * 0.45 + Double(i) * 1.3) * 18),
+                                y: size.height * (0.24 + CGFloat(i) * 0.17)
+                            )
                     }
                 }
-                .drawingGroup()
             }
         }
         .allowsHitTesting(false)
@@ -47,7 +56,7 @@ struct WindyBackgroundView: View {
 
 private struct CloudConfig {
     let size: CGFloat
-    let y: CGFloat
+    let yRatio: CGFloat
     let speed: Double
     let opacity: Double
 }

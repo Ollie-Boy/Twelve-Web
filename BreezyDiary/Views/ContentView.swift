@@ -29,14 +29,18 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            BreezyTheme.softBlueBackground.ignoresSafeArea()
+            BreezyTheme.background.ignoresSafeArea()
             WindyBackgroundView()
 
             ScrollView {
-                adaptiveLayout
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
-                .frame(maxWidth: 980)
+                VStack(spacing: 22) {
+                    heroSection
+                    editorSection
+                    entriesSection
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 22)
+                .frame(maxWidth: 920)
                 .frame(maxWidth: .infinity)
             }
         }
@@ -61,158 +65,141 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
-    private var adaptiveLayout: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top, spacing: 18) {
-                VStack(spacing: 18) {
-                    headerCard
-                    editorCard
-                }
-                .frame(minWidth: 340, idealWidth: 390, maxWidth: 430, alignment: .top)
-
-                historySection
-                    .frame(minWidth: 330, maxWidth: .infinity, alignment: .topLeading)
-            }
-            .frame(maxWidth: .infinity, alignment: .top)
-
-            VStack(spacing: 18) {
-                headerCard
-                editorCard
-                historySection
-            }
-        }
-    }
-
-    private var headerCard: some View {
+    private var heroSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Breezy Diary")
-                .font(.system(size: 34, weight: .black, design: .rounded))
-                .foregroundStyle(BreezyTheme.deepBlue)
-            Text("A playful offline diary with windy cartoon vibes.")
-                .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(BreezyTheme.deepBlue.opacity(0.85))
+                .font(.system(size: 38, weight: .bold))
+                .foregroundStyle(BreezyTheme.textPrimary)
+            Text("Write gentle moments with a calm, Apple-style layout.")
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(BreezyTheme.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(BreezyTheme.cardGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .shadow(color: BreezyTheme.deepBlue.opacity(0.13), radius: 14, y: 7)
+        .padding(.horizontal, 2)
     }
 
-    private var editorCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Group {
+    private var editorSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
                 Text(isEditing ? "Edit Entry" : "New Entry")
-                    .font(.system(size: 23, weight: .bold, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue)
-
-                TextField("Entry title...", text: $titleText)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.system(.body, design: .rounded))
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                Spacer()
+                if isEditing {
+                    Button("Cancel", action: cancelEditing)
+                        .buttonStyle(BreezyPillButtonStyle())
+                }
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Date & Time")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue)
+            TextField("Title", text: $titleText)
+                .textFieldStyle(.plain)
+                .font(.system(size: 18, weight: .medium))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                DatePicker(
-                    "Entry Date",
-                    selection: $entryDate,
-                    displayedComponents: [.date, .hourAndMinute]
-                )
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Date & Time")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                    DatePicker(
+                        "Entry Date",
+                        selection: $entryDate,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
                     .datePickerStyle(.compact)
                     .labelsHidden()
+                }
 
-                HStack {
-                    Text(displayFormatter.string(from: entryDate))
-                        .font(.system(size: 13, weight: .medium, design: .rounded))
-                        .foregroundStyle(BreezyTheme.deepBlue.opacity(0.8))
-                    Spacer()
-                    Button("Use Now") {
-                        entryDate = Date()
+                Spacer()
+
+                Button("Now") {
+                    entryDate = Date()
+                }
+                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.surfaceTintBlue))
+            }
+
+            Text(displayFormatter.string(from: entryDate))
+                .font(.system(size: 13, weight: .regular))
+                .foregroundStyle(BreezyTheme.textSecondary)
+
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Weather")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                    Picker("Weather", selection: $weather) {
+                        ForEach(WeatherOption.allCases) { item in
+                            Label(item.title, systemImage: item.symbolName)
+                                .tag(item)
+                        }
                     }
-                    .buttonStyle(BreezyPillButtonStyle())
+                    .pickerStyle(.menu)
+                }
+
+                Spacer()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Location Mode")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                    Picker("Location Source", selection: $locationMode) {
+                        Text("Current").tag(LocationMode.currentLocation)
+                        Text("Manual").tag(LocationMode.manualInput)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 260)
                 }
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Weather")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue)
-
-                Picker("Weather", selection: $weather) {
-                    ForEach(WeatherOption.allCases) { item in
-                        Label(item.title, systemImage: item.symbolName)
-                            .tag(item)
-                    }
-                }
-                .pickerStyle(.menu)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Location")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue)
-
-                Picker("Location Source", selection: $locationMode) {
-                    Text("Current Coordinates").tag(LocationMode.currentLocation)
-                    Text("Manual Input").tag(LocationMode.manualInput)
-                }
-                .pickerStyle(.segmented)
-
+            Group {
                 if locationMode == .currentLocation {
-                    HStack {
-                        Text(locationText)
-                            .font(.system(size: 13, weight: .medium, design: .rounded))
-                            .foregroundStyle(BreezyTheme.deepBlue.opacity(0.78))
+                    HStack(spacing: 10) {
+                        Label(locationText, systemImage: "mappin.and.ellipse")
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .lineLimit(1)
                         Spacer()
                         Button("Refresh") {
                             locationManager.requestCurrentLocation()
                         }
-                        .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+                        .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.accentYellow))
                     }
                 } else {
-                    TextField("Type location manually...", text: $manualLocation)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.system(.body, design: .rounded))
+                    TextField("Location", text: $manualLocation)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 15, weight: .regular))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Diary Text")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue)
-
+                Text("Diary")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(BreezyTheme.textSecondary)
                 WiggleTextEditor(text: $bodyText)
-                    .frame(height: 180)
+                    .frame(height: 170)
             }
 
             Button {
                 saveEntry()
             } label: {
-                HStack {
-                    Image(systemName: isEditing ? "pencil.circle.fill" : "square.and.arrow.down.fill")
-                    Text(isEditing ? "Update Entry" : "Save Entry")
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
+                Text(isEditing ? "Update Entry" : "Save Entry")
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(BreezyPrimaryButtonStyle())
             .disabled(bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-            if isEditing {
-                Button("Cancel Editing") {
-                    cancelEditing()
-                }
-                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.skyBlue))
-            }
         }
-        .padding(16)
-        .background(BreezyTheme.whiteCard)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .shadow(color: BreezyTheme.deepBlue.opacity(0.1), radius: 14, y: 7)
+        .padding(20)
+        .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(BreezyTheme.hairline, lineWidth: 1)
+        )
+        .shadow(color: BreezyTheme.shadow, radius: 20, y: 10)
         .onChange(of: locationMode) { newMode in
             if newMode == .currentLocation {
                 locationText = locationManager.currentLocationText
@@ -223,27 +210,32 @@ struct ContentView: View {
         }
     }
 
-    private var historySection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+    private var entriesSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
             Text("Recent Entries")
-                .font(.system(size: 22, weight: .bold, design: .rounded))
-                .foregroundStyle(BreezyTheme.deepBlue)
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(BreezyTheme.textPrimary)
 
             if entries.isEmpty {
-                Text("No entries yet. Start your first breezy story!")
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(BreezyTheme.deepBlue.opacity(0.75))
+                Text("No entries yet. Write your first one above.")
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundStyle(BreezyTheme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(14)
-                    .background(BreezyTheme.whiteCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            } else {
-                ForEach(entries) { entry in
-                    EntryCardView(
-                        entry: entry,
-                        onEdit: { beginEditing(entry) },
-                        onDelete: { pendingDeletionEntry = entry }
+                    .padding(18)
+                    .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .stroke(BreezyTheme.hairline, lineWidth: 1)
                     )
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(entries) { entry in
+                        EntryCardView(
+                            entry: entry,
+                            onEdit: { beginEditing(entry) },
+                            onDelete: { pendingDeletionEntry = entry }
+                        )
+                    }
                 }
             }
         }

@@ -17,55 +17,69 @@ struct EntryCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Label(entry.weather.title, systemImage: entry.weather.symbol)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(BreezyTheme.deepBlue)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(BreezyTheme.softBlue.opacity(0.65))
+                    )
 
                 Spacer()
 
                 Text(dateText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(BreezyTheme.textTertiary)
             }
 
             if !entry.location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 Label(entry.location, systemImage: "mappin.and.ellipse")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundStyle(BreezyTheme.textSecondary)
             }
 
             if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 Text(entry.title)
-                    .font(.headline)
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textPrimary)
             }
 
             Text(entry.body)
-                .font(.body)
-                .foregroundStyle(.primary)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(BreezyTheme.textSecondary)
+                .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 10) {
-                Button("Edit", action: onEdit)
-                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.skyBlue))
+                Button {
+                    onEdit()
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
 
-                Button("Delete", role: .destructive, action: onDelete)
-                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
 
                 Spacer()
             }
+            .padding(.top, 4)
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(BreezyTheme.whiteCard)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(BreezyTheme.skyBlue.opacity(0.35), lineWidth: 1)
-                )
-                .shadow(color: BreezyTheme.skyBlue.opacity(0.15), radius: 12, y: 6)
+        .padding(22)
+        .background(BreezyTheme.cardSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(BreezyTheme.cardBorder, lineWidth: 1)
         )
+        .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
     }
 }
