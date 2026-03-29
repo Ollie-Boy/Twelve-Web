@@ -11,7 +11,7 @@ enum DiaryAttachmentKind: String, Codable, Equatable {
     case other
 }
 
-struct DiaryAttachment: Identifiable, Equatable {
+struct DiaryAttachment: Identifiable, Codable, Equatable {
     let id: UUID
     var fileName: String
     var relativePath: String
@@ -58,9 +58,7 @@ struct DiaryAttachment: Identifiable, Equatable {
         case localPath
         case fileType
     }
-}
 
-extension DiaryAttachment: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
@@ -84,9 +82,7 @@ extension DiaryAttachment: Decodable {
         }
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
     }
-}
 
-extension DiaryAttachment: Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
