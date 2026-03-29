@@ -13,6 +13,7 @@ struct TodayFeatureCardOverlay: View {
     @State private var dragOffset: CGFloat = 0
     @State private var showDetail: Bool = false
     @State private var detailHeroOffset: CGFloat = 0
+    @State private var detailBackOffset: CGFloat = 0
     @Namespace private var todayCardNamespace
 
     var body: some View {
@@ -38,6 +39,14 @@ struct TodayFeatureCardOverlay: View {
             isPresented = false
             showDetail = false
             dragOffset = 0
+            detailBackOffset = 0
+        }
+    }
+
+    private func goBackFromDetail() {
+        withAnimation(.spring(response: 0.42, dampingFraction: 0.88)) {
+            detailBackOffset = 0
+            showDetail = false
         }
     }
 
@@ -72,6 +81,7 @@ struct TodayFeatureCardOverlay: View {
 
                     Button {
                         withAnimation(.spring(response: 0.42, dampingFraction: 0.88)) {
+                            detailBackOffset = 0
                             showDetail = true
                         }
                     } label: {
@@ -116,49 +126,56 @@ struct TodayFeatureCardOverlay: View {
     }
 
     private var detailCard: some View {
-        VStack(spacing: 0) {
-            ZStack(alignment: .top) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        detailHeroParallax
-                        detailContent
+        GeometryReader { proxy in
+            let topInset = proxy.safeAreaInsets.top
+            let bottomInset = proxy.safeAreaInsets.bottom
+
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 0) {
+                    ZStack(alignment: .top) {
+                        ScrollView(showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                detailHeroParallax
+                                detailContent
+                            }
+                        }
+                        .coordinateSpace(name: "todayDetailScroll")
+                        .onPreferenceChange(DetailHeroOffsetKey.self) { detailHeroOffset = $0 }
+
+                        detailStickyHeader
+                            .padding(.top, topInset)
                     }
+
+                    detailFooter
+                        .padding(.bottom, max(bottomInset, 12))
                 }
-                .coordinateSpace(name: "todayDetailScroll")
-                .onPreferenceChange(DetailHeroOffsetKey.self) { detailHeroOffset = $0 }
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .background(BreezyTheme.todayFeatureDetailCard)
+                .matchedGeometryEffect(id: "today.card.shell", in: todayCardNamespace)
+                .overlay(
+                    Rectangle()
+                        .stroke(BreezyTheme.todayFeatureDetailStroke.opacity(0.7), lineWidth: 0.6)
+                )
+                .offset(x: detailBackOffset, y: dragOffset)
+                .gesture(dismissDragGesture)
+                .simultaneousGesture(detailBackSwipeGesture)
+                .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
 
-                detailStickyHeader
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
+                        .frame(width: 32, height: 32)
+                        .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
+                        .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
+                }
+                .padding(.top, topInset + 8)
+                .padding(.trailing, 16)
             }
-            .frame(maxHeight: 560)
-
-            detailFooter
+            .ignoresSafeArea()
         }
-        .frame(maxWidth: 700)
-        .background(BreezyTheme.todayFeatureDetailCard)
-        .matchedGeometryEffect(id: "today.card.shell", in: todayCardNamespace)
-        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .stroke(BreezyTheme.todayFeatureDetailStroke, lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.24), radius: 30, y: 18)
-        .padding(.horizontal, 14)
-        .overlay(alignment: .topTrailing) {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
-                    .frame(width: 30, height: 30)
-                    .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
-                    .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
-            }
-            .padding(14)
-        }
-        .offset(y: dragOffset)
-        .gesture(dismissDragGesture)
-        .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
     }
 
     private var detailHeroParallax: some View {
@@ -212,9 +229,7 @@ struct TodayFeatureCardOverlay: View {
     private var detailFooter: some View {
         HStack {
             Button("Back") {
-                withAnimation(.spring(response: 0.42, dampingFraction: 0.88)) {
-                    showDetail = false
-                }
+                goBackFromDetail()
             }
             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
 
@@ -222,6 +237,7 @@ struct TodayFeatureCardOverlay: View {
 
             Button {
                 withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
+                    detailBackOffset = 0
                     isPresented = false
                 }
                 onStartWriting()
@@ -350,6 +366,30 @@ struct TodayFeatureCardOverlay: View {
                 } else {
                     withAnimation(.spring(response: 0.36, dampingFraction: 0.84)) {
                         dragOffset = 0
+                    }
+                }
+            }
+    }
+
+    // Full-screen interactive back gesture (right swipe) in detail mode.
+    private var detailBackSwipeGesture: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                guard showDetail else { return }
+                let x = value.translation.width
+                let y = value.translation.height
+                guard x > 0, abs(x) > abs(y) * 1.1 else { return }
+                detailBackOffset = min(x, 340)
+            }
+            .onEnded { value in
+                guard showDetail else { return }
+                let x = value.translation.width
+                let predicted = value.predictedEndTranslation.width
+                if x > 120 || predicted > 190 {
+                    goBackFromDetail()
+                } else {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        detailBackOffset = 0
                     }
                 }
             }
