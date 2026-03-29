@@ -143,6 +143,13 @@ struct TodayFeatureCardOverlay: View {
         GeometryReader { proxy in
             let topInset = proxy.safeAreaInsets.top
             let bottomInset = proxy.safeAreaInsets.bottom
+            let collapseWidth = min(560, proxy.size.width - 40)
+            let collapseHeight = min(700, proxy.size.height - 120)
+            let width = proxy.size.width - (proxy.size.width - collapseWidth) * horizontalBackProgress
+            let height = proxy.size.height - (proxy.size.height - collapseHeight) * horizontalBackProgress
+            let cornerRadius = 4 + (horizontalBackProgress * 28)
+            let xOffset = detailBackOffset * (0.86 - 0.22 * horizontalBackProgress)
+            let yOffset = dragOffset - (horizontalBackProgress * 20)
 
             ZStack(alignment: .topTrailing) {
                 VStack(spacing: 0) {
@@ -163,15 +170,22 @@ struct TodayFeatureCardOverlay: View {
                     detailFooter
                         .padding(.bottom, max(bottomInset, 12))
                 }
-                .frame(width: proxy.size.width, height: proxy.size.height)
+                .frame(width: width, height: height)
                 .background(BreezyTheme.todayFeatureDetailCard)
                 .matchedGeometryEffect(id: "today.card.shell", in: todayCardNamespace)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
                 .overlay(
-                    Rectangle()
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(BreezyTheme.todayFeatureDetailStroke.opacity(0.7), lineWidth: 0.6)
                 )
-                .offset(x: detailBackOffset, y: dragOffset)
-                .scaleEffect(1 - (horizontalBackProgress * 0.055))
+                .shadow(
+                    color: Color.black.opacity(0.10 + Double(horizontalBackProgress) * 0.16),
+                    radius: 8 + horizontalBackProgress * 18,
+                    y: 6 + horizontalBackProgress * 10
+                )
+                .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+                .offset(x: xOffset, y: yOffset)
+                .scaleEffect(1 - (horizontalBackProgress * 0.04))
                 .opacity(1 - Double(horizontalBackProgress * 0.1))
                 .gesture(dismissDragGesture)
                 .simultaneousGesture(detailBackSwipeGesture)
