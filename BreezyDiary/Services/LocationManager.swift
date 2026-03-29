@@ -47,16 +47,16 @@ extension LocationManager: CLLocationManagerDelegate {
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, _ in
             guard let self else { return }
             if let placemark = placemarks?.first {
-                let pieces = [
+                let fields: [String?] = [
                     placemark.name,
                     placemark.locality,
                     placemark.administrativeArea,
                     placemark.country
-                ].compactMap { item in
-                    guard let value = item?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
-                        return nil
-                    }
-                    return value
+                ]
+                let pieces = fields.compactMap { field -> String? in
+                    guard let raw = field else { return nil }
+                    let value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+                    return value.isEmpty ? nil : value
                 }
                 if pieces.isEmpty {
                     self.currentLocationText = "Location found"
