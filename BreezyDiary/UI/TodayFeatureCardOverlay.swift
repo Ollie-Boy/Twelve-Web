@@ -22,6 +22,7 @@ struct TodayFeatureCardOverlay: View {
                 collapsedCard
             }
         }
+        .animation(.spring(response: 0.46, dampingFraction: 0.88), value: showDetail)
     }
 
     private func dismiss() {
@@ -36,16 +37,19 @@ struct TodayFeatureCardOverlay: View {
         VStack(spacing: 0) {
             heroArtwork(isDetail: false)
                 .frame(height: 360)
+                .matchedGeometryEffect(id: "today.hero.container", in: todayCardNamespace)
 
             VStack(alignment: .leading, spacing: 14) {
                 Text("Offline. Private. Playful.")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textPrimary)
+                    .matchedGeometryEffect(id: "today.body.title", in: todayCardNamespace)
 
                 Text("Write with animated text feel, adjust date and weather, and save everything locally on your iPhone.")
                     .font(.system(size: 15, weight: .regular))
                     .foregroundStyle(BreezyTheme.textSecondary)
                     .lineSpacing(3)
+                    .matchedGeometryEffect(id: "today.body.subtitle", in: todayCardNamespace)
 
                 HStack {
                     Button {
@@ -73,6 +77,7 @@ struct TodayFeatureCardOverlay: View {
             .padding(.vertical, 22)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(BreezyTheme.todayFeatureDetailCard)
+            .matchedGeometryEffect(id: "today.body.container", in: todayCardNamespace)
         }
         .frame(maxWidth: 560)
         .matchedGeometryEffect(id: "today.card.shell", in: todayCardNamespace)
@@ -88,28 +93,12 @@ struct TodayFeatureCardOverlay: View {
                     .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
                     .frame(width: 30, height: 30)
                     .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
+                    .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
             }
             .padding(14)
         }
         .offset(y: dragOffset)
-        .gesture(
-            DragGesture(minimumDistance: 8)
-                .onChanged { value in
-                    if value.translation.height > 0 {
-                        dragOffset = value.translation.height
-                    }
-                }
-                .onEnded { value in
-                    let predicted = value.predictedEndTranslation.height
-                    if value.translation.height > 130 || predicted > 190 {
-                        dismiss()
-                    } else {
-                        withAnimation(.spring(response: 0.36, dampingFraction: 0.84)) {
-                            dragOffset = 0
-                        }
-                    }
-                }
-        )
+        .gesture(dismissDragGesture)
         .transition(
             .asymmetric(
                 insertion: .scale(scale: 0.96).combined(with: .opacity),
@@ -121,7 +110,8 @@ struct TodayFeatureCardOverlay: View {
     private var detailCard: some View {
         VStack(spacing: 0) {
             heroArtwork(isDetail: true)
-                .frame(height: 360)
+                .frame(height: 410)
+                .matchedGeometryEffect(id: "today.hero.container", in: todayCardNamespace)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
@@ -170,6 +160,7 @@ struct TodayFeatureCardOverlay: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
             .background(BreezyTheme.todayFeatureDetailCard)
+            .matchedGeometryEffect(id: "today.body.container", in: todayCardNamespace)
         }
         .frame(maxWidth: 700)
         .background(BreezyTheme.todayFeatureDetailCard)
@@ -190,9 +181,12 @@ struct TodayFeatureCardOverlay: View {
                     .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
                     .frame(width: 30, height: 30)
                     .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
+                    .matchedGeometryEffect(id: "today.close.button", in: todayCardNamespace)
             }
             .padding(14)
         }
+        .offset(y: dragOffset)
+        .gesture(dismissDragGesture)
         .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
     }
 
@@ -230,13 +224,16 @@ struct TodayFeatureCardOverlay: View {
                 Text("TODAY")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.92))
+                    .matchedGeometryEffect(id: "today.hero.kicker", in: todayCardNamespace)
                 Text("Breezy Diary")
                     .font(.system(size: 42, weight: .bold))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage)
+                    .matchedGeometryEffect(id: "today.hero.title", in: todayCardNamespace)
                 Text("A calm, playful place for your daily stories.")
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.9))
                     .lineSpacing(3)
+                    .matchedGeometryEffect(id: "today.hero.subtitle", in: todayCardNamespace)
             }
             .padding(.horizontal, 24)
             .padding(.top, 26)
@@ -259,5 +256,24 @@ struct TodayFeatureCardOverlay: View {
                     .padding(.bottom, 16)
             }
         }
+    }
+
+    private var dismissDragGesture: some Gesture {
+        DragGesture(minimumDistance: 8)
+            .onChanged { value in
+                if value.translation.height > 0 {
+                    dragOffset = value.translation.height
+                }
+            }
+            .onEnded { value in
+                let predicted = value.predictedEndTranslation.height
+                if value.translation.height > 130 || predicted > 190 {
+                    dismiss()
+                } else {
+                    withAnimation(.spring(response: 0.36, dampingFraction: 0.84)) {
+                        dragOffset = 0
+                    }
+                }
+            }
     }
 }
