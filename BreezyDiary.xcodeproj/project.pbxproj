@@ -20,6 +20,11 @@
         9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000BA100000100000001 /* WindyBackgroundView.swift */; };
         9A10000CA100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A00000CA100000100000001 /* Assets.xcassets */; };
         9A10000DA100000100000001 /* TodayFeatureCardOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */; };
+        9A10000EA100000100000001 /* DiaryAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000010A100000100000001 /* DiaryAttachment.swift */; };
+        9A10000FA100000100000001 /* AttachmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000011A100000100000001 /* AttachmentService.swift */; };
+        9A100010A100000100000001 /* MediaPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000012A100000100000001 /* MediaPicker.swift */; };
+        9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000013A100000100000001 /* DiaryComposerSheet.swift */; };
+        9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000014A100000100000001 /* DiaryReaderSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +43,11 @@
         9A00000DA100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
         9A00000EA100000100000001 /* BreezyDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreezyDiary.app; sourceTree = BUILT_PRODUCTS_DIR; };
         9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayFeatureCardOverlay.swift; sourceTree = "<group>"; };
+        9A000010A100000100000001 /* DiaryAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryAttachment.swift; sourceTree = "<group>"; };
+        9A000011A100000100000001 /* AttachmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentService.swift; sourceTree = "<group>"; };
+        9A000012A100000100000001 /* MediaPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPicker.swift; sourceTree = "<group>"; };
+        9A000013A100000100000001 /* DiaryComposerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryComposerSheet.swift; sourceTree = "<group>"; };
+        9A000014A100000100000001 /* DiaryReaderSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryReaderSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +113,7 @@
             children = (
                 9A000004A100000100000001 /* DiaryEntry.swift */,
                 9A000005A100000100000001 /* WeatherOption.swift */,
+                9A000010A100000100000001 /* DiaryAttachment.swift */,
             );
             path = Models;
             sourceTree = "<group>";
@@ -112,6 +123,7 @@
             children = (
                 9A000006A100000100000001 /* DiaryStorage.swift */,
                 9A000007A100000100000001 /* LocationManager.swift */,
+                9A000011A100000100000001 /* AttachmentService.swift */,
             );
             path = Services;
             sourceTree = "<group>";
@@ -124,6 +136,9 @@
                 9A00000AA100000100000001 /* BreezyButtonStyles.swift */,
                 9A00000BA100000100000001 /* WindyBackgroundView.swift */,
                 9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */,
+                9A000012A100000100000001 /* MediaPicker.swift */,
+                9A000013A100000100000001 /* DiaryComposerSheet.swift */,
+                9A000014A100000100000001 /* DiaryReaderSheet.swift */,
             );
             path = UI;
             sourceTree = "<group>";
@@ -208,6 +223,11 @@
                 9A10000AA100000100000001 /* BreezyButtonStyles.swift in Sources */,
                 9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */,
                 9A10000DA100000100000001 /* TodayFeatureCardOverlay.swift in Sources */,
+                9A10000EA100000100000001 /* DiaryAttachment.swift in Sources */,
+                9A10000FA100000100000001 /* AttachmentService.swift in Sources */,
+                9A100010A100000100000001 /* MediaPicker.swift in Sources */,
+                9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */,
+                9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

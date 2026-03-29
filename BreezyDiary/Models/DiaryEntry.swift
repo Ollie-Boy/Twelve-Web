@@ -7,7 +7,8 @@ struct DiaryEntry: Identifiable, Codable, Equatable {
     var title: String
     var body: String
     var weather: WeatherOption
-    var location: String
+    var location: String?
+    var attachments: [DiaryAttachment]
 
     init(
         id: UUID = UUID(),
@@ -16,7 +17,8 @@ struct DiaryEntry: Identifiable, Codable, Equatable {
         title: String = "",
         body: String = "",
         weather: WeatherOption = .sunny,
-        location: String = "",
+        location: String? = nil,
+        attachments: [DiaryAttachment] = []
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -25,5 +27,6 @@ struct DiaryEntry: Identifiable, Codable, Equatable {
         self.body = body
         self.weather = weather
         self.location = location
+        self.attachments = attachments
     }
 }

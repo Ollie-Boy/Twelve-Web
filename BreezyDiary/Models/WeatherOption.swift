@@ -1,6 +1,7 @@
 import Foundation
 
 enum WeatherOption: String, CaseIterable, Codable, Identifiable {
+    case none
     case sunny
     case cloudy
     case rainy
@@ -12,6 +13,8 @@ enum WeatherOption: String, CaseIterable, Codable, Identifiable {
 
     var title: String {
         switch self {
+        case .none:
+            return "No Weather"
         case .sunny:
             return "Sunny"
         case .cloudy:
@@ -29,6 +32,8 @@ enum WeatherOption: String, CaseIterable, Codable, Identifiable {
 
     var symbolName: String {
         switch self {
+        case .none:
+            return "minus.circle"
         case .sunny:
             return "sun.max.fill"
         case .cloudy:
@@ -45,4 +50,10 @@ enum WeatherOption: String, CaseIterable, Codable, Identifiable {
     }
 
     var symbol: String { symbolName }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = (try? container.decode(String.self)) ?? "none"
+        self = WeatherOption(rawValue: rawValue) ?? .none
+    }
 }
