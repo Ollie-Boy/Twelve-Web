@@ -260,16 +260,6 @@ struct DiaryComposerSheet: View {
 
 extension DiaryComposerSheet {
     init(
-        isPresented: Binding<Bool>,
-        mode: Mode,
-        onSave: @escaping (DiaryEntry) -> Void
-    ) {
-        self._isPresented = isPresented
-        self.mode = mode
-        self.onSave = onSave
-    }
-
-    init(
         mode: Mode,
         onSave: @escaping (DiaryEntry) -> Void
     ) {

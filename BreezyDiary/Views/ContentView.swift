@@ -53,6 +53,7 @@ struct ContentView: View {
         }
         .sheet(item: $selectedEntryForEdit) { entry in
             DiaryComposerSheet(
+                isPresented: bindingForEditSheet,
                 mode: .edit(entry),
                 onSave: { updated in
                     if let index = entries.firstIndex(where: { $0.id == updated.id }) {
@@ -60,11 +61,13 @@ struct ContentView: View {
                         sortEntries()
                         storage.saveEntries(entries)
                     }
+                    selectedEntryForEdit = nil
                 }
             )
         }
         .sheet(isPresented: $isComposerPresented) {
             DiaryComposerSheet(
+                isPresented: $isComposerPresented,
                 mode: .create,
                 onSave: { newEntry in
                     entries.insert(newEntry, at: 0)
@@ -178,6 +181,17 @@ struct ContentView: View {
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
+    }
+
+    private var bindingForEditSheet: Binding<Bool> {
+        Binding(
+            get: { selectedEntryForEdit != nil },
+            set: { isPresented in
+                if !isPresented {
+                    selectedEntryForEdit = nil
+                }
+            }
+        )
     }
 }
 
