@@ -125,10 +125,7 @@ private struct MarkdownOrPlainTextView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            return
-        }
-
-        if let attributed = try? AttributedString(markdown: text) {
+        } else if let attributed = try? AttributedString(markdown: text) {
             Text(attributed)
                 .font(.system(size: 16))
                 .foregroundStyle(BreezyTheme.textPrimary)
