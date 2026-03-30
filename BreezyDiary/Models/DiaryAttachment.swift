@@ -82,6 +82,15 @@ struct DiaryAttachment: Identifiable, Codable, Equatable {
         }
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
     }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(fileName, forKey: .fileName)
+        try container.encode(relativePath, forKey: .relativePath)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(createdAt, forKey: .createdAt)
+    }
 }
 
 extension DiaryAttachmentKind {
