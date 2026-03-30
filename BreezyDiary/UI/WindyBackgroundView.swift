@@ -24,9 +24,8 @@ struct WindyBackgroundView: View {
                         endPoint: .bottom
                     )
 
-                    ForEach(Array(cloudConfigs.enumerated()), id: \.offset) { pair in
-                        let index = pair.offset
-                        let cloud = pair.element
+                    ForEach(cloudConfigs.indices, id: \.self) { index in
+                        let cloud = cloudConfigs[index]
                         let phase = (time / cloud.speed).truncatingRemainder(dividingBy: 1.0)
                         let x = CGFloat(phase) * (size.width + cloud.size + 80) - cloud.size - 40
                         let yBase = size.height * cloud.yRatio

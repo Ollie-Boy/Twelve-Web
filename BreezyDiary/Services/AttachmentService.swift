@@ -5,7 +5,13 @@ final class AttachmentService {
     private static let rootDirectoryName = "DiaryAttachments"
 
     func importPickedFiles(_ urls: [URL]) -> [DiaryAttachment] {
-        urls.compactMap { try? importFile(from: $0) }
+        var imported: [DiaryAttachment] = []
+        for url in urls {
+            if let attachment = try? importFile(from: url) {
+                imported.append(attachment)
+            }
+        }
+        return imported
     }
 
     func importFile(from sourceURL: URL) throws -> DiaryAttachment {
