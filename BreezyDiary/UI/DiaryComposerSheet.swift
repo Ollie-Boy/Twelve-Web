@@ -216,8 +216,8 @@ struct DiaryComposerSheet: View {
             bodyText = entry.body
             entryDate = entry.selectedDate
             weather = entry.weather
-            location = entry.location
-            hasLocation = !entry.location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            location = entry.location ?? ""
+            hasLocation = !location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             attachments = entry.attachments
         }
     }
@@ -255,5 +255,26 @@ struct DiaryComposerSheet: View {
         }
         onSave(entry)
         isPresented = false
+    }
+}
+
+extension DiaryComposerSheet {
+    init(
+        isPresented: Binding<Bool>,
+        mode: Mode,
+        onSave: @escaping (DiaryEntry) -> Void
+    ) {
+        self._isPresented = isPresented
+        self.mode = mode
+        self.onSave = onSave
+    }
+
+    init(
+        mode: Mode,
+        onSave: @escaping (DiaryEntry) -> Void
+    ) {
+        self._isPresented = .constant(true)
+        self.mode = mode
+        self.onSave = onSave
     }
 }

@@ -93,6 +93,9 @@ struct DiaryAttachment: Identifiable, Codable, Equatable {
     }
 }
 
+// Keep compatibility with older references that used a lowercase "a" type name.
+typealias Diaryattachment = DiaryAttachment
+
 extension DiaryAttachmentKind {
     var iconName: String {
         switch self {
