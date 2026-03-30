@@ -163,7 +163,7 @@ struct ContentView: View {
     }
 
     private var groupedSections: [DiaryDaySection] {
-        let grouped = Dictionary(grouping: entries) { Calendar.current.startOfDay(for: $0.selectedDate) }
+        let grouped: [Date: [DiaryEntry]] = Dictionary(grouping: entries) { Calendar.current.startOfDay(for: $0.selectedDate) }
         return grouped.keys.sorted(by: >).map { day in
             let dayEntries = (grouped[day] ?? []).sorted { $0.selectedDate > $1.selectedDate }
             return DiaryDaySection(day: day, entries: dayEntries)
