@@ -3,6 +3,13 @@ import UIKit
 import UniformTypeIdentifiers
 
 struct MediaPicker: UIViewControllerRepresentable {
+    enum Kind {
+        case photo
+        case video
+        case audio
+    }
+
+    var kind: Kind
     var onPicked: ([URL]) -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -10,18 +17,18 @@ struct MediaPicker: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let gifType = UTType(filenameExtension: "gif") ?? .image
+        let types: [UTType]
+        switch kind {
+        case .photo:
+            let gifType = UTType(filenameExtension: "gif") ?? .image
+            types = [.image, gifType]
+        case .video:
+            types = [.movie, .video]
+        case .audio:
+            types = [.audio]
+        }
         let controller = UIDocumentPickerViewController(
-            forOpeningContentTypes: [
-                .image,
-                .movie,
-                gifType,
-                .audio,
-                .plainText,
-                .json,
-                .pdf,
-                .item
-            ],
+            forOpeningContentTypes: types,
             asCopy: true
         )
         controller.allowsMultipleSelection = true

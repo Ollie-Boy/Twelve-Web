@@ -38,15 +38,6 @@ struct WindyBackgroundView: View {
                             .position(x: x, y: y)
                     }
 
-                    ForEach(0..<4, id: \.self) { i in
-                        Capsule(style: .continuous)
-                            .fill(BreezyTheme.windLine.opacity(0.16))
-                            .frame(width: 110, height: 3.5)
-                            .offset(
-                                x: CGFloat(sin(time * 0.45 + Double(i) * 1.3) * 18),
-                                y: size.height * (0.24 + CGFloat(i) * 0.17)
-                            )
-                    }
                 }
             }
         }

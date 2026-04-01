@@ -17,9 +17,10 @@ struct DiaryComposerSheet: View {
     @State private var entryDate: Date = Date()
     @State private var weather: WeatherOption = .sunny
     @State private var location: String = ""
-    @State private var hasLocation = false
     @State private var attachments: [DiaryAttachment] = []
     @State private var showMediaPicker = false
+    @State private var pickerKind: MediaPicker.Kind = .photo
+    @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
     private let attachmentService = AttachmentService()
@@ -37,24 +38,46 @@ struct DiaryComposerSheet: View {
                     TextField("Title", text: $titleText)
                         .textFieldStyle(.plain)
                         .font(.system(size: 20, weight: .semibold))
+                        .submitLabel(.done)
+                        .focused($titleFocused)
+                        .onSubmit {
+                            titleFocused = false
+                        }
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
                         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                    HStack {
-                        DatePicker(
-                            "",
-                            selection: $entryDate,
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                        .labelsHidden()
-                        .tint(.primary)
+                    HStack(spacing: 12) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "calendar")
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                            DatePicker(
+                                "",
+                                selection: $entryDate,
+                                displayedComponents: .date
+                            )
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                        }
+
+                        HStack(spacing: 6) {
+                            Image(systemName: "clock")
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                            DatePicker(
+                                "",
+                                selection: $entryDate,
+                                displayedComponents: .hourAndMinute
+                            )
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                        }
 
                         Spacer()
 
                         Button("Now") {
                             entryDate = Date()
                             bodyFocused = false
+                            titleFocused = false
                         }
                         .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                     }
@@ -86,31 +109,29 @@ struct DiaryComposerSheet: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
-                        HStack(spacing: 8) {
-                            Button("Use Current Place") {
+                        HStack(spacing: 10) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                            Text(location.isEmpty ? "No address selected" : location)
+                                .font(.system(size: 13))
+                                .foregroundStyle(location.isEmpty ? BreezyTheme.textTertiary : BreezyTheme.textSecondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Button {
+                                titleFocused = false
                                 bodyFocused = false
                                 locationManager.requestCurrentLocation()
-                            }
-                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.surfaceTintBlue))
-
-                            if hasLocation {
-                                Button("Clear") {
-                                    location = ""
-                                    hasLocation = false
-                                }
-                                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+                            } label: {
+                                Image(systemName: "location.fill")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(BreezyTheme.primaryBlueDark)
+                                    .frame(width: 30, height: 30)
+                                    .background(BreezyTheme.surfaceTintBlue, in: Circle())
                             }
                         }
-
-                        if hasLocation {
-                            Text(location)
-                                .font(.system(size: 13))
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                        } else {
-                            Text("No location selected")
-                                .font(.system(size: 13))
-                                .foregroundStyle(BreezyTheme.textTertiary)
-                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -119,8 +140,24 @@ struct DiaryComposerSheet: View {
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textSecondary)
                             Spacer()
-                            Button("Add File") {
+                            Button("Photo") {
+                                titleFocused = false
                                 bodyFocused = false
+                                pickerKind = .photo
+                                showMediaPicker = true
+                            }
+                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            Button("Video") {
+                                titleFocused = false
+                                bodyFocused = false
+                                pickerKind = .video
+                                showMediaPicker = true
+                            }
+                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            Button("Audio") {
+                                titleFocused = false
+                                bodyFocused = false
+                                pickerKind = .audio
                                 showMediaPicker = true
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
@@ -172,21 +209,15 @@ struct DiaryComposerSheet: View {
             .onAppear { configureFromMode() }
             .onReceive(locationManager.$currentLocationText) { newValue in
                 guard !newValue.isEmpty else { return }
-                location = newValue
-                hasLocation = !newValue.contains("error") && !newValue.contains("denied")
-            }
-            .sheet(isPresented: $showMediaPicker) {
-                MediaPicker { pickedURLs in
-                    attachments.append(contentsOf: attachmentService.importPickedFiles(pickedURLs))
+                if !newValue.localizedCaseInsensitiveContains("error")
+                    && !newValue.localizedCaseInsensitiveContains("denied")
+                {
+                    location = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
                 }
             }
-            .onSubmit { bodyFocused = false }
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") {
-                        bodyFocused = false
-                    }
+            .sheet(isPresented: $showMediaPicker) {
+                MediaPicker(kind: pickerKind) { pickedURLs in
+                    attachments.append(contentsOf: attachmentService.importPickedFiles(pickedURLs))
                 }
             }
         }
@@ -209,7 +240,6 @@ struct DiaryComposerSheet: View {
             entryDate = Date()
             weather = .none
             location = ""
-            hasLocation = false
             attachments = []
         case .edit(let entry):
             titleText = entry.title
@@ -218,15 +248,16 @@ struct DiaryComposerSheet: View {
             weather = entry.weather
             let existingLocation = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             location = existingLocation
-            hasLocation = !existingLocation.isEmpty
             attachments = entry.attachments
         }
     }
 
     private func save() {
         bodyFocused = false
+        titleFocused = false
         let title = titleText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Day" : titleText
-        let resolvedLocation = hasLocation ? location : ""
+        let trimmedLocation = location.trimmingCharacters(in: .whitespacesAndNewlines)
+        let resolvedLocation = trimmedLocation.isEmpty ? nil : trimmedLocation
         let markdownBody = bodyText
 
         let entry: DiaryEntry

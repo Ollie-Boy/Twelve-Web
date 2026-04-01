@@ -9,7 +9,6 @@ struct DiaryDaySection: Identifiable {
 struct ContentView: View {
     @State private var entries: [DiaryEntry] = []
     @State private var pendingDeletionEntry: DiaryEntry?
-    @State private var isFeatureCardPresented: Bool = true
     @State private var selectedEntryForRead: DiaryEntry?
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
@@ -47,8 +46,14 @@ struct ContentView: View {
         .sheet(item: $selectedEntryForRead) { entry in
             DiaryReaderSheet(
                 entry: entry,
-                onEdit: { selectedEntryForEdit = entry },
-                onDelete: { pendingDeletionEntry = entry }
+                onEdit: {
+                    selectedEntryForRead = nil
+                    selectedEntryForEdit = entry
+                },
+                onDelete: {
+                    selectedEntryForRead = nil
+                    pendingDeletionEntry = entry
+                }
             )
         }
         .sheet(item: $selectedEntryForEdit) { entry in
@@ -84,16 +89,6 @@ struct ContentView: View {
         }
         .overlay(alignment: .bottomTrailing) {
             addButton
-        }
-        .overlay {
-            if isFeatureCardPresented {
-                TodayFeatureCardOverlay(
-                    isPresented: $isFeatureCardPresented,
-                    onStartWriting: { isComposerPresented = true }
-                )
-                .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
-                .zIndex(10)
-            }
         }
     }
 

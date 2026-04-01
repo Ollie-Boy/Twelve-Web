@@ -1,5 +1,7 @@
 import QuickLook
 import SwiftUI
+import AVKit
+import UIKit
 
 extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
@@ -12,6 +14,7 @@ struct DiaryReaderSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var quickLookURL: URL?
+    @State private var selectedMediaURL: URL?
 
     var body: some View {
         NavigationStack {
@@ -46,6 +49,7 @@ struct DiaryReaderSheet: View {
                     }
                 }
                 .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .background(BreezyTheme.background)
             .navigationBarTitleDisplayMode(.inline)
@@ -71,6 +75,10 @@ struct DiaryReaderSheet: View {
             .sheet(item: $quickLookURL) { url in
                 QuickLookPreviewControllerRepresentable(url: url)
             }
+            .sheet(item: $selectedMediaURL) { url in
+                VideoPlayer(player: AVPlayer(url: url))
+                    .ignoresSafeArea()
+            }
         }
     }
 
@@ -80,31 +88,91 @@ struct DiaryReaderSheet: View {
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(BreezyTheme.textPrimary)
             ForEach(entry.attachments) { item in
-                Button {
-                    quickLookURL = item.url
-                } label: {
-                    HStack {
-                        Image(systemName: item.kind.iconName)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.displayName)
-                            Text(item.kind.title)
-                                .font(.system(size: 11))
+                VStack(alignment: .leading, spacing: 10) {
+                    mediaPreview(for: item)
+                    Button {
+                        openAttachment(item)
+                    } label: {
+                        HStack {
+                            Image(systemName: item.kind.iconName)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(item.displayName)
+                                Text(item.kind.title)
+                                    .font(.system(size: 11))
+                            }
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
                         }
-                        Spacer()
-                        Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textPrimary)
                     }
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(BreezyTheme.textPrimary)
-                    .padding(12)
-                    .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(BreezyTheme.hairline, lineWidth: 1)
-                    )
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(BreezyTheme.hairline, lineWidth: 1)
+                )
             }
         }
+    }
+
+    @ViewBuilder
+    private func mediaPreview(for item: DiaryAttachment) -> some View {
+        switch item.kind {
+        case .image, .gif:
+            if let image = UIImage(contentsOfFile: item.url.path) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 220)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+        case .video:
+            InlineAVPlayerView(url: item.url, height: 220)
+        case .audio:
+            InlineAVPlayerView(url: item.url, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        default:
+            EmptyView()
+        }
+    }
+
+    private func openAttachment(_ item: DiaryAttachment) {
+        switch item.kind {
+        case .video:
+            selectedMediaURL = item.url
+        case .audio:
+            selectedMediaURL = item.url
+        case .image, .gif:
+            quickLookURL = item.url
+        default:
+            quickLookURL = item.url
+        }
+    }
+}
+
+private struct InlineAVPlayerView: View {
+    let height: CGFloat
+    @State private var player: AVPlayer
+
+    init(url: URL, height: CGFloat) {
+        self.height = height
+        _player = State(initialValue: AVPlayer(url: url))
+    }
+
+    var body: some View {
+        VideoPlayer(player: player)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .onDisappear {
+                player.pause()
+            }
     }
 }
 
