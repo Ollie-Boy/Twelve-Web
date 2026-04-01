@@ -32,6 +32,9 @@ struct DiaryComposerSheet: View {
     @State private var showWeatherPicker = false
     @State private var datePickerDraftDate: Date = Date()
     @State private var timePickerDraftDate: Date = Date()
+    /// Forces a fresh `DatePicker` identity each time the sheet opens (avoids graphical calendar layout drift).
+    @State private var datePickerSheetIdentity = UUID()
+    @State private var timePickerSheetIdentity = UUID()
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -65,14 +68,16 @@ struct DiaryComposerSheet: View {
                         .padding(.vertical, 12)
                         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Date & Time")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
-
-                        HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Date")
+                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                            Spacer()
                             Button {
                                 dismissKeyboard()
+                                datePickerDraftDate = entryDate
+                                datePickerSheetIdentity = UUID()
                                 showDatePicker = true
                             } label: {
                                 HStack(spacing: 8) {
@@ -82,15 +87,22 @@ struct DiaryComposerSheet: View {
                                 }
                                 .font(BreezyTheme.appFont(size: 14, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textPrimary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
-                                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
                             .buttonStyle(.plain)
+                        }
 
+                        HStack {
+                            Text("Time")
+                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                            Spacer()
                             Button {
                                 dismissKeyboard()
+                                timePickerDraftDate = entryDate
+                                timePickerSheetIdentity = UUID()
                                 showTimePicker = true
                             } label: {
                                 HStack(spacing: 8) {
@@ -100,22 +112,21 @@ struct DiaryComposerSheet: View {
                                 }
                                 .font(BreezyTheme.appFont(size: 14, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textPrimary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
-                                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
                             .buttonStyle(.plain)
+                        }
 
+                        HStack {
+                            Spacer()
                             Button("Now") {
                                 entryDate = Date()
                                 dismissKeyboard()
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     HStack {
@@ -292,7 +303,7 @@ struct DiaryComposerSheet: View {
             }
             .sheet(isPresented: $showDatePicker) {
                 NavigationStack {
-                    VStack(alignment: .leading, spacing: 0) {
+                    ScrollView {
                         DatePicker(
                             "Date",
                             selection: $datePickerDraftDate,
@@ -301,7 +312,10 @@ struct DiaryComposerSheet: View {
                         .datePickerStyle(.graphical)
                         .labelsHidden()
                         .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        .id(datePickerSheetIdentity)
+                        .frame(maxWidth: .infinity, alignment: .top)
                     }
+                    .scrollBounceBehavior(.basedOnSize)
                     .padding(18)
                     .navigationTitle("Choose Date")
                     .navigationBarTitleDisplayMode(.inline)
@@ -328,6 +342,7 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
+                .font(BreezyTheme.appFont(size: 16))
                 .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showTimePicker) {
@@ -341,6 +356,7 @@ struct DiaryComposerSheet: View {
                         .datePickerStyle(.wheel)
                         .labelsHidden()
                         .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        .id(timePickerSheetIdentity)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .frame(height: 216)
                         .clipped()
@@ -364,6 +380,7 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
+                .font(BreezyTheme.appFont(size: 16))
                 .presentationDetents([.fraction(0.35)])
             }
             .sheet(isPresented: $showWeatherPicker) {
@@ -400,17 +417,8 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
+                .font(BreezyTheme.appFont(size: 16))
                 .presentationDetents([.fraction(0.45), .medium])
-            }
-            .onChange(of: showDatePicker) { isPresented in
-                if isPresented {
-                    datePickerDraftDate = entryDate
-                }
-            }
-            .onChange(of: showTimePicker) { isPresented in
-                if isPresented {
-                    timePickerDraftDate = entryDate
-                }
             }
             .scrollDismissesKeyboard(.interactively)
             .contentShape(Rectangle())
@@ -421,6 +429,8 @@ struct DiaryComposerSheet: View {
                 including: .gesture
             )
         }
+        // Root app uses handwritten body font; reset here so DatePicker, lists, and nav use rounded UI typography.
+        .font(BreezyTheme.appFont(size: 16))
     }
 
     private var modeTitle: String {

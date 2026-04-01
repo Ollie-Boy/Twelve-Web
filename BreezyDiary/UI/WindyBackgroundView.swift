@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct WindyBackgroundView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     private let cloudConfigs: [CloudConfig] = [
         .init(size: 80, yRatio: 0.16, speed: 24, opacity: 0.15),
         .init(size: 58, yRatio: 0.30, speed: 31, opacity: 0.13),
@@ -24,18 +26,20 @@ struct WindyBackgroundView: View {
                         endPoint: .bottom
                     )
 
-                    ForEach(Array(cloudConfigs.enumerated()), id: \.offset) { index, cloud in
-                        let phase = (time / cloud.speed).truncatingRemainder(dividingBy: 1.0)
-                        let x = CGFloat(phase) * (size.width + cloud.size + 80) - cloud.size - 40
-                        let yBase = size.height * cloud.yRatio
-                        let y = yBase + CGFloat(sin(time * 0.6 + Double(index) * 0.9) * 7)
+                    if colorScheme == .light {
+                        ForEach(Array(cloudConfigs.enumerated()), id: \.offset) { index, cloud in
+                            let phase = (time / cloud.speed).truncatingRemainder(dividingBy: 1.0)
+                            let x = CGFloat(phase) * (size.width + cloud.size + 80) - cloud.size - 40
+                            let yBase = size.height * cloud.yRatio
+                            let y = yBase + CGFloat(sin(time * 0.6 + Double(index) * 0.9) * 7)
 
-                        Image(systemName: "cloud.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cloud.size, height: cloud.size * 0.62)
-                            .foregroundStyle(BreezyTheme.cloudTint.opacity(cloud.opacity))
-                            .position(x: x, y: y)
+                            Image(systemName: "cloud.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: cloud.size, height: cloud.size * 0.62)
+                                .foregroundStyle(BreezyTheme.cloudTint.opacity(cloud.opacity))
+                                .position(x: x, y: y)
+                        }
                     }
 
                 }
