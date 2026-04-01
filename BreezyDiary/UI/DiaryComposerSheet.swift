@@ -1,6 +1,8 @@
 import SwiftUI
 import PhotosUI
 import AVFoundation
+import MapKit
+import CoreLocation
 
 struct DiaryComposerSheet: View {
     enum Mode {
