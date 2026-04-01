@@ -76,11 +76,16 @@ struct EntryCardView: View {
                         .foregroundStyle(BreezyTheme.textPrimary)
                 }
 
-                if !entry.body.isEmpty, hasImageCover || bodyPreviewPlain.isEmpty {
+                if hasImageCover, !entry.body.isEmpty {
                     Text(entry.body)
                         .font(BreezyTheme.appFont(size: 15))
                         .foregroundStyle(BreezyTheme.textSecondary)
-                        .lineLimit(hasImageCover ? 3 : 4)
+                        .lineLimit(3)
+                } else if hasImageCover == false, bodyPreviewPlain.isEmpty, !entry.body.isEmpty {
+                    Text(entry.body)
+                        .font(BreezyTheme.appFont(size: 15))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                        .lineLimit(4)
                 }
 
                 if !entry.attachments.isEmpty {
