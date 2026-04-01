@@ -53,6 +53,14 @@ struct ContentView: View {
         }
         .sheet(item: $selectedEntryForEdit) { entry in
             DiaryComposerSheet(
+                isPresented: Binding(
+                    get: { selectedEntryForEdit != nil },
+                    set: { presented in
+                        if !presented {
+                            selectedEntryForEdit = nil
+                        }
+                    }
+                ),
                 mode: .edit(entry),
                 onSave: { updated in
                     if let index = entries.firstIndex(where: { $0.id == updated.id }) {
@@ -65,6 +73,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isComposerPresented) {
             DiaryComposerSheet(
+                isPresented: $isComposerPresented,
                 mode: .create,
                 onSave: { newEntry in
                     entries.insert(newEntry, at: 0)
