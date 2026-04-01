@@ -29,6 +29,8 @@ struct DiaryComposerSheet: View {
     @State private var showMapPicker = false
     @State private var showDatePicker = false
     @State private var showTimePicker = false
+    @State private var showWeatherPicker = false
+    @State private var datePickerDraftDate: Date = Date()
     @State private var timePickerDraftDate: Date = Date()
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
@@ -121,17 +123,21 @@ struct DiaryComposerSheet: View {
                             .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
                         Spacer()
-                        Picker("Weather", selection: $weather) {
-                            ForEach(WeatherOption.allCases) { item in
-                                Text(item.title)
-                                    .font(BreezyTheme.appFont(size: 14))
-                                    .foregroundStyle(.black)
-                                    .tag(item)
+                        Button {
+                            dismissKeyboard()
+                            showWeatherPicker = true
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: weather.symbolName)
+                                Text(weather.title)
                             }
+                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
-                        .pickerStyle(.menu)
-                        .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                        .tint(.black)
+                        .buttonStyle(.plain)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -289,7 +295,7 @@ struct DiaryComposerSheet: View {
                     VStack(alignment: .leading, spacing: 0) {
                         DatePicker(
                             "Date",
-                            selection: $entryDate,
+                            selection: $datePickerDraftDate,
                             displayedComponents: .date
                         )
                         .datePickerStyle(.graphical)
@@ -300,8 +306,25 @@ struct DiaryComposerSheet: View {
                     .navigationTitle("Choose Date")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Cancel") { showDatePicker = false }
+                        }
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") { showDatePicker = false }
+                            Button("Done") {
+                                let calendar = Calendar.current
+                                let dateParts = calendar.dateComponents([.year, .month, .day], from: datePickerDraftDate)
+                                let timeParts = calendar.dateComponents([.hour, .minute], from: entryDate)
+                                var merged = DateComponents()
+                                merged.year = dateParts.year
+                                merged.month = dateParts.month
+                                merged.day = dateParts.day
+                                merged.hour = timeParts.hour
+                                merged.minute = timeParts.minute
+                                if let updated = calendar.date(from: merged) {
+                                    entryDate = updated
+                                }
+                                showDatePicker = false
+                            }
                         }
                     }
                 }
@@ -342,6 +365,47 @@ struct DiaryComposerSheet: View {
                     }
                 }
                 .presentationDetents([.fraction(0.35)])
+            }
+            .sheet(isPresented: $showWeatherPicker) {
+                NavigationStack {
+                    List {
+                        ForEach(WeatherOption.allCases) { item in
+                            Button {
+                                weather = item
+                                showWeatherPicker = false
+                            } label: {
+                                HStack(spacing: 10) {
+                                    Image(systemName: item.symbolName)
+                                        .font(BreezyTheme.appFont(size: 15, weight: .semibold))
+                                    Text(item.title)
+                                        .font(BreezyTheme.appFont(size: 16))
+                                    Spacer()
+                                    if item == weather {
+                                        Image(systemName: "checkmark")
+                                            .font(BreezyTheme.appFont(size: 14, weight: .bold))
+                                            .foregroundStyle(BreezyTheme.primaryBlueDark)
+                                    }
+                                }
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .navigationTitle("Choose Weather")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showWeatherPicker = false }
+                        }
+                    }
+                }
+                .presentationDetents([.fraction(0.45), .medium])
+            }
+            .onChange(of: showDatePicker) { isPresented in
+                if isPresented {
+                    datePickerDraftDate = entryDate
+                }
             }
             .onChange(of: showTimePicker) { isPresented in
                 if isPresented {
