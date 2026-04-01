@@ -46,6 +46,7 @@ extension LocationManager: CLLocationManagerDelegate {
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, _ in
             guard let self else { return }
+            LocationStore.shared.lastCoordinate = location.coordinate
             if let placemark = placemarks?.first {
                 let locationParts: [String?] = [
                     placemark.name,

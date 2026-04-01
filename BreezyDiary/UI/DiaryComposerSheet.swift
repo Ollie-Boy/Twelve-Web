@@ -22,9 +22,9 @@ struct DiaryComposerSheet: View {
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
     @State private var selectedVideoItems: [PhotosPickerItem] = []
     @State private var showAudioRecorder = false
+    @State private var showMapPicker = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
-    @FocusState private var locationFocused: Bool
 
     private let attachmentService = AttachmentService()
     private let dateFormatter: DateFormatter = {
@@ -120,25 +120,35 @@ struct DiaryComposerSheet: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
-                        HStack(spacing: 10) {
-                            Image(systemName: "mappin.and.ellipse")
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            TextField("No address selected", text: $location)
-                                .textFieldStyle(.plain)
-                                .font(.system(size: 13))
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .focused($locationFocused)
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "mappin.and.ellipse")
+                                    .foregroundStyle(BreezyTheme.textSecondary)
+                                Text(location.isEmpty ? "No address selected" : location)
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(location.isEmpty ? BreezyTheme.textTertiary : BreezyTheme.textSecondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            HStack(spacing: 8) {
+                                Button("Use Current") {
+                                    dismissKeyboard()
+                                    locationManager.requestCurrentLocation()
+                                }
+                                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.surfaceTintBlue))
 
-                            Button {
-                                dismissKeyboard()
-                                locationManager.requestCurrentLocation()
-                            } label: {
-                                Image(systemName: "location.fill")
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundStyle(BreezyTheme.primaryBlueDark)
-                                    .frame(width: 30, height: 30)
-                                    .background(BreezyTheme.surfaceTintBlue, in: Circle())
+                                Button("Pick on Map") {
+                                    dismissKeyboard()
+                                    showMapPicker = true
+                                }
+                                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+
+                                if !location.isEmpty {
+                                    Button("No Address") {
+                                        location = ""
+                                        weather = .none
+                                    }
+                                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+                                }
                             }
                         }
                         .padding(.horizontal, 12)
@@ -241,6 +251,19 @@ struct DiaryComposerSheet: View {
                     }
                 }
             }
+            .sheet(isPresented: $showMapPicker) {
+                LocationPickerMapSheet(
+                    initialAddress: location,
+                    onPickAddress: { address in
+                        location = address
+                        weather = WeatherOption.suggestedForRecognizedAddress(address, date: entryDate)
+                    },
+                    onClearAddress: {
+                        location = ""
+                        weather = .none
+                    }
+                )
+            }
             .scrollDismissesKeyboard(.interactively)
             .contentShape(Rectangle())
             .gesture(
@@ -320,26 +343,17 @@ struct DiaryComposerSheet: View {
     private func dismissKeyboard() {
         bodyFocused = false
         titleFocused = false
-        locationFocused = false
     }
 
     private func attachmentLabel(_ attachment: DiaryAttachment) -> String {
         switch attachment.kind {
-        case .image:
+        case .image, .gif:
             return "Image"
         case .video:
             return "Video"
         case .audio:
             return "Audio"
-        case .gif:
-            return "GIF"
-        case .markdown:
-            return "Markdown"
-        case .latex:
-            return "LaTeX"
-        case .document:
-            return "Document"
-        case .other:
+        default:
             return "File"
         }
     }

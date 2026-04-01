@@ -15,6 +15,7 @@ struct DiaryReaderSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var quickLookURL: URL?
     @State private var selectedMediaURL: URL?
+    @State private var selectedImageURL: URL?
 
     var body: some View {
         NavigationStack {
@@ -79,6 +80,9 @@ struct DiaryReaderSheet: View {
                 VideoPlayer(player: AVPlayer(url: url))
                     .ignoresSafeArea()
             }
+            .sheet(item: $selectedImageURL) { url in
+                FullscreenImageViewer(imageURL: url)
+            }
         }
     }
 
@@ -90,23 +94,6 @@ struct DiaryReaderSheet: View {
             ForEach(entry.attachments) { item in
                 VStack(alignment: .leading, spacing: 10) {
                     mediaPreview(for: item)
-                    Button {
-                        openAttachment(item)
-                    } label: {
-                        HStack {
-                            Image(systemName: item.kind.iconName)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(item.displayName)
-                                Text(item.kind.title)
-                                    .font(.system(size: 11))
-                            }
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                        }
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-                    }
-                    .buttonStyle(.plain)
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -123,40 +110,55 @@ struct DiaryReaderSheet: View {
     private func mediaPreview(for item: DiaryAttachment) -> some View {
         switch item.kind {
         case .image, .gif:
-            if let image = UIImage(contentsOfFile: item.url.path) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            Button {
+                selectedImageURL = item.url
+            } label: {
+                if let image = UIImage(contentsOfFile: item.url.path) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 220)
+                        .clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
             }
+            .buttonStyle(.plain)
         case .video:
-            InlineAVPlayerView(url: item.url, height: 220)
+            Button {
+                selectedMediaURL = item.url
+            } label: {
+                InlineVideoPreview(url: item.url, height: 220)
+            }
+            .buttonStyle(.plain)
         case .audio:
-            InlineAVPlayerView(url: item.url, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            Button {
+                selectedMediaURL = item.url
+            } label: {
+                InlineAudioPreview(url: item.url)
+            }
+            .buttonStyle(.plain)
         default:
-            EmptyView()
+            Button {
+                quickLookURL = item.url
+            } label: {
+                HStack {
+                    Image(systemName: item.kind.iconName)
+                    Text(item.kind.title)
+                    Spacer()
+                    Image(systemName: "arrow.up.right.square")
+                }
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(BreezyTheme.textPrimary)
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    private func openAttachment(_ item: DiaryAttachment) {
-        switch item.kind {
-        case .video:
-            selectedMediaURL = item.url
-        case .audio:
-            selectedMediaURL = item.url
-        case .image, .gif:
-            quickLookURL = item.url
-        default:
-            quickLookURL = item.url
-        }
-    }
 }
 
-private struct InlineAVPlayerView: View {
+private struct InlineVideoPreview: View {
     let height: CGFloat
     @State private var player: AVPlayer
 
@@ -166,13 +168,130 @@ private struct InlineAVPlayerView: View {
     }
 
     var body: some View {
-        VideoPlayer(player: player)
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .onDisappear {
-                player.pause()
+        ZStack {
+            VideoPlayer(player: player)
+                .frame(maxWidth: .infinity)
+                .frame(height: height)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .onAppear {
+                    player.seek(to: .zero)
+                    player.play()
+                }
+                .onDisappear {
+                    player.pause()
+                }
+
+            Image(systemName: "play.circle.fill")
+                .font(.system(size: 42))
+                .foregroundStyle(.white.opacity(0.9))
+        }
+    }
+}
+
+private struct InlineAudioPreview: View {
+    let url: URL
+    @State private var player: AVPlayer
+
+    init(url: URL) {
+        self.url = url
+        _player = State(initialValue: AVPlayer(url: url))
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "waveform.circle.fill")
+                .font(.system(size: 24))
+                .foregroundStyle(BreezyTheme.primaryBlueDark)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Audio")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                Text("Tap to play")
+                    .font(.system(size: 12))
+                    .foregroundStyle(BreezyTheme.textSecondary)
             }
+            Spacer()
+            Image(systemName: "play.fill")
+                .foregroundStyle(BreezyTheme.textSecondary)
+        }
+        .padding(12)
+        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .onAppear {
+            player.pause()
+        }
+        .onDisappear {
+            player.pause()
+        }
+    }
+}
+
+private struct FullscreenImageViewer: View {
+    let imageURL: URL
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.black.ignoresSafeArea()
+            if let image = UIImage(contentsOfFile: imageURL.path) {
+                ZoomableScrollView {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .padding(16)
+            }
+        }
+    }
+}
+
+private struct ZoomableScrollView<Content: View>: UIViewRepresentable {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    func makeUIView(context: Context) -> UIScrollView {
+        let scrollView = UIScrollView()
+        scrollView.delegate = context.coordinator
+        scrollView.maximumZoomScale = 5
+        scrollView.minimumZoomScale = 1
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        let host = context.coordinator.hostingController.view!
+        host.translatesAutoresizingMaskIntoConstraints = true
+        host.frame = scrollView.bounds
+        scrollView.addSubview(host)
+        return scrollView
+    }
+
+    func updateUIView(_ uiView: UIScrollView, context: Context) {
+        context.coordinator.hostingController.rootView = content
+        context.coordinator.hostingController.view.frame = uiView.bounds
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(hostingController: UIHostingController(rootView: content))
+    }
+
+    final class Coordinator: NSObject, UIScrollViewDelegate {
+        let hostingController: UIHostingController<Content>
+
+        init(hostingController: UIHostingController<Content>) {
+            self.hostingController = hostingController
+        }
+
+        func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+            hostingController.view
+        }
     }
 }
 
