@@ -27,6 +27,8 @@ struct DiaryComposerSheet: View {
     @State private var selectedVideoItems: [PhotosPickerItem] = []
     @State private var showAudioRecorder = false
     @State private var showMapPicker = false
+    @State private var showDatePicker = false
+    @State private var showTimePicker = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -34,6 +36,12 @@ struct DiaryComposerSheet: View {
     private let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
+        f.timeStyle = .none
+        return f
+    }()
+    private let timeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .none
         f.timeStyle = .short
         return f
     }()
@@ -59,35 +67,43 @@ struct DiaryComposerSheet: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
-                        HStack(spacing: 10) {
-                            Image(systemName: "calendar")
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            DatePicker(
-                                "",
-                                selection: $entryDate,
-                                displayedComponents: .date
-                            )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                            Spacer()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        HStack(spacing: 12) {
+                            Button {
+                                dismissKeyboard()
+                                showDatePicker = true
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "calendar")
+                                    Text(dateFormatter.string(from: entryDate))
+                                        .lineLimit(1)
+                                }
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            }
+                            .buttonStyle(.plain)
 
-                        HStack(spacing: 10) {
-                            Image(systemName: "clock")
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            DatePicker(
-                                "",
-                                selection: $entryDate,
-                                displayedComponents: .hourAndMinute
-                            )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                            Spacer()
+                            Button {
+                                dismissKeyboard()
+                                showTimePicker = true
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "clock")
+                                    Text(timeFormatter.string(from: entryDate))
+                                        .lineLimit(1)
+                                }
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            }
+                            .buttonStyle(.plain)
+
                             Button("Now") {
                                 entryDate = Date()
                                 dismissKeyboard()
@@ -98,10 +114,6 @@ struct DiaryComposerSheet: View {
                         .padding(.vertical, 10)
                         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
-
-                    Text(dateFormatter.string(from: entryDate))
-                        .font(.system(size: 13, weight: .regular))
-                        .foregroundStyle(BreezyTheme.textSecondary)
 
                     HStack {
                         Text("Weather")
@@ -268,6 +280,54 @@ struct DiaryComposerSheet: View {
                         weather = .none
                     }
                 )
+            }
+            .sheet(isPresented: $showDatePicker) {
+                NavigationStack {
+                    VStack {
+                        DatePicker(
+                            "Date",
+                            selection: $entryDate,
+                            displayedComponents: .date
+                        )
+                        .datePickerStyle(.graphical)
+                        .labelsHidden()
+                        .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        Spacer()
+                    }
+                    .padding(18)
+                    .navigationTitle("Choose Date")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showDatePicker = false }
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showTimePicker) {
+                NavigationStack {
+                    VStack {
+                        DatePicker(
+                            "Time",
+                            selection: $entryDate,
+                            displayedComponents: .hourAndMinute
+                        )
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        Spacer()
+                    }
+                    .padding(18)
+                    .navigationTitle("Choose Time")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showTimePicker = false }
+                        }
+                    }
+                }
+                .presentationDetents([.fraction(0.35)])
             }
             .scrollDismissesKeyboard(.interactively)
             .contentShape(Rectangle())
