@@ -68,65 +68,62 @@ struct DiaryComposerSheet: View {
                         .padding(.vertical, 12)
                         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            Text("Date")
-                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            Spacer()
-                            Button {
-                                dismissKeyboard()
-                                datePickerDraftDate = entryDate
-                                datePickerSheetIdentity = UUID()
-                                showDatePicker = true
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "calendar")
-                                    Text(dateFormatter.string(from: entryDate))
-                                        .lineLimit(1)
-                                }
-                                .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                                .foregroundStyle(BreezyTheme.textPrimary)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 8)
-                                .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    HStack(alignment: .center, spacing: 8) {
+                        Text("Date & Time")
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .fixedSize(horizontal: true, vertical: false)
 
-                        HStack {
-                            Text("Time")
-                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            Spacer()
-                            Button {
-                                dismissKeyboard()
-                                timePickerDraftDate = entryDate
-                                timePickerSheetIdentity = UUID()
-                                showTimePicker = true
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "clock")
-                                    Text(timeFormatter.string(from: entryDate))
-                                        .lineLimit(1)
-                                }
-                                .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                                .foregroundStyle(BreezyTheme.textPrimary)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 8)
-                                .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        Spacer(minLength: 6)
 
-                        HStack {
-                            Spacer()
-                            Button("Now") {
-                                entryDate = Date()
-                                dismissKeyboard()
+                        Button {
+                            dismissKeyboard()
+                            datePickerDraftDate = entryDate
+                            datePickerSheetIdentity = UUID()
+                            showDatePicker = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "calendar")
+                                Text(dateFormatter.string(from: entryDate))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
                             }
-                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
+                        .buttonStyle(.plain)
+                        .layoutPriority(1)
+
+                        Button {
+                            dismissKeyboard()
+                            timePickerDraftDate = entryDate
+                            timePickerSheetIdentity = UUID()
+                            showTimePicker = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "clock")
+                                Text(timeFormatter.string(from: entryDate))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
+                            }
+                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .layoutPriority(1)
+
+                        Button("Now") {
+                            entryDate = Date()
+                            dismissKeyboard()
+                        }
+                        .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                        .fixedSize(horizontal: true, vertical: false)
                     }
 
                     HStack {
