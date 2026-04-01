@@ -2,26 +2,36 @@ import SwiftUI
 import UIKit
 import WebKit
 
-/// Renders diary body via WKWebView (Markdown and/or HTML) with optional MathJax for LaTeX.
+/// Renders diary body via WKWebView (Markdown and/or HTML) with optional offline MathJax for LaTeX.
 struct DiaryBodyContentView: View {
     let text: String
+    /// When set, caps height and enables vertical scrolling inside the web view (e.g. list card preview).
+    var compactMaxHeight: CGFloat?
     @Environment(\.colorScheme) private var colorScheme
-    @State private var richWebHeight: CGFloat = 180
+    @State private var richWebHeight: CGFloat = 160
 
     var body: some View {
+        let natural = max(richWebHeight, compactMaxHeight.map { _ in 60 } ?? 80)
+        let cappedHeight: CGFloat = {
+            guard let cap = compactMaxHeight else { return natural }
+            return min(natural, cap)
+        }()
+
         DiaryBodyRichWebView(
             rawText: text,
             mode: looksLikeHTMLFragment(text) ? .rawHTML : .markdown,
             isDark: colorScheme == .dark,
             includeMathJax: containsLaTeXDelimiters(text),
+            compactMaxHeight: compactMaxHeight,
             contentHeight: $richWebHeight
         )
-        .frame(height: max(richWebHeight, 80))
+        .frame(height: cappedHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .clipped()
     }
 }
 
-// MARK: - LaTeX (avoid treating lone `$` as math)
+// MARK: - LaTeX
 
 private func containsLaTeXDelimiters(_ s: String) -> Bool {
     if s.contains(#"\("#) || s.contains(#"\["#) { return true }
@@ -44,6 +54,22 @@ private func looksLikeHTMLFragment(_ s: String) -> Bool {
     return t.range(of: pattern, options: .regularExpression) != nil
 }
 
+// MARK: - Bundle script URLs (offline)
+
+private enum DiaryBodyWebAssets {
+    static var baseDirectoryURL: URL? {
+        Bundle.main.bundleURL
+    }
+
+    static var markedScriptURL: URL? {
+        Bundle.main.url(forResource: "marked.min", withExtension: "js")
+    }
+
+    static var mathJaxScriptURL: URL? {
+        Bundle.main.url(forResource: "mathjax-tex-svg", withExtension: "js")
+    }
+}
+
 // MARK: - WKWebView
 
 struct DiaryBodyRichWebView: UIViewRepresentable {
@@ -56,6 +82,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
     let mode: PayloadMode
     let isDark: Bool
     let includeMathJax: Bool
+    var compactMaxHeight: CGFloat?
     @Binding var contentHeight: CGFloat
 
     func makeCoordinator() -> Coordinator {
@@ -69,25 +96,32 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         webView.navigationDelegate = context.coordinator
         webView.isOpaque = false
         webView.backgroundColor = .clear
-        webView.scrollView.isScrollEnabled = false
-        webView.scrollView.bounces = false
-        webView.scrollView.backgroundColor = .clear
+        let scroll = webView.scrollView
+        scroll.backgroundColor = .clear
+        scroll.isScrollEnabled = compactMaxHeight != nil
+        scroll.bounces = false
+        scroll.showsVerticalScrollIndicator = compactMaxHeight == nil
         context.coordinator.webView = webView
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.parent = self
+        webView.scrollView.isScrollEnabled = compactMaxHeight != nil
+        webView.scrollView.showsVerticalScrollIndicator = compactMaxHeight == nil
+
         if context.coordinator.lastRawText == rawText,
            context.coordinator.lastMode == mode,
            context.coordinator.lastIsDark == isDark,
-           context.coordinator.lastIncludeMathJax == includeMathJax {
+           context.coordinator.lastIncludeMathJax == includeMathJax,
+           context.coordinator.lastCompact == compactMaxHeight {
             return
         }
         context.coordinator.lastRawText = rawText
         context.coordinator.lastMode = mode
         context.coordinator.lastIsDark = isDark
         context.coordinator.lastIncludeMathJax = includeMathJax
+        context.coordinator.lastCompact = compactMaxHeight
 
         let b64 = Data(rawText.utf8).base64EncodedString()
         let modeFlag = mode == .markdown ? "1" : "0"
@@ -97,21 +131,31 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         let linkColor = isDark ? "#64a8ff" : "#007aff"
         let borderSubtle = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"
 
-        let mathJaxScript = includeMathJax ? """
-        <script>
-          window.MathJax = {
-            tex: {
-              inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-              displayMath: [['$$','$$'], ['\\\\[','\\\\]']],
-              processEscapes: true
-            },
-            options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
-          };
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-        """ : ""
+        let markedTag: String
+        if mode == .markdown, let markedURL = DiaryBodyWebAssets.markedScriptURL {
+            markedTag = "<script src=\"\(markedURL.lastPathComponent)\"></script>"
+        } else {
+            markedTag = ""
+        }
 
-        let markedScript = mode == .markdown ? #"<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>"# : ""
+        let mathJaxTag: String
+        if includeMathJax, let mjURL = DiaryBodyWebAssets.mathJaxScriptURL {
+            mathJaxTag = """
+            <script>
+              window.MathJax = {
+                tex: {
+                  inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                  displayMath: [['$$','$$'], ['\\\\[','\\\\]']],
+                  processEscapes: true
+                },
+                options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+              };
+            </script>
+            <script src="\(mjURL.lastPathComponent)"></script>
+            """
+        } else {
+            mathJaxTag = ""
+        }
 
         let html = """
         <!DOCTYPE html>
@@ -158,8 +202,8 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
           table { border-collapse: collapse; width: 100%; font-size: 15px; }
           th, td { border: 1px solid \(borderSubtle); padding: 6px 8px; }
         </style>
-        \(markedScript)
-        \(mathJaxScript)
+        \(markedTag)
+        \(mathJaxTag)
         </head><body>
         <div id="content"></div>
         <script>
@@ -179,8 +223,10 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
           }
           function renderCore() {
             const el = document.getElementById('content');
-            if (useMarkdown) {
+            if (useMarkdown && typeof marked !== 'undefined') {
               el.innerHTML = marked.parse(raw, { breaks: true, gfm: true });
+            } else if (useMarkdown) {
+              el.textContent = raw;
             } else {
               el.innerHTML = raw;
             }
@@ -196,7 +242,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
                 if (window.MathJax && MathJax.typesetPromise) {
                   clearInterval(t);
                   MathJax.typesetPromise([document.getElementById('content')]).then(notifyHeight).catch(notifyHeight);
-                } else if (n > 100) { clearInterval(t); notifyHeight(); }
+                } else if (n > 150) { clearInterval(t); notifyHeight(); }
               }, 40);
             }
           }
@@ -208,7 +254,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
                 clearInterval(t);
                 renderCore();
                 runMathJax();
-              } else if (n > 100) {
+              } else if (n > 150) {
                 clearInterval(t);
                 document.getElementById('content').textContent = raw;
                 notifyHeight();
@@ -222,7 +268,8 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         </body></html>
         """
 
-        webView.loadHTMLString(html, baseURL: nil)
+        let base = DiaryBodyWebAssets.baseDirectoryURL
+        webView.loadHTMLString(html, baseURL: base)
     }
 
     static func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
@@ -236,6 +283,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         var lastMode: PayloadMode?
         var lastIsDark: Bool?
         var lastIncludeMathJax: Bool?
+        var lastCompact: CGFloat?
 
         init(_ parent: DiaryBodyRichWebView) {
             self.parent = parent

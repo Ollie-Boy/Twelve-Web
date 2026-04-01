@@ -27,7 +27,8 @@
         9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000013A100000100000001 /* DiaryComposerSheet.swift */; };
         9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000014A100000100000001 /* DiaryReaderSheet.swift */; };
         9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000016A100000100000001 /* DiaryBodyContentView.swift */; };
-        9A100015A100000100000001 /* DiaryEntryBodyPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000017A100000100000001 /* DiaryEntryBodyPreview.swift */; };
+        9A100016A100000100000001 /* marked.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000018A100000100000001 /* marked.min.js */; };
+        9A100017A100000100000001 /* mathjax-tex-svg.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000019A100000100000001 /* mathjax-tex-svg.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,7 +54,8 @@
         9A000013A100000100000001 /* DiaryComposerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryComposerSheet.swift; sourceTree = "<group>"; };
         9A000014A100000100000001 /* DiaryReaderSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryReaderSheet.swift; sourceTree = "<group>"; };
         9A000016A100000100000001 /* DiaryBodyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryBodyContentView.swift; sourceTree = "<group>"; };
-        9A000017A100000100000001 /* DiaryEntryBodyPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntryBodyPreview.swift; sourceTree = "<group>"; };
+        9A000018A100000100000001 /* marked.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "marked.min.js"; sourceTree = "<group>"; };
+        9A000019A100000100000001 /* mathjax-tex-svg.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "mathjax-tex-svg.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,8 @@
                 9A300008A100000100000001 /* UI */,
                 9A00000CA100000100000001 /* Assets.xcassets */,
                 9A00000DA100000100000001 /* Info.plist */,
+                9A000018A100000100000001 /* marked.min.js */,
+                9A000019A100000100000001 /* mathjax-tex-svg.js */,
             );
             path = BreezyDiary;
             sourceTree = "<group>";
@@ -147,7 +151,6 @@
                 9A000013A100000100000001 /* DiaryComposerSheet.swift */,
                 9A000014A100000100000001 /* DiaryReaderSheet.swift */,
                 9A000016A100000100000001 /* DiaryBodyContentView.swift */,
-                9A000017A100000100000001 /* DiaryEntryBodyPreview.swift */,
             );
             path = UI;
             sourceTree = "<group>";
@@ -210,6 +213,8 @@
             buildActionMask = 2147483647;
             files = (
                 9A10000CA100000100000001 /* Assets.xcassets in Resources */,
+                9A100016A100000100000001 /* marked.min.js in Resources */,
+                9A100017A100000100000001 /* mathjax-tex-svg.js in Resources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -239,7 +244,6 @@
                 9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */,
                 9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */,
                 9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */,
-                9A100015A100000100000001 /* DiaryEntryBodyPreview.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

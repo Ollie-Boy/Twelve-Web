@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var selectedEntryForRead: DiaryEntry?
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
+    @State private var showAppearanceSheet: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -99,23 +100,8 @@ struct ContentView: View {
                 .font(BreezyTheme.handwrittenFont(size: 40))
                 .foregroundStyle(BreezyTheme.textPrimary)
             Spacer(minLength: 8)
-            Menu {
-                ForEach(AppearancePreference.allCases) { option in
-                    Button {
-                        appearance.setPreference(option)
-                    } label: {
-                        HStack {
-                            Text(option.title)
-                                .font(BreezyTheme.appFont(size: 16))
-                            Spacer(minLength: 8)
-                            if appearance.preference == option {
-                                Image(systemName: "checkmark")
-                                    .font(BreezyTheme.appFont(size: 14, weight: .semibold))
-                                    .foregroundStyle(BreezyTheme.primaryBlue)
-                            }
-                        }
-                    }
-                }
+            Button {
+                showAppearanceSheet = true
             } label: {
                 Image(systemName: "circle.lefthalf.filled")
                     .font(BreezyTheme.appFont(size: 20, weight: .medium))
@@ -126,6 +112,14 @@ struct ContentView: View {
             .accessibilityLabel("Appearance")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .sheet(isPresented: $showAppearanceSheet) {
+            AppearancePickerSheet(
+                selection: Binding(
+                    get: { appearance.preference },
+                    set: { appearance.setPreference($0) }
+                )
+            )
+        }
     }
 
     private var diaryListSection: some View {
@@ -226,6 +220,51 @@ struct ContentView: View {
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
+    }
+}
+
+private struct AppearancePickerSheet: View {
+    @Binding var selection: AppearancePreference
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(AppearancePreference.allCases) { option in
+                    Button {
+                        selection = option
+                        dismiss()
+                    } label: {
+                        HStack {
+                            Text(option.title)
+                                .font(BreezyTheme.appFont(size: 17))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                            Spacer()
+                            if selection == option {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(BreezyTheme.appFont(size: 18, weight: .semibold))
+                                    .foregroundStyle(BreezyTheme.primaryBlue)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(BreezyTheme.background.ignoresSafeArea())
+            .navigationTitle("Appearance")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .font(BreezyTheme.appFont(size: 17))
+                }
+            }
+        }
+        .presentationDetents([.medium])
+        .font(BreezyTheme.appFont(size: 17))
     }
 }
 

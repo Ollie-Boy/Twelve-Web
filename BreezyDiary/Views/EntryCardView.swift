@@ -6,6 +6,10 @@ struct EntryCardView: View {
     let onOpen: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
+
+    private static let topBandHeight: CGFloat = 154
+    private static let cardFixedHeight: CGFloat = 468
+
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
 
@@ -30,34 +34,20 @@ struct EntryCardView: View {
         return hash % imageAttachments.count
     }
 
-    private var currentCoverAttachment: DiaryAttachment? {
-        guard !imageAttachments.isEmpty else { return nil }
-        let safeIndex = rotatingCoverIndex % imageAttachments.count
-        return imageAttachments[safeIndex]
-    }
-
-    private var bodyPreviewPlain: String {
-        DiaryEntryBodyPreview.plainText(for: entry.body)
-    }
-
     private var hasImageCover: Bool {
         !imageAttachments.isEmpty
     }
 
+    private var trimmedBody: String {
+        entry.body.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if hasImageCover {
-                coverView
-            } else if !bodyPreviewPlain.isEmpty {
-                Text(bodyPreviewPlain)
-                    .font(BreezyTheme.appFont(size: 15))
-                    .foregroundStyle(BreezyTheme.textSecondary)
-                    .lineLimit(6)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 22)
-                    .padding(.top, 18)
-            }
+            topBand
+                .frame(height: Self.topBandHeight)
+                .frame(maxWidth: .infinity)
+                .clipped()
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -74,18 +64,14 @@ struct EntryCardView: View {
                     Text(entry.title)
                         .font(BreezyTheme.appFont(size: 24, weight: .bold))
                         .foregroundStyle(BreezyTheme.textPrimary)
+                        .lineLimit(2)
                 }
 
-                if hasImageCover, !entry.body.isEmpty {
+                if hasImageCover, !trimmedBody.isEmpty {
                     Text(entry.body)
                         .font(BreezyTheme.appFont(size: 15))
                         .foregroundStyle(BreezyTheme.textSecondary)
                         .lineLimit(3)
-                } else if hasImageCover == false, bodyPreviewPlain.isEmpty, !entry.body.isEmpty {
-                    Text(entry.body)
-                        .font(BreezyTheme.appFont(size: 15))
-                        .foregroundStyle(BreezyTheme.textSecondary)
-                        .lineLimit(4)
                 }
 
                 if !entry.attachments.isEmpty {
@@ -96,12 +82,16 @@ struct EntryCardView: View {
                     .font(BreezyTheme.appFont(size: 12, weight: .medium))
                     .foregroundStyle(BreezyTheme.textTertiary)
                 }
+
+                Spacer(minLength: 0)
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 22)
             .padding(.top, 2)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+        .frame(height: Self.cardFixedHeight, alignment: .top)
         .background(BreezyTheme.cardSurface)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(
@@ -132,6 +122,19 @@ struct EntryCardView: View {
     }
 
     @ViewBuilder
+    private var topBand: some View {
+        if hasImageCover {
+            coverView
+        } else if !trimmedBody.isEmpty {
+            DiaryBodyContentView(text: entry.body, compactMaxHeight: Self.topBandHeight)
+                .padding(.horizontal, 10)
+        } else {
+            Rectangle()
+                .fill(BreezyTheme.secondarySurface.opacity(0.4))
+        }
+    }
+
+    @ViewBuilder
     private var coverView: some View {
         if imageAttachments.count > 1 {
             ZStack {
@@ -153,38 +156,11 @@ struct EntryCardView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(maxWidth: .infinity)
-                .frame(height: 154)
+                .frame(height: Self.topBandHeight)
                 .clipped()
         } else {
-            ZStack {
-                LinearGradient(
-                    colors: [
-                        BreezyTheme.placeholderCoverTop,
-                        BreezyTheme.placeholderCoverBottom
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-
-                VStack(spacing: 12) {
-                    ForEach(0..<3, id: \.self) { idx in
-                        Capsule()
-                            .fill(BreezyTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
-                            .frame(width: 230 + CGFloat(idx * 30), height: 12)
-                            .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
-                    }
-                }
-
-                VStack(spacing: 8) {
-                    Image(systemName: "book.pages.fill")
-                        .font(BreezyTheme.appFont(size: 28, weight: .semibold))
-                    Text("Twelve")
-                        .font(BreezyTheme.handwrittenFont(size: 20))
-                }
-                .foregroundStyle(BreezyTheme.textPrimary.opacity(0.72))
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 154)
+            Rectangle()
+                .fill(BreezyTheme.secondarySurface.opacity(0.4))
         }
     }
 }
