@@ -71,30 +71,12 @@ struct DiaryReaderSheet: View {
     @State private var quickLookURL: URL?
     @State private var selectedImageURL: URL?
 
-    private enum AttachmentDisplayItem: Identifiable {
-        case imageGroup([DiaryAttachment])
-        case single(DiaryAttachment)
-
-        var id: String {
-            switch self {
-            case .imageGroup(let items):
-                return "images-\(items.map(\.id.uuidString).joined(separator: "-"))"
-            case .single(let item):
-                return item.id.uuidString
-            }
-        }
+    private var imageAttachments: [DiaryAttachment] {
+        entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
     }
 
-    private var displayAttachments: [AttachmentDisplayItem] {
-        let imageItems = entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
-        var items: [AttachmentDisplayItem] = []
-        if !imageItems.isEmpty {
-            items.append(.imageGroup(imageItems))
-        }
-        for item in entry.attachments where item.kind != .image && item.kind != .gif {
-            items.append(.single(item))
-        }
-        return items
+    private var nonImageAttachments: [DiaryAttachment] {
+        entry.attachments.filter { $0.kind != .image && $0.kind != .gif }
     }
 
     private var trimmedEmotion: String {
@@ -105,6 +87,10 @@ struct DiaryReaderSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    if !imageAttachments.isEmpty {
+                        topImageCarousel
+                    }
+
                     VStack(alignment: .leading, spacing: 16) {
                         Text(entry.title)
                             .font(TwelveTheme.appFont(size: 30, weight: .bold))
@@ -153,8 +139,8 @@ struct DiaryReaderSheet: View {
                         including: .gesture
                     )
 
-                    if !entry.attachments.isEmpty {
-                        attachmentSection
+                    if !nonImageAttachments.isEmpty {
+                        nonImageAttachmentSection
                     }
                 }
                 .padding(20)
@@ -190,11 +176,53 @@ struct DiaryReaderSheet: View {
         }
     }
 
-    private var attachmentSection: some View {
+    private var topImageCarousel: some View {
+        Group {
+            if imageAttachments.count > 1 {
+                TabView {
+                    ForEach(imageAttachments) { imageItem in
+                        Button {
+                            selectedImageURL = imageItem.url
+                        } label: {
+                            readerImageCell(url: imageItem.url)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .frame(height: 240)
+                .tabViewStyle(.page(indexDisplayMode: .automatic))
+            } else if let imageItem = imageAttachments.first {
+                Button {
+                    selectedImageURL = imageItem.url
+                } label: {
+                    readerImageCell(url: imageItem.url)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func readerImageCell(url: URL) -> some View {
+        if let image = UIImage(contentsOfFile: url.path) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity)
+                .frame(height: 240)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        } else {
+            imageLoadFallbackView
+        }
+    }
+
+    private var nonImageAttachmentSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ForEach(displayAttachments) { attachment in
+            ForEach(nonImageAttachments) { item in
                 VStack(alignment: .leading, spacing: 10) {
-                    mediaPreview(for: attachment)
+                    nonImageMediaPreview(for: item)
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -207,80 +235,28 @@ struct DiaryReaderSheet: View {
         }
     }
 
-    private func mediaPreview(for displayItem: AttachmentDisplayItem) -> AnyView {
-        switch displayItem {
-        case .imageGroup(let imageAttachments):
-            if imageAttachments.count > 1 {
-                return AnyView(
-                    TabView {
-                        ForEach(imageAttachments) { imageItem in
-                            Button {
-                                selectedImageURL = imageItem.url
-                            } label: {
-                                if let image = UIImage(contentsOfFile: imageItem.url.path) {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 220)
-                                        .clipped()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                                } else {
-                                    imageLoadFallbackView
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .frame(height: 220)
-                    .tabViewStyle(.page(indexDisplayMode: .automatic))
-                )
+    @ViewBuilder
+    private func nonImageMediaPreview(for item: DiaryAttachment) -> some View {
+        switch item.kind {
+        case .video:
+            InlineVideoPreview(url: item.url, height: 220)
+        case .audio:
+            InlineAudioPreview(url: item.url)
+        default:
+            Button {
+                quickLookURL = item.url
+            } label: {
+                HStack {
+                    Image(systemName: item.kind.iconName)
+                    Text(item.kind.title)
+                    Spacer()
+                    Image(systemName: "arrow.up.right.square")
+                }
+                .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                .foregroundStyle(TwelveTheme.textPrimary)
+                .padding(.vertical, 6)
             }
-            if let imageItem = imageAttachments.first {
-                return AnyView(
-                    Button {
-                        selectedImageURL = imageItem.url
-                    } label: {
-                        if let image = UIImage(contentsOfFile: imageItem.url.path) {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 220)
-                                .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                        } else {
-                            imageLoadFallbackView
-                        }
-                    }
-                    .buttonStyle(.plain)
-                )
-            }
-            return AnyView(imageLoadFallbackView)
-        case .single(let item):
-            switch item.kind {
-            case .video:
-                return AnyView(InlineVideoPreview(url: item.url, height: 220))
-            case .audio:
-                return AnyView(InlineAudioPreview(url: item.url))
-            default:
-                return AnyView(
-                    Button {
-                        quickLookURL = item.url
-                    } label: {
-                        HStack {
-                            Image(systemName: item.kind.iconName)
-                            Text(item.kind.title)
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                        }
-                        .font(TwelveTheme.appFont(size: 14, weight: .medium))
-                        .foregroundStyle(TwelveTheme.textPrimary)
-                        .padding(.vertical, 6)
-                    }
-                    .buttonStyle(.plain)
-                )
-            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -297,7 +273,7 @@ struct DiaryReaderSheet: View {
             .foregroundStyle(TwelveTheme.textSecondary)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 220)
+        .frame(height: 240)
     }
 
 }
