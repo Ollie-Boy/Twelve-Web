@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
         9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000001A100000100000001 /* BreezyDiaryApp.swift */; };
+        9A100013A100000100000001 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000015A100000100000001 /* AppearanceStore.swift */; };
         9A100002A100000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000002A100000100000001 /* ContentView.swift */; };
         9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
         9A100004A100000100000001 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000004A100000100000001 /* DiaryEntry.swift */; };
@@ -29,6 +30,7 @@
 
 /* Begin PBXFileReference section */
         9A000001A100000100000001 /* BreezyDiaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezyDiaryApp.swift; sourceTree = "<group>"; };
+        9A000015A100000100000001 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
         9A000002A100000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
         9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
         9A000004A100000100000001 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
             isa = PBXGroup;
             children = (
                 9A000001A100000100000001 /* BreezyDiaryApp.swift */,
+                9A000015A100000100000001 /* AppearanceStore.swift */,
             );
             path = App;
             sourceTree = "<group>";
@@ -212,6 +215,7 @@
             buildActionMask = 2147483647;
             files = (
                 9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */,
+                9A100013A100000100000001 /* AppearanceStore.swift in Sources */,
                 9A100002A100000100000001 /* ContentView.swift in Sources */,
                 9A100003A100000100000001 /* EntryCardView.swift in Sources */,
                 9A100004A100000100000001 /* DiaryEntry.swift in Sources */,

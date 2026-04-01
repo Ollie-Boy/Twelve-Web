@@ -120,7 +120,7 @@ struct DiaryReaderSheet: View {
                             }
                         }
                         .font(BreezyTheme.appFont(size: 13))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(BreezyTheme.textPrimary)
 
                         Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
                             .font(BreezyTheme.appFont(size: 13))

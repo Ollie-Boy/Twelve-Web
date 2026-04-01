@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var appearance: AppearanceStore
     @State private var entries: [DiaryEntry] = []
     @State private var pendingDeletionEntry: DiaryEntry?
     @State private var selectedEntryForRead: DiaryEntry?
@@ -93,10 +94,30 @@ struct ContentView: View {
     }
 
     private var headerBar: some View {
-        Text("Twelve")
-            .font(BreezyTheme.handwrittenFont(size: 40))
-            .foregroundStyle(BreezyTheme.textPrimary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center, spacing: 12) {
+            Text("Twelve")
+                .font(BreezyTheme.handwrittenFont(size: 40))
+                .foregroundStyle(BreezyTheme.textPrimary)
+            Spacer(minLength: 8)
+            Menu {
+                Picker("Appearance", selection: Binding(
+                    get: { appearance.preference },
+                    set: { appearance.setPreference($0) }
+                )) {
+                    ForEach(AppearancePreference.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+            } label: {
+                Image(systemName: "circle.lefthalf.filled")
+                    .font(BreezyTheme.appFont(size: 20, weight: .medium))
+                    .foregroundStyle(BreezyTheme.primaryBlue)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Appearance")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var diaryListSection: some View {
@@ -202,4 +223,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppearanceStore())
 }

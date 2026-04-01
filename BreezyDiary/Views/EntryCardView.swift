@@ -44,7 +44,7 @@ struct EntryCardView: View {
                 HStack {
                     Label(entry.weather.title, systemImage: entry.weather.symbol)
                         .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(BreezyTheme.textPrimary)
                     Spacer()
                     Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
                         .font(BreezyTheme.appFont(size: 13, weight: .semibold))
@@ -133,8 +133,8 @@ struct EntryCardView: View {
             ZStack {
                 LinearGradient(
                     colors: [
-                        Color(red: 0.80, green: 0.90, blue: 1.00),
-                        Color.white
+                        BreezyTheme.placeholderCoverTop,
+                        BreezyTheme.placeholderCoverBottom
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -143,7 +143,7 @@ struct EntryCardView: View {
                 VStack(spacing: 12) {
                     ForEach(0..<3, id: \.self) { idx in
                         Capsule()
-                            .fill(Color.white.opacity(0.55 - Double(idx) * 0.10))
+                            .fill(BreezyTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
                             .frame(width: 230 + CGFloat(idx * 30), height: 12)
                             .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
                     }

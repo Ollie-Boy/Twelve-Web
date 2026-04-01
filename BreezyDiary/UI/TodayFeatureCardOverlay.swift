@@ -113,7 +113,7 @@ struct TodayFeatureCardOverlay: View {
         .frame(maxWidth: 560)
         .matchedGeometryEffect(id: "today.card.shell", in: todayCardNamespace)
         .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-        .shadow(color: Color.black.opacity(0.22), radius: 28, y: 18)
+        .shadow(color: BreezyTheme.modalCardShadow, radius: 28, y: 18)
         .padding(.horizontal, 20)
         .overlay(alignment: .topTrailing) {
             Button {
@@ -331,19 +331,19 @@ struct TodayFeatureCardOverlay: View {
 
             // Illustration-like layers to mimic App Store Today hero art.
             Circle()
-                .fill(.white.opacity(0.35))
+                .fill(BreezyTheme.heroOrbPrimary)
                 .frame(width: 260, height: 260)
                 .offset(x: 230, y: -55)
             Circle()
-                .fill(.white.opacity(0.22))
+                .fill(BreezyTheme.heroOrbSecondary)
                 .frame(width: 190, height: 190)
                 .offset(x: 165, y: 120)
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.white.opacity(0.55))
+                .fill(BreezyTheme.heroBarWide)
                 .frame(width: 130, height: 18)
                 .offset(x: 34, y: 245)
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.white.opacity(0.45))
+                .fill(BreezyTheme.heroBarNarrow)
                 .frame(width: 95, height: 14)
                 .offset(x: 56, y: 272)
 
@@ -368,7 +368,7 @@ struct TodayFeatureCardOverlay: View {
         .matchedGeometryEffect(id: "today.card.hero", in: todayCardNamespace)
         .overlay(
             RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .stroke(Color.white.opacity(0.56), lineWidth: 0.8)
+                .stroke(BreezyTheme.heroCardStroke, lineWidth: 0.8)
         )
         .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
         .overlay(alignment: .bottomLeading) {
@@ -378,7 +378,7 @@ struct TodayFeatureCardOverlay: View {
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.88))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(.black.opacity(0.14), in: Capsule())
+                    .background(BreezyTheme.heroSwipeHintBackground, in: Capsule())
                     .padding(.leading, 18)
                     .padding(.bottom, 16)
             }
