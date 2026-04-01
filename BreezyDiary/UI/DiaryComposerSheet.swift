@@ -364,9 +364,9 @@ struct DiaryComposerSheet: View {
                 title: title,
                 body: markdownBody,
                 weather: weather,
+                location: resolvedLocation,
                 tags: resolvedTags,
                 emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
-                location: resolvedLocation,
                 attachments: attachments
             )
         case .edit(let existing):
@@ -377,9 +377,9 @@ struct DiaryComposerSheet: View {
                 title: title,
                 body: markdownBody,
                 weather: weather,
+                location: resolvedLocation,
                 tags: resolvedTags,
                 emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
-                location: resolvedLocation,
                 attachments: attachments
             )
         }
