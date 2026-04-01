@@ -244,15 +244,21 @@ struct DiaryComposerSheet: View {
                 }
                 .padding(18)
             }
-            .navigationTitle(modeTitle)
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(modeTitle)
+                        .font(BreezyTheme.appFont(size: 17, weight: .semibold))
+                        .foregroundStyle(BreezyTheme.textPrimary)
+                }
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { isPresented = false }
+                        .font(BreezyTheme.appFont(size: 17))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") { save() }
-                        .fontWeight(.semibold)
+                        .font(BreezyTheme.appFont(size: 17, weight: .semibold))
                 }
             }
             .onAppear { configureFromMode() }

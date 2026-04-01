@@ -100,12 +100,20 @@ struct ContentView: View {
                 .foregroundStyle(BreezyTheme.textPrimary)
             Spacer(minLength: 8)
             Menu {
-                Picker("Appearance", selection: Binding(
-                    get: { appearance.preference },
-                    set: { appearance.setPreference($0) }
-                )) {
-                    ForEach(AppearancePreference.allCases) { option in
-                        Text(option.title).tag(option)
+                ForEach(AppearancePreference.allCases) { option in
+                    Button {
+                        appearance.setPreference(option)
+                    } label: {
+                        HStack {
+                            Text(option.title)
+                                .font(BreezyTheme.appFont(size: 16))
+                            Spacer(minLength: 8)
+                            if appearance.preference == option {
+                                Image(systemName: "checkmark")
+                                    .font(BreezyTheme.appFont(size: 14, weight: .semibold))
+                                    .foregroundStyle(BreezyTheme.primaryBlue)
+                            }
+                        }
                     }
                 }
             } label: {

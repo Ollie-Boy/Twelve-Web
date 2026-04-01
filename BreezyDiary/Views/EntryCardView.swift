@@ -36,9 +36,28 @@ struct EntryCardView: View {
         return imageAttachments[safeIndex]
     }
 
+    private var bodyPreviewPlain: String {
+        DiaryEntryBodyPreview.plainText(for: entry.body)
+    }
+
+    private var hasImageCover: Bool {
+        !imageAttachments.isEmpty
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            coverView
+            if hasImageCover {
+                coverView
+            } else if !bodyPreviewPlain.isEmpty {
+                Text(bodyPreviewPlain)
+                    .font(BreezyTheme.appFont(size: 15))
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .lineLimit(6)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 22)
+                    .padding(.top, 18)
+            }
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -57,10 +76,12 @@ struct EntryCardView: View {
                         .foregroundStyle(BreezyTheme.textPrimary)
                 }
 
-                Text(entry.body)
-                    .font(BreezyTheme.appFont(size: 15))
-                    .foregroundStyle(BreezyTheme.textSecondary)
-                    .lineLimit(3)
+                if !entry.body.isEmpty, hasImageCover || bodyPreviewPlain.isEmpty {
+                    Text(entry.body)
+                        .font(BreezyTheme.appFont(size: 15))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                        .lineLimit(hasImageCover ? 3 : 4)
+                }
 
                 if !entry.attachments.isEmpty {
                     HStack(spacing: 6) {

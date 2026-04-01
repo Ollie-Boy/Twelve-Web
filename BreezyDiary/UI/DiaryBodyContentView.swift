@@ -2,38 +2,26 @@ import SwiftUI
 import UIKit
 import WebKit
 
-/// Renders diary body: native Markdown, HTML fragments, or Markdown/HTML mixed with LaTeX (WKWebView + MathJax).
+/// Renders diary body via WKWebView (Markdown and/or HTML) with optional MathJax for LaTeX.
 struct DiaryBodyContentView: View {
     let text: String
     @Environment(\.colorScheme) private var colorScheme
     @State private var richWebHeight: CGFloat = 180
 
     var body: some View {
-        Group {
-            if let webMode = richWebMode {
-                DiaryBodyRichWebView(
-                    rawText: text,
-                    mode: webMode,
-                    isDark: colorScheme == .dark,
-                    contentHeight: $richWebHeight
-                )
-                .frame(height: max(richWebHeight, 80))
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } else if looksLikeHTMLFragment(text) {
-                HTMLFragmentTextView(htmlFragment: text, isDark: colorScheme == .dark)
-            } else {
-                NativeMarkdownTextView(text: text)
-            }
-        }
-    }
-
-    private var richWebMode: DiaryBodyRichWebView.PayloadMode? {
-        guard containsLaTeXDelimiters(text) else { return nil }
-        return looksLikeHTMLFragment(text) ? .rawHTML : .markdown
+        DiaryBodyRichWebView(
+            rawText: text,
+            mode: looksLikeHTMLFragment(text) ? .rawHTML : .markdown,
+            isDark: colorScheme == .dark,
+            includeMathJax: containsLaTeXDelimiters(text),
+            contentHeight: $richWebHeight
+        )
+        .frame(height: max(richWebHeight, 80))
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-// MARK: - LaTeX (narrow detection — do not block Markdown for `$` currency)
+// MARK: - LaTeX (avoid treating lone `$` as math)
 
 private func containsLaTeXDelimiters(_ s: String) -> Bool {
     if s.contains(#"\("#) || s.contains(#"\["#) { return true }
@@ -56,83 +44,7 @@ private func looksLikeHTMLFragment(_ s: String) -> Bool {
     return t.range(of: pattern, options: .regularExpression) != nil
 }
 
-// MARK: - Native Markdown
-
-private struct NativeMarkdownTextView: View {
-    let text: String
-
-    var body: some View {
-        Group {
-            if let attributed = Self.parsedMarkdown(text) {
-                Text(attributed)
-                    .font(BreezyTheme.appFont(size: 16))
-                    .foregroundStyle(BreezyTheme.textPrimary)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Text(text)
-                    .font(BreezyTheme.appFont(size: 16))
-                    .foregroundStyle(BreezyTheme.textPrimary)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-
-    private static func parsedMarkdown(_ source: String) -> AttributedString? {
-        var options = AttributedString.MarkdownParsingOptions()
-        options.interpretedSyntax = .full
-        return try? AttributedString(markdown: source, options: options)
-    }
-}
-
-// MARK: - HTML → attributed text
-
-private struct HTMLFragmentTextView: View {
-    let htmlFragment: String
-    let isDark: Bool
-
-    var body: some View {
-        Group {
-            if let attributed = Self.attributedHTML(htmlFragment, isDark: isDark) {
-                Text(attributed)
-                    .font(BreezyTheme.appFont(size: 16))
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Text(htmlFragment)
-                    .font(BreezyTheme.appFont(size: 16))
-                    .foregroundStyle(BreezyTheme.textPrimary)
-                    .textSelection(.enabled)
-            }
-        }
-    }
-
-    private static func attributedHTML(_ fragment: String, isDark: Bool) -> AttributedString? {
-        let textColor = isDark ? "#e8eaef" : "#1c1c1e"
-        let wrapped = """
-        <!DOCTYPE html>
-        <html><head><meta charset="utf-8">
-        <style>
-          body { font: -apple-system-body; font-size: 16px; line-height: 1.45; color: \(textColor); margin: 0; }
-          a { color: #0a84ff; }
-          pre, code { font-family: ui-monospace, Menlo, monospace; font-size: 14px; }
-        </style></head><body>\(fragment)</body></html>
-        """
-        guard let data = wrapped.data(using: .utf8) else { return nil }
-        guard let ns = try? NSMutableAttributedString(
-            data: data,
-            options: [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ],
-            documentAttributes: nil
-        ) else { return nil }
-        return AttributedString(ns)
-    }
-}
-
-// MARK: - WKWebView: Markdown or HTML + MathJax
+// MARK: - WKWebView
 
 struct DiaryBodyRichWebView: UIViewRepresentable {
     enum PayloadMode {
@@ -143,6 +55,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
     let rawText: String
     let mode: PayloadMode
     let isDark: Bool
+    let includeMathJax: Bool
     @Binding var contentHeight: CGFloat
 
     func makeCoordinator() -> Coordinator {
@@ -158,6 +71,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         webView.backgroundColor = .clear
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.bounces = false
+        webView.scrollView.backgroundColor = .clear
         context.coordinator.webView = webView
         return webView
     }
@@ -166,32 +80,24 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         context.coordinator.parent = self
         if context.coordinator.lastRawText == rawText,
            context.coordinator.lastMode == mode,
-           context.coordinator.lastIsDark == isDark {
+           context.coordinator.lastIsDark == isDark,
+           context.coordinator.lastIncludeMathJax == includeMathJax {
             return
         }
         context.coordinator.lastRawText = rawText
         context.coordinator.lastMode = mode
         context.coordinator.lastIsDark = isDark
+        context.coordinator.lastIncludeMathJax = includeMathJax
 
         let b64 = Data(rawText.utf8).base64EncodedString()
         let modeFlag = mode == .markdown ? "1" : "0"
-        let bg = isDark ? "#0b0d12" : "#f5f7fb"
+        let mathFlag = includeMathJax ? "1" : "0"
         let fg = isDark ? "#e8eaef" : "#1c1c1e"
-        let codeBg = isDark ? "#161a22" : "#eef1f6"
+        let codeFg = isDark ? "#c8ccd4" : "#3a3a3c"
+        let linkColor = isDark ? "#64a8ff" : "#007aff"
+        let borderSubtle = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"
 
-        let html = """
-        <!DOCTYPE html>
-        <html><head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-        <style>
-          body { margin: 0; padding: 0; font-family: -apple-system, system-ui; font-size: 16px; line-height: 1.45; color: \(fg); background: \(bg); }
-          #content { padding: 2px 0; word-wrap: break-word; }
-          pre { overflow-x: auto; padding: 10px; border-radius: 8px; background: \(codeBg); }
-          code { font-family: ui-monospace, Menlo, monospace; font-size: 14px; }
-          a { color: #0a84ff; }
-          img { max-width: 100%; height: auto; }
-        </style>
+        let mathJaxScript = includeMathJax ? """
         <script>
           window.MathJax = {
             tex: {
@@ -202,13 +108,64 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
           };
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+        """ : ""
+
+        let markedScript = mode == .markdown ? #"<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>"# : ""
+
+        let html = """
+        <!DOCTYPE html>
+        <html><head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <style>
+          html, body { margin: 0; padding: 0; background: transparent !important; }
+          body {
+            font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+            font-size: 16px;
+            line-height: 1.45;
+            color: \(fg);
+          }
+          #content { padding: 2px 0; word-wrap: break-word; }
+          pre, code {
+            font-family: ui-monospace, "SF Mono", Menlo, monospace;
+            font-size: 14px;
+            color: \(codeFg);
+            background: transparent !important;
+          }
+          pre {
+            margin: 0.6em 0;
+            padding: 0;
+            overflow-x: auto;
+            border-left: 3px solid \(borderSubtle);
+            padding-left: 10px;
+          }
+          code { padding: 0; border-radius: 0; }
+          pre code { border: none; display: block; white-space: pre; }
+          p { margin: 0.35em 0; }
+          ul, ol { margin: 0.35em 0; padding-left: 1.35em; }
+          h1, h2, h3, h4 { font-family: inherit; font-weight: 600; margin: 0.5em 0 0.25em; line-height: 1.25; }
+          h1 { font-size: 1.35em; } h2 { font-size: 1.2em; } h3 { font-size: 1.08em; }
+          blockquote {
+            margin: 0.5em 0;
+            padding-left: 12px;
+            border-left: 3px solid \(borderSubtle);
+            color: \(fg);
+            opacity: 0.92;
+          }
+          a { color: \(linkColor); }
+          img { max-width: 100%; height: auto; }
+          table { border-collapse: collapse; width: 100%; font-size: 15px; }
+          th, td { border: 1px solid \(borderSubtle); padding: 6px 8px; }
+        </style>
+        \(markedScript)
+        \(mathJaxScript)
         </head><body>
         <div id="content"></div>
         <script>
           const payloadB64 = "\(b64)";
           const useMarkdown = "\(modeFlag)" === "1";
+          const useMathJax = "\(mathFlag)" === "1";
           function utf8FromB64(b64) {
             const bin = atob(b64);
             const bytes = new Uint8Array(bin.length);
@@ -229,6 +186,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             }
           }
           function runMathJax() {
+            if (!useMathJax) { notifyHeight(); return; }
             if (window.MathJax && MathJax.typesetPromise) {
               MathJax.typesetPromise([document.getElementById('content')]).then(notifyHeight).catch(notifyHeight);
             } else {
@@ -250,7 +208,11 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
                 clearInterval(t);
                 renderCore();
                 runMathJax();
-              } else if (n > 100) { clearInterval(t); document.getElementById('content').textContent = raw; notifyHeight(); }
+              } else if (n > 100) {
+                clearInterval(t);
+                document.getElementById('content').textContent = raw;
+                notifyHeight();
+              }
             }, 20);
           } else {
             renderCore();
@@ -273,6 +235,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         var lastRawText: String?
         var lastMode: PayloadMode?
         var lastIsDark: Bool?
+        var lastIncludeMathJax: Bool?
 
         init(_ parent: DiaryBodyRichWebView) {
             self.parent = parent
