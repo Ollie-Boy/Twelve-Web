@@ -14,6 +14,30 @@ struct DiaryReaderPagerSheet: View {
     let onDelete: (DiaryEntry) -> Void
 
     @State private var currentEntryID: UUID
+    @State private var swipeDirection: SwipeDirection = .forward
+
+    private enum SwipeDirection {
+        case forward
+        case backward
+
+        var insertionEdge: Edge {
+            switch self {
+            case .forward:
+                return .trailing
+            case .backward:
+                return .leading
+            }
+        }
+
+        var removalEdge: Edge {
+            switch self {
+            case .forward:
+                return .leading
+            case .backward:
+                return .trailing
+            }
+        }
+    }
 
     init(entries: [DiaryEntry], initialEntryID: UUID, onEdit: @escaping (DiaryEntry) -> Void, onDelete: @escaping (DiaryEntry) -> Void) {
         self.entries = entries
@@ -23,29 +47,48 @@ struct DiaryReaderPagerSheet: View {
         _currentEntryID = State(initialValue: initialEntryID)
     }
 
+    private var sortedEntries: [DiaryEntry] {
+        entries.sorted { $0.selectedDate > $1.selectedDate }
+    }
+
+    private var currentEntry: DiaryEntry? {
+        entries.first(where: { $0.id == currentEntryID }) ?? entries.first
+    }
+
     var body: some View {
-        if let current = entries.first(where: { $0.id == currentEntryID }) {
-            DiaryReaderSheet(
-                entry: current,
-                allEntries: entries,
-                onEdit: { onEdit(current) },
-                onDelete: { onDelete(current) },
-                onOpenEntry: { next in
-                    currentEntryID = next.id
-                }
-            )
-        } else if let fallback = entries.first {
-            DiaryReaderSheet(
-                entry: fallback,
-                allEntries: entries,
-                onEdit: { onEdit(fallback) },
-                onDelete: { onDelete(fallback) },
-                onOpenEntry: { next in
-                    currentEntryID = next.id
-                }
-            )
-        } else {
-            Text("No entry available")
+        ZStack {
+            if let currentEntry {
+                DiaryReaderSheet(
+                    entry: currentEntry,
+                    allEntries: entries,
+                    onEdit: { onEdit(currentEntry) },
+                    onDelete: { onDelete(currentEntry) },
+                    onOpenEntry: { next in
+                        openEntryWithAnimation(next)
+                    }
+                )
+                .id(currentEntry.id)
+                .transition(
+                    .asymmetric(
+                        insertion: .move(edge: swipeDirection.insertionEdge).combined(with: .opacity),
+                        removal: .move(edge: swipeDirection.removalEdge).combined(with: .opacity)
+                    )
+                )
+            } else {
+                Text("No entry available")
+            }
+        }
+        .animation(.interactiveSpring(response: 0.35, dampingFraction: 0.9), value: currentEntryID)
+    }
+
+    private func openEntryWithAnimation(_ nextEntry: DiaryEntry) {
+        if let currentIndex = sortedEntries.firstIndex(where: { $0.id == currentEntryID }),
+           let nextIndex = sortedEntries.firstIndex(where: { $0.id == nextEntry.id }),
+           currentIndex != nextIndex {
+            swipeDirection = nextIndex > currentIndex ? .forward : .backward
+        }
+        withAnimation(.interactiveSpring(response: 0.35, dampingFraction: 0.9)) {
+            currentEntryID = nextEntry.id
         }
     }
 }
