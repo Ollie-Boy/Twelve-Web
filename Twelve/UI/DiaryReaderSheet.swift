@@ -126,10 +126,6 @@ struct DiaryReaderSheet: View {
                             .font(BreezyTheme.appFont(size: 13))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
-                        if !entry.body.isEmpty {
-                            DiaryBodyContentView(text: entry.body)
-                        }
-
                         if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
                             HStack(spacing: 8) {
                                 ForEach(entry.tags, id: \.self) { tag in
@@ -141,6 +137,10 @@ struct DiaryReaderSheet: View {
                             }
                             .font(BreezyTheme.appFont(size: 12, weight: .semibold))
                             .foregroundStyle(BreezyTheme.textSecondary)
+                        }
+
+                        if !entry.body.isEmpty {
+                            DiaryBodyContentView(text: entry.body)
                         }
                     }
                     .contentShape(Rectangle())

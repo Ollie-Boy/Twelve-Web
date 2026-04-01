@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct BreezyDiaryApp: App {
+struct TwelveApp: App {
     @StateObject private var appearance = AppearanceStore()
 
     var body: some Scene {

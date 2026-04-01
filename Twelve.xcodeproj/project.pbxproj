@@ -7,7 +7,7 @@
     objects = {
 
 /* Begin PBXBuildFile section */
-        9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000001A100000100000001 /* BreezyDiaryApp.swift */; };
+        9A100001A100000100000001 /* TwelveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000001A100000100000001 /* TwelveApp.swift */; };
         9A100013A100000100000001 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000015A100000100000001 /* AppearanceStore.swift */; };
         9A100002A100000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000002A100000100000001 /* ContentView.swift */; };
         9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
@@ -32,7 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-        9A000001A100000100000001 /* BreezyDiaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezyDiaryApp.swift; sourceTree = "<group>"; };
+        9A000001A100000100000001 /* TwelveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveApp.swift; sourceTree = "<group>"; };
         9A000015A100000100000001 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
         9A000002A100000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
         9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
         9A00000BA100000100000001 /* WindyBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindyBackgroundView.swift; sourceTree = "<group>"; };
         9A00000CA100000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         9A00000DA100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-        9A00000EA100000100000001 /* BreezyDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreezyDiary.app; sourceTree = BUILT_PRODUCTS_DIR; };
+        9A00000EA100000100000001 /* Twelve.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twelve.app; sourceTree = BUILT_PRODUCTS_DIR; };
         9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayFeatureCardOverlay.swift; sourceTree = "<group>"; };
         9A000010A100000100000001 /* DiaryAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryAttachment.swift; sourceTree = "<group>"; };
         9A000011A100000100000001 /* AttachmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentService.swift; sourceTree = "<group>"; };
@@ -72,12 +72,12 @@
         9A300001A100000100000001 = {
             isa = PBXGroup;
             children = (
-                9A300002A100000100000001 /* BreezyDiary */,
+                9A300002A100000100000001 /* Twelve */,
                 9A300003A100000100000001 /* Products */,
             );
             sourceTree = "<group>";
         };
-        9A300002A100000100000001 /* BreezyDiary */ = {
+        9A300002A100000100000001 /* Twelve */ = {
             isa = PBXGroup;
             children = (
                 9A300004A100000100000001 /* App */,
@@ -90,13 +90,13 @@
                 9A000018A100000100000001 /* marked.min.js */,
                 9A000019A100000100000001 /* mathjax-tex-svg.js */,
             );
-            path = BreezyDiary;
+            path = Twelve;
             sourceTree = "<group>";
         };
         9A300003A100000100000001 /* Products */ = {
             isa = PBXGroup;
             children = (
-                9A00000EA100000100000001 /* BreezyDiary.app */,
+                9A00000EA100000100000001 /* Twelve.app */,
             );
             name = Products;
             sourceTree = "<group>";
@@ -104,7 +104,7 @@
         9A300004A100000100000001 /* App */ = {
             isa = PBXGroup;
             children = (
-                9A000001A100000100000001 /* BreezyDiaryApp.swift */,
+                9A000001A100000100000001 /* TwelveApp.swift */,
                 9A000015A100000100000001 /* AppearanceStore.swift */,
             );
             path = App;
@@ -158,9 +158,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-        9A400001A100000100000001 /* BreezyDiary */ = {
+        9A400001A100000100000001 /* Twelve */ = {
             isa = PBXNativeTarget;
-            buildConfigurationList = 9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "BreezyDiary" */;
+            buildConfigurationList = 9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "Twelve" */;
             buildPhases = (
                 9A600001A100000100000001 /* Sources */,
                 9A200001A100000100000001 /* Frameworks */,
@@ -170,9 +170,9 @@
             );
             dependencies = (
             );
-            name = BreezyDiary;
-            productName = BreezyDiary;
-            productReference = 9A00000EA100000100000001 /* BreezyDiary.app */;
+            name = Twelve;
+            productName = Twelve;
+            productReference = 9A00000EA100000100000001 /* Twelve.app */;
             productType = "com.apple.product-type.application";
         };
 /* End PBXNativeTarget section */
@@ -189,7 +189,7 @@
                     };
                 };
             };
-            buildConfigurationList = 9A500003A100000100000001 /* Build configuration list for PBXProject "BreezyDiary" */;
+            buildConfigurationList = 9A500003A100000100000001 /* Build configuration list for PBXProject "Twelve" */;
             compatibilityVersion = "Xcode 16.0";
             developmentRegion = en;
             hasScannedForEncodings = 0;
@@ -202,7 +202,7 @@
             projectDirPath = "";
             projectRoot = "";
             targets = (
-                9A400001A100000100000001 /* BreezyDiary */,
+                9A400001A100000100000001 /* Twelve */,
             );
         };
 /* End PBXProject section */
@@ -225,7 +225,7 @@
             isa = PBXSourcesBuildPhase;
             buildActionMask = 2147483647;
             files = (
-                9A100001A100000100000001 /* BreezyDiaryApp.swift in Sources */,
+                9A100001A100000100000001 /* TwelveApp.swift in Sources */,
                 9A100013A100000100000001 /* AppearanceStore.swift in Sources */,
                 9A100002A100000100000001 /* ContentView.swift in Sources */,
                 9A100003A100000100000001 /* EntryCardView.swift in Sources */,
@@ -373,7 +373,7 @@
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
                 GENERATE_INFOPLIST_FILE = NO;
-                INFOPLIST_FILE = BreezyDiary/Info.plist;
+                INFOPLIST_FILE = Twelve/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
                 INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -384,7 +384,7 @@
                     "@executable_path/Frameworks",
                 );
                 MARKETING_VERSION = 1.0;
-                PRODUCT_BUNDLE_IDENTIFIER = com.example.BreezyDiary;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Twelve;
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 SWIFT_EMIT_LOC_STRINGS = YES;
@@ -403,7 +403,7 @@
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
                 GENERATE_INFOPLIST_FILE = NO;
-                INFOPLIST_FILE = BreezyDiary/Info.plist;
+                INFOPLIST_FILE = Twelve/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
                 INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -414,7 +414,7 @@
                     "@executable_path/Frameworks",
                 );
                 MARKETING_VERSION = 1.0;
-                PRODUCT_BUNDLE_IDENTIFIER = com.example.BreezyDiary;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Twelve;
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 SWIFT_EMIT_LOC_STRINGS = YES;
@@ -426,7 +426,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-        9A500003A100000100000001 /* Build configuration list for PBXProject "BreezyDiary" */ = {
+        9A500003A100000100000001 /* Build configuration list for PBXProject "Twelve" */ = {
             isa = XCConfigurationList;
             buildConfigurations = (
                 9A700001A100000100000001 /* Debug */,
@@ -435,7 +435,7 @@
             defaultConfigurationIsVisible = 0;
             defaultConfigurationName = Release;
         };
-        9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "BreezyDiary" */ = {
+        9A500002A100000100000001 /* Build configuration list for PBXNativeTarget "Twelve" */ = {
             isa = XCConfigurationList;
             buildConfigurations = (
                 9A700003A100000100000001 /* Debug */,

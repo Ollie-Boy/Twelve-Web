@@ -18,12 +18,23 @@ enum AppearancePreference: Int, CaseIterable, Identifiable {
 
 @MainActor
 final class AppearanceStore: ObservableObject {
-    private static let storageKey = "breezyAppearancePreference"
+    private static let storageKey = "twelveAppearancePreference"
+    private static let legacyStorageKey = "breezyAppearancePreference"
 
     @Published private(set) var preference: AppearancePreference
 
     init() {
-        let raw = UserDefaults.standard.object(forKey: Self.storageKey) as? Int ?? AppearancePreference.system.rawValue
+        let defaults = UserDefaults.standard
+        let raw: Int
+        if let v = defaults.object(forKey: Self.storageKey) as? Int {
+            raw = v
+        } else if let legacy = defaults.object(forKey: Self.legacyStorageKey) as? Int {
+            raw = legacy
+            defaults.set(legacy, forKey: Self.storageKey)
+            defaults.removeObject(forKey: Self.legacyStorageKey)
+        } else {
+            raw = AppearancePreference.system.rawValue
+        }
         preference = AppearancePreference(rawValue: raw) ?? .system
     }
 

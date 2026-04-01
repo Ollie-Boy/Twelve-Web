@@ -7,8 +7,8 @@ struct EntryCardView: View {
     let onEdit: () -> Void
     let onDelete: () -> Void
 
-    private static let topBandHeight: CGFloat = 154
-    private static let cardFixedHeight: CGFloat = 382
+    private static let topBandHeight: CGFloat = 112
+    private static let cardFixedHeight: CGFloat = 340
 
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
@@ -135,20 +135,20 @@ struct EntryCardView: View {
                 endPoint: .bottomTrailing
             )
 
-            VStack(spacing: 12) {
+            VStack(spacing: 8) {
                 ForEach(0..<3, id: \.self) { idx in
                     Capsule()
                         .fill(BreezyTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
-                        .frame(width: 230 + CGFloat(idx * 30), height: 12)
-                        .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
+                        .frame(width: 200 + CGFloat(idx * 26), height: 10)
+                        .offset(x: idx % 2 == 0 ? -22 : 24, y: CGFloat(idx * 6))
                 }
             }
 
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 Image(systemName: "book.pages.fill")
-                    .font(BreezyTheme.appFont(size: 28, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 24, weight: .semibold))
                 Text("Twelve")
-                    .font(BreezyTheme.handwrittenFont(size: 20))
+                    .font(BreezyTheme.handwrittenFont(size: 18))
             }
             .foregroundStyle(BreezyTheme.textPrimary.opacity(0.72))
         }

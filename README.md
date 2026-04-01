@@ -1,6 +1,6 @@
-# Breezy Diary (iPhone Offline Journal App)
+# Twelve (iPhone Offline Journal App)
 
-This repository now includes a complete Xcode project (`BreezyDiary.xcodeproj`) for an offline iPhone diary app.
+This repository includes an Xcode project (`Twelve.xcodeproj`) for an offline iPhone diary app.
 
 ## Implemented Features
 
@@ -17,7 +17,7 @@ This repository now includes a complete Xcode project (`BreezyDiary.xcodeproj`) 
   - Edit
   - Delete (with confirmation)
 - Windy animated background (floating clouds + breezy streaks)
-- Adaptive layout for modern iPhone screens (including iPhone 17 class sizes)
+- Adaptive layout for modern iPhone screens
 - English-only in-app text
 - Fully offline local persistence (`UserDefaults`)
 
@@ -25,8 +25,8 @@ This repository now includes a complete Xcode project (`BreezyDiary.xcodeproj`) 
 
 ## Project Structure
 
-- `BreezyDiary.xcodeproj` - Ready-to-open Xcode project
-- `BreezyDiary/` - App source
+- `Twelve.xcodeproj` - Ready-to-open Xcode project
+- `Twelve/` - App source
   - `App/` - App entry
   - `Views/` - Main screens and cards
   - `Models/` - Diary and weather models
@@ -37,14 +37,14 @@ This repository now includes a complete Xcode project (`BreezyDiary.xcodeproj`) 
 
 ---
 
-## Run on iPhone 17 (Xcode)
+## Run in Xcode
 
-1. Open `BreezyDiary.xcodeproj` in Xcode.
-2. Select target **BreezyDiary**.
+1. Open `Twelve.xcodeproj` in Xcode.
+2. Select target **Twelve**.
 3. In **Signing & Capabilities**:
    - choose your Apple Team
-   - set a unique Bundle Identifier (for example `com.yourname.BreezyDiary`)
-4. Choose your **iPhone 17** device from the run destination list.
+   - set a unique Bundle Identifier (for example `com.yourname.Twelve`)
+4. Choose your device from the run destination list.
 5. Build and Run (`Cmd + R`).
 
 If prompted on first run, allow location permission to use current coordinates in entries.
