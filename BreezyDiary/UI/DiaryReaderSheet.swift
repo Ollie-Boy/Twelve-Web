@@ -214,7 +214,7 @@ struct DiaryReaderSheet: View {
                                     .clipped()
                                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             } else {
-                                missingImagePlaceholder
+                                imageLoadFallbackView
                             }
                         }
                         .buttonStyle(.plain)
@@ -236,7 +236,7 @@ struct DiaryReaderSheet: View {
                             .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     } else {
-                        missingImagePlaceholder
+                        imageLoadFallbackView
                     }
                 }
                 .buttonStyle(.plain)
@@ -266,7 +266,7 @@ struct DiaryReaderSheet: View {
         }
     }
 
-    private var missingImagePlaceholder: some View {
+    private var imageLoadFallbackView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(BreezyTheme.secondarySurface)
