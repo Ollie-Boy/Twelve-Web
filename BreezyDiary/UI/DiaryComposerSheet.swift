@@ -216,8 +216,9 @@ struct DiaryComposerSheet: View {
             bodyText = entry.body
             entryDate = entry.selectedDate
             weather = entry.weather
-            location = entry.location
-            hasLocation = !entry.location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let existingLocation = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            location = existingLocation
+            hasLocation = !existingLocation.isEmpty
             attachments = entry.attachments
         }
     }
