@@ -24,6 +24,7 @@ struct DiaryComposerSheet: View {
     @State private var showAudioRecorder = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
+    @FocusState private var locationFocused: Bool
 
     private let attachmentService = AttachmentService()
     private let dateFormatter: DateFormatter = {
@@ -64,6 +65,7 @@ struct DiaryComposerSheet: View {
                             )
                             .datePickerStyle(.compact)
                             .labelsHidden()
+                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
                             Spacer()
                         }
                         .padding(.horizontal, 12)
@@ -80,6 +82,7 @@ struct DiaryComposerSheet: View {
                             )
                             .datePickerStyle(.compact)
                             .labelsHidden()
+                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
                             Spacer()
                             Button("Now") {
                                 entryDate = Date()
@@ -120,14 +123,15 @@ struct DiaryComposerSheet: View {
                         HStack(spacing: 10) {
                             Image(systemName: "mappin.and.ellipse")
                                 .foregroundStyle(BreezyTheme.textSecondary)
-                            Text(location.isEmpty ? "No address selected" : location)
+                            TextField("No address selected", text: $location)
+                                .textFieldStyle(.plain)
                                 .font(.system(size: 13))
-                                .foregroundStyle(location.isEmpty ? BreezyTheme.textTertiary : BreezyTheme.textSecondary)
+                                .foregroundStyle(BreezyTheme.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .focused($locationFocused)
 
                             Button {
-                                titleFocused = false
-                                bodyFocused = false
+                                dismissKeyboard()
                                 locationManager.requestCurrentLocation()
                             } label: {
                                 Image(systemName: "location.fill")
@@ -175,7 +179,7 @@ struct DiaryComposerSheet: View {
                             ForEach(attachments) { attachment in
                                 HStack {
                                     Image(systemName: attachment.kind.iconName)
-                                    Text(attachment.displayName)
+                                    Text(attachmentLabel(attachment))
                                         .lineLimit(1)
                                     Spacer()
                                     Button(role: .destructive) {
@@ -316,6 +320,28 @@ struct DiaryComposerSheet: View {
     private func dismissKeyboard() {
         bodyFocused = false
         titleFocused = false
+        locationFocused = false
+    }
+
+    private func attachmentLabel(_ attachment: DiaryAttachment) -> String {
+        switch attachment.kind {
+        case .image:
+            return "Image"
+        case .video:
+            return "Video"
+        case .audio:
+            return "Audio"
+        case .gif:
+            return "GIF"
+        case .markdown:
+            return "Markdown"
+        case .latex:
+            return "LaTeX"
+        case .document:
+            return "Document"
+        case .other:
+            return "File"
+        }
     }
 
     private func importPhotos(from items: [PhotosPickerItem]) async {
