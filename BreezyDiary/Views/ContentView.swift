@@ -2,12 +2,12 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appearance: AppearanceStore
+    @Environment(\.colorScheme) private var colorScheme
     @State private var entries: [DiaryEntry] = []
     @State private var pendingDeletionEntry: DiaryEntry?
     @State private var selectedEntryForRead: DiaryEntry?
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
-    @State private var showAppearanceOverlay: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -27,11 +27,7 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
             }
 
-            topScrollChromeMaterial
-
-            if showAppearanceOverlay {
-                appearanceTopOverlay
-            }
+            topScrollChromeGradient
         }
         .onAppear {
             entries = storage.loadEntries()
@@ -93,25 +89,21 @@ struct ContentView: View {
         }
     }
 
-    /// App Store–style frosted band so scrolling content does not muddy the status bar / time.
-    private var topScrollChromeMaterial: some View {
+    /// Subtle top gradient so status bar stays readable when content scrolls under it (no material).
+    private var topScrollChromeGradient: some View {
         GeometryReader { proxy in
-            let bandHeight = proxy.safeAreaInsets.top + 58
+            let bandHeight = proxy.safeAreaInsets.top + 50
+            let topOpacity = colorScheme == .dark ? 0.42 : 0.14
             VStack(spacing: 0) {
-                ZStack(alignment: .bottom) {
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                    LinearGradient(
-                        colors: [
-                            Color.black.opacity(0.07),
-                            Color.black.opacity(0.02),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: bandHeight + 28)
-                }
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(topOpacity),
+                        Color.black.opacity(topOpacity * 0.35),
+                        Color.clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
                 .frame(height: bandHeight)
                 .frame(maxWidth: .infinity)
                 Spacer(minLength: 0)
@@ -135,8 +127,23 @@ struct ContentView: View {
                 .font(BreezyTheme.handwrittenFont(size: 40))
                 .foregroundStyle(BreezyTheme.textPrimary)
             Spacer(minLength: 8)
-            Button {
-                showAppearanceOverlay.toggle()
+            Menu {
+                ForEach(AppearancePreference.allCases) { option in
+                    Button {
+                        appearance.setPreference(option)
+                    } label: {
+                        HStack {
+                            Text(option.title)
+                                .font(BreezyTheme.appFont(size: 16))
+                            Spacer(minLength: 10)
+                            if appearance.preference == option {
+                                Image(systemName: "checkmark")
+                                    .font(BreezyTheme.appFont(size: 14, weight: .semibold))
+                                    .foregroundStyle(BreezyTheme.primaryBlue)
+                            }
+                        }
+                    }
+                }
             } label: {
                 Image(systemName: "circle.lefthalf.filled")
                     .font(BreezyTheme.appFont(size: 20, weight: .medium))
@@ -147,80 +154,6 @@ struct ContentView: View {
             .accessibilityLabel("Appearance")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var appearanceTopOverlay: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .topTrailing) {
-                Color.black.opacity(0.28)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        showAppearanceOverlay = false
-                    }
-
-                VStack(alignment: .trailing, spacing: 0) {
-                    appearanceOptionsPanel
-                        .padding(.trailing, 20)
-                }
-                .padding(.top, geo.safeAreaInsets.top + 6)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            }
-        }
-        .allowsHitTesting(true)
-    }
-
-    private var appearanceOptionsPanel: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("Appearance")
-                .font(BreezyTheme.appFont(size: 13, weight: .semibold))
-                .foregroundStyle(BreezyTheme.textSecondary)
-                .padding(.horizontal, 14)
-                .padding(.top, 12)
-                .padding(.bottom, 6)
-
-            ForEach(AppearancePreference.allCases) { option in
-                Button {
-                    appearance.setPreference(option)
-                    showAppearanceOverlay = false
-                } label: {
-                    HStack {
-                        Text(option.title)
-                            .font(BreezyTheme.appFont(size: 16))
-                            .foregroundStyle(BreezyTheme.textPrimary)
-                        Spacer(minLength: 12)
-                        if appearance.preference == option {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(BreezyTheme.appFont(size: 17, weight: .semibold))
-                                .foregroundStyle(BreezyTheme.primaryBlue)
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 11)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-
-                if option.id != AppearancePreference.allCases.last?.id {
-                    Divider()
-                        .padding(.leading, 14)
-                }
-            }
-
-            Button("Done") {
-                showAppearanceOverlay = false
-            }
-            .font(BreezyTheme.appFont(size: 16, weight: .medium))
-            .foregroundStyle(BreezyTheme.primaryBlue)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-        }
-        .frame(minWidth: 200)
-        .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(BreezyTheme.hairline, lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.12), radius: 16, y: 8)
     }
 
     private var diaryListSection: some View {

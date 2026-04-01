@@ -44,73 +44,78 @@ struct EntryCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            topBand
-                .frame(height: Self.topBandHeight)
-                .frame(maxWidth: .infinity)
-                .clipped()
+        Button(action: onOpen) {
+            ZStack(alignment: .bottomTrailing) {
+                VStack(alignment: .leading, spacing: 12) {
+                    topBand
+                        .frame(height: Self.topBandHeight)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
 
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Label(entry.weather.title, systemImage: entry.weather.symbol)
-                        .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-                    Spacer()
-                    Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
-                        .font(BreezyTheme.appFont(size: 13, weight: .semibold))
-                        .foregroundStyle(BreezyTheme.textSecondary)
-                }
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Label(entry.weather.title, systemImage: entry.weather.symbol)
+                                .font(BreezyTheme.appFont(size: 12, weight: .semibold))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                            Spacer()
+                            Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
+                                .font(BreezyTheme.appFont(size: 13, weight: .semibold))
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                        }
 
-                if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(entry.title)
-                        .font(BreezyTheme.appFont(size: 24, weight: .bold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-                        .lineLimit(2)
-                }
+                        if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text(entry.title)
+                                .font(BreezyTheme.appFont(size: 20, weight: .bold))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.trailing, 8)
+                        }
 
-                if hasImageCover, !trimmedBody.isEmpty {
-                    Text(entry.body)
-                        .font(BreezyTheme.appFont(size: 15))
-                        .foregroundStyle(BreezyTheme.textSecondary)
-                        .lineLimit(3)
-                }
+                        if hasImageCover, !trimmedBody.isEmpty {
+                            Text(entry.body)
+                                .font(BreezyTheme.appFont(size: 15))
+                                .foregroundStyle(BreezyTheme.textSecondary)
+                                .lineLimit(3)
+                        }
 
-                if !entry.attachments.isEmpty {
-                    HStack(spacing: 6) {
-                        Image(systemName: "paperclip")
-                        Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
+                        if !entry.attachments.isEmpty {
+                            HStack(spacing: 6) {
+                                Image(systemName: "paperclip")
+                                Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
+                            }
+                            .font(BreezyTheme.appFont(size: 12, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textTertiary)
+                        }
+
+                        Spacer(minLength: 0)
                     }
-                    .font(BreezyTheme.appFont(size: 12, weight: .medium))
-                    .foregroundStyle(BreezyTheme.textTertiary)
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 22)
+                    .padding(.top, 2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: Self.cardFixedHeight, alignment: .top)
 
-                Spacer(minLength: 0)
+                Text(dateText)
+                    .font(BreezyTheme.appFont(size: 11, weight: .medium))
+                    .foregroundStyle(BreezyTheme.textTertiary)
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 14)
+                    .allowsHitTesting(false)
             }
-            .padding(.horizontal, 22)
-            .padding(.bottom, 22)
-            .padding(.top, 2)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(BreezyTheme.cardSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .stroke(BreezyTheme.cardBorder, lineWidth: 1)
+            )
+            .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
+            .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: Self.cardFixedHeight, alignment: .top)
-        .background(BreezyTheme.cardSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(BreezyTheme.cardBorder, lineWidth: 1)
-        )
-        .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
-        .overlay(alignment: .bottomTrailing) {
-            Text(dateText)
-                .font(BreezyTheme.appFont(size: 11, weight: .medium))
-                .foregroundStyle(BreezyTheme.textTertiary)
-                .padding(.trailing, 16)
-                .padding(.bottom, 14)
-        }
-        .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .onTapGesture {
-            onOpen()
-        }
+        .buttonStyle(.plain)
         .onAppear {
             rotatingCoverIndex = initialCoverIndex
         }
@@ -127,8 +132,26 @@ struct EntryCardView: View {
         if hasImageCover {
             coverView
         } else if !trimmedBody.isEmpty {
-            DiaryBodyContentView(text: entry.body, compactMaxHeight: Self.topBandHeight)
-                .padding(.horizontal, 10)
+            ZStack(alignment: .bottom) {
+                DiaryBodyContentView(text: entry.body, compactMaxHeight: Self.topBandHeight)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: BreezyTheme.cardSurface.opacity(0.25), location: 0.45),
+                        .init(color: BreezyTheme.cardSurface.opacity(0.92), location: 0.82),
+                        .init(color: BreezyTheme.cardSurface, location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 52)
+                .allowsHitTesting(false)
+            }
+            .frame(maxWidth: .infinity)
+            .clipped()
         } else {
             Rectangle()
                 .fill(BreezyTheme.secondarySurface.opacity(0.4))

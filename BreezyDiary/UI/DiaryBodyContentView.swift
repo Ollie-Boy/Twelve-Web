@@ -5,7 +5,7 @@ import WebKit
 /// Renders diary body via WKWebView (Markdown and/or HTML) with optional offline MathJax for LaTeX.
 struct DiaryBodyContentView: View {
     let text: String
-    /// When set, caps height and enables vertical scrolling inside the web view (e.g. list card preview).
+    /// When set, fixed clip height; no scroll; touches pass through to parent (list card tap).
     var compactMaxHeight: CGFloat?
     @Environment(\.colorScheme) private var colorScheme
     @State private var richWebHeight: CGFloat = 160
@@ -98,6 +98,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         webView.navigationDelegate = context.coordinator
         webView.isOpaque = false
         webView.backgroundColor = .clear
+        webView.isUserInteractionEnabled = !isCompactPreview
         let scroll = webView.scrollView
         scroll.backgroundColor = .clear
         scroll.isScrollEnabled = !isCompactPreview
@@ -111,6 +112,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.parent = self
+        webView.isUserInteractionEnabled = !isCompactPreview
         webView.scrollView.isScrollEnabled = !isCompactPreview
         webView.scrollView.bounces = !isCompactPreview
         webView.scrollView.showsVerticalScrollIndicator = !isCompactPreview
