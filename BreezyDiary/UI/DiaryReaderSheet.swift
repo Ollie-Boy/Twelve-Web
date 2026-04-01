@@ -14,7 +14,6 @@ struct DiaryReaderSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var quickLookURL: URL?
-    @State private var selectedMediaURL: URL?
     @State private var selectedImageURL: URL?
 
     var body: some View {
@@ -76,10 +75,6 @@ struct DiaryReaderSheet: View {
             .sheet(item: $quickLookURL) { url in
                 QuickLookPreviewControllerRepresentable(url: url)
             }
-            .sheet(item: $selectedMediaURL) { url in
-                VideoPlayer(player: AVPlayer(url: url))
-                    .ignoresSafeArea()
-            }
             .sheet(item: $selectedImageURL) { url in
                 FullscreenImageViewer(imageURL: url)
             }
@@ -125,19 +120,9 @@ struct DiaryReaderSheet: View {
             }
             .buttonStyle(.plain)
         case .video:
-            Button {
-                selectedMediaURL = item.url
-            } label: {
-                InlineVideoPreview(url: item.url, height: 220)
-            }
-            .buttonStyle(.plain)
+            InlineVideoPreview(url: item.url, height: 220)
         case .audio:
-            Button {
-                selectedMediaURL = item.url
-            } label: {
-                InlineAudioPreview(url: item.url)
-            }
-            .buttonStyle(.plain)
+            InlineAudioPreview(url: item.url)
         default:
             Button {
                 quickLookURL = item.url
@@ -168,32 +153,21 @@ private struct InlineVideoPreview: View {
     }
 
     var body: some View {
-        ZStack {
-            VideoPlayer(player: player)
-                .frame(maxWidth: .infinity)
-                .frame(height: height)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .onAppear {
-                    player.seek(to: .zero)
-                    player.play()
-                }
-                .onDisappear {
-                    player.pause()
-                }
-
-            Image(systemName: "play.circle.fill")
-                .font(.system(size: 42))
-                .foregroundStyle(.white.opacity(0.9))
-        }
+        VideoPlayer(player: player)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .onDisappear {
+                player.pause()
+            }
     }
 }
 
 private struct InlineAudioPreview: View {
-    let url: URL
     @State private var player: AVPlayer
+    @State private var isPlaying = false
 
     init(url: URL) {
-        self.url = url
         _player = State(initialValue: AVPlayer(url: url))
     }
 
@@ -206,21 +180,43 @@ private struct InlineAudioPreview: View {
                 Text("Audio")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textPrimary)
-                Text("Tap to play")
+                Text(isPlaying ? "Playing" : "Tap to play")
                     .font(.system(size: 12))
                     .foregroundStyle(BreezyTheme.textSecondary)
             }
             Spacer()
-            Image(systemName: "play.fill")
-                .foregroundStyle(BreezyTheme.textSecondary)
+            Button {
+                togglePlayback()
+            } label: {
+                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 28, height: 28)
+            }
         }
         .padding(12)
         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)) { _ in
+            isPlaying = false
+            player.seek(to: .zero)
+        }
         .onAppear {
             player.pause()
+            isPlaying = false
         }
         .onDisappear {
             player.pause()
+            isPlaying = false
+        }
+    }
+
+    private func togglePlayback() {
+        if isPlaying {
+            player.pause()
+            isPlaying = false
+        } else {
+            player.play()
+            isPlaying = true
         }
     }
 }
@@ -233,12 +229,15 @@ private struct FullscreenImageViewer: View {
         ZStack(alignment: .topTrailing) {
             Color.black.ignoresSafeArea()
             if let image = UIImage(contentsOfFile: imageURL.path) {
-                ZoomableScrollView {
+                GeometryReader { proxy in
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
                 }
+            } else {
+                Text("Unable to load image")
+                    .foregroundStyle(.white)
             }
             Button {
                 dismiss()
@@ -248,49 +247,6 @@ private struct FullscreenImageViewer: View {
                     .foregroundStyle(.white.opacity(0.92))
                     .padding(16)
             }
-        }
-    }
-}
-
-private struct ZoomableScrollView<Content: View>: UIViewRepresentable {
-    let content: Content
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    func makeUIView(context: Context) -> UIScrollView {
-        let scrollView = UIScrollView()
-        scrollView.delegate = context.coordinator
-        scrollView.maximumZoomScale = 5
-        scrollView.minimumZoomScale = 1
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        let host = context.coordinator.hostingController.view!
-        host.translatesAutoresizingMaskIntoConstraints = true
-        host.frame = scrollView.bounds
-        scrollView.addSubview(host)
-        return scrollView
-    }
-
-    func updateUIView(_ uiView: UIScrollView, context: Context) {
-        context.coordinator.hostingController.rootView = content
-        context.coordinator.hostingController.view.frame = uiView.bounds
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(hostingController: UIHostingController(rootView: content))
-    }
-
-    final class Coordinator: NSObject, UIScrollViewDelegate {
-        let hostingController: UIHostingController<Content>
-
-        init(hostingController: UIHostingController<Content>) {
-            self.hostingController = hostingController
-        }
-
-        func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-            hostingController.view
         }
     }
 }
