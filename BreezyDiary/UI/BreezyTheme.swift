@@ -222,4 +222,18 @@ enum BreezyTheme {
     }
 
     static var appTypographyDesign: Font.Design { .rounded }
+
+    /// CSS `font-family` list for WKWebView body text to mirror `appFont` (Chalkboard / Noteworthy / Marker Felt / rounded system).
+    static var webContentFontFamilyCSS: String {
+        if UIFont(name: "ChalkboardSE-Regular", size: 12) != nil {
+            return #"'Chalkboard SE', ChalkboardSE-Regular, 'ChalkboardSE-Regular', ui-rounded, system-ui, -apple-system, sans-serif"#
+        }
+        if UIFont(name: "Noteworthy-Light", size: 12) != nil {
+            return #"'Noteworthy', Noteworthy-Light, 'Noteworthy-Light', ui-rounded, system-ui, -apple-system, sans-serif"#
+        }
+        if UIFont(name: "MarkerFelt-Wide", size: 12) != nil {
+            return #"'Marker Felt', MarkerFelt-Wide, 'MarkerFelt-Wide', ui-rounded, system-ui, -apple-system, sans-serif"#
+        }
+        return "ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, sans-serif"
+    }
 }

@@ -7,7 +7,7 @@ struct ContentView: View {
     @State private var selectedEntryForRead: DiaryEntry?
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
-    @State private var showAppearanceSheet: Bool = false
+    @State private var showAppearanceOverlay: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -25,6 +25,10 @@ struct ContentView: View {
                 .padding(.vertical, 22)
                 .frame(maxWidth: 920)
                 .frame(maxWidth: .infinity)
+            }
+
+            if showAppearanceOverlay {
+                appearanceTopOverlay
             }
         }
         .onAppear {
@@ -101,7 +105,7 @@ struct ContentView: View {
                 .foregroundStyle(BreezyTheme.textPrimary)
             Spacer(minLength: 8)
             Button {
-                showAppearanceSheet = true
+                showAppearanceOverlay.toggle()
             } label: {
                 Image(systemName: "circle.lefthalf.filled")
                     .font(BreezyTheme.appFont(size: 20, weight: .medium))
@@ -112,14 +116,80 @@ struct ContentView: View {
             .accessibilityLabel("Appearance")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .sheet(isPresented: $showAppearanceSheet) {
-            AppearancePickerSheet(
-                selection: Binding(
-                    get: { appearance.preference },
-                    set: { appearance.setPreference($0) }
-                )
-            )
+    }
+
+    private var appearanceTopOverlay: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .topTrailing) {
+                Color.black.opacity(0.28)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        showAppearanceOverlay = false
+                    }
+
+                VStack(alignment: .trailing, spacing: 0) {
+                    appearanceOptionsPanel
+                        .padding(.trailing, 20)
+                }
+                .padding(.top, geo.safeAreaInsets.top + 6)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            }
         }
+        .allowsHitTesting(true)
+    }
+
+    private var appearanceOptionsPanel: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Appearance")
+                .font(BreezyTheme.appFont(size: 13, weight: .semibold))
+                .foregroundStyle(BreezyTheme.textSecondary)
+                .padding(.horizontal, 14)
+                .padding(.top, 12)
+                .padding(.bottom, 6)
+
+            ForEach(AppearancePreference.allCases) { option in
+                Button {
+                    appearance.setPreference(option)
+                    showAppearanceOverlay = false
+                } label: {
+                    HStack {
+                        Text(option.title)
+                            .font(BreezyTheme.appFont(size: 16))
+                            .foregroundStyle(BreezyTheme.textPrimary)
+                        Spacer(minLength: 12)
+                        if appearance.preference == option {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(BreezyTheme.appFont(size: 17, weight: .semibold))
+                                .foregroundStyle(BreezyTheme.primaryBlue)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 11)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if option.id != AppearancePreference.allCases.last?.id {
+                    Divider()
+                        .padding(.leading, 14)
+                }
+            }
+
+            Button("Done") {
+                showAppearanceOverlay = false
+            }
+            .font(BreezyTheme.appFont(size: 16, weight: .medium))
+            .foregroundStyle(BreezyTheme.primaryBlue)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        }
+        .frame(minWidth: 200)
+        .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(BreezyTheme.hairline, lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.12), radius: 16, y: 8)
     }
 
     private var diaryListSection: some View {
@@ -220,51 +290,6 @@ struct ContentView: View {
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
-    }
-}
-
-private struct AppearancePickerSheet: View {
-    @Binding var selection: AppearancePreference
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            List {
-                ForEach(AppearancePreference.allCases) { option in
-                    Button {
-                        selection = option
-                        dismiss()
-                    } label: {
-                        HStack {
-                            Text(option.title)
-                                .font(BreezyTheme.appFont(size: 17))
-                                .foregroundStyle(BreezyTheme.textPrimary)
-                            Spacer()
-                            if selection == option {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(BreezyTheme.appFont(size: 18, weight: .semibold))
-                                    .foregroundStyle(BreezyTheme.primaryBlue)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
-            .background(BreezyTheme.background.ignoresSafeArea())
-            .navigationTitle("Appearance")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                        .font(BreezyTheme.appFont(size: 17))
-                }
-            }
-        }
-        .presentationDetents([.medium])
-        .font(BreezyTheme.appFont(size: 17))
     }
 }
 

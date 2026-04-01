@@ -157,6 +157,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             mathJaxTag = ""
         }
 
+        let bodyFontStack = BreezyTheme.webContentFontFamilyCSS
         let html = """
         <!DOCTYPE html>
         <html><head>
@@ -165,14 +166,14 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         <style>
           html, body { margin: 0; padding: 0; background: transparent !important; }
           body {
-            font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+            font-family: \(bodyFontStack);
             font-size: 16px;
             line-height: 1.45;
             color: \(fg);
           }
           #content { padding: 2px 0; word-wrap: break-word; }
           pre, code {
-            font-family: ui-monospace, "SF Mono", Menlo, monospace;
+            font-family: \(bodyFontStack);
             font-size: 14px;
             color: \(codeFg);
             background: transparent !important;
@@ -188,7 +189,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
           pre code { border: none; display: block; white-space: pre; }
           p { margin: 0.35em 0; }
           ul, ol { margin: 0.35em 0; padding-left: 1.35em; }
-          h1, h2, h3, h4 { font-family: inherit; font-weight: 600; margin: 0.5em 0 0.25em; line-height: 1.25; }
+          h1, h2, h3, h4 { font-family: \(bodyFontStack); font-weight: 600; margin: 0.5em 0 0.25em; line-height: 1.25; }
           h1 { font-size: 1.35em; } h2 { font-size: 1.2em; } h3 { font-size: 1.08em; }
           blockquote {
             margin: 0.5em 0;
