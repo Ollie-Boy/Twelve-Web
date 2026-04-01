@@ -53,11 +53,12 @@ extension LocationManager: CLLocationManagerDelegate {
                     placemark.administrativeArea,
                     placemark.country
                 ]
-                let pieces = locationParts.compactMap { item in
+                var pieces: [String] = []
+                for item in locationParts {
                     guard let value = item?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
-                        return nil
+                        continue
                     }
-                    return value
+                    pieces.append(value)
                 }
                 if pieces.isEmpty {
                     self.currentLocationText = "Location found"
