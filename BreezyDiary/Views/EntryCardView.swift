@@ -8,6 +8,8 @@ struct EntryCardView: View {
     let onDelete: () -> Void
 
     private static let topBandHeight: CGFloat = 154
+    /// Matches a typical card with photo: 154 band + meta (weather, 2-line title, 3-line body, attachment row, padding).
+    private static let cardFixedHeight: CGFloat = 382
 
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
@@ -81,12 +83,16 @@ struct EntryCardView: View {
                     .font(BreezyTheme.appFont(size: 12, weight: .medium))
                     .foregroundStyle(BreezyTheme.textTertiary)
                 }
+
+                Spacer(minLength: 0)
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 22)
             .padding(.top, 2)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+        .frame(height: Self.cardFixedHeight, alignment: .top)
         .background(BreezyTheme.cardSurface)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(

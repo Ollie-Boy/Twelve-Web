@@ -11,10 +11,11 @@ struct DiaryBodyContentView: View {
     @State private var richWebHeight: CGFloat = 160
 
     var body: some View {
-        let natural = max(richWebHeight, compactMaxHeight.map { _ in 60 } ?? 80)
-        let cappedHeight: CGFloat = {
-            guard let cap = compactMaxHeight else { return natural }
-            return min(natural, cap)
+        let displayHeight: CGFloat = {
+            if let cap = compactMaxHeight {
+                return cap
+            }
+            return max(richWebHeight, 80)
         }()
 
         DiaryBodyRichWebView(
@@ -22,10 +23,10 @@ struct DiaryBodyContentView: View {
             mode: looksLikeHTMLFragment(text) ? .rawHTML : .markdown,
             isDark: colorScheme == .dark,
             includeMathJax: containsLaTeXDelimiters(text),
-            compactMaxHeight: compactMaxHeight,
+            isCompactPreview: compactMaxHeight != nil,
             contentHeight: $richWebHeight
         )
-        .frame(height: cappedHeight)
+        .frame(height: displayHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
         .clipped()
     }
@@ -82,7 +83,8 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
     let mode: PayloadMode
     let isDark: Bool
     let includeMathJax: Bool
-    var compactMaxHeight: CGFloat?
+    /// List/card preview: fixed clip, no internal scrolling.
+    var isCompactPreview: Bool
     @Binding var contentHeight: CGFloat
 
     func makeCoordinator() -> Coordinator {
@@ -98,30 +100,33 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         webView.backgroundColor = .clear
         let scroll = webView.scrollView
         scroll.backgroundColor = .clear
-        scroll.isScrollEnabled = compactMaxHeight != nil
-        scroll.bounces = false
-        scroll.showsVerticalScrollIndicator = compactMaxHeight == nil
+        scroll.isScrollEnabled = !isCompactPreview
+        scroll.isDirectionalLockEnabled = true
+        scroll.bounces = !isCompactPreview
+        scroll.showsVerticalScrollIndicator = !isCompactPreview
+        scroll.showsHorizontalScrollIndicator = false
         context.coordinator.webView = webView
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.parent = self
-        webView.scrollView.isScrollEnabled = compactMaxHeight != nil
-        webView.scrollView.showsVerticalScrollIndicator = compactMaxHeight == nil
+        webView.scrollView.isScrollEnabled = !isCompactPreview
+        webView.scrollView.bounces = !isCompactPreview
+        webView.scrollView.showsVerticalScrollIndicator = !isCompactPreview
 
         if context.coordinator.lastRawText == rawText,
            context.coordinator.lastMode == mode,
            context.coordinator.lastIsDark == isDark,
            context.coordinator.lastIncludeMathJax == includeMathJax,
-           context.coordinator.lastCompact == compactMaxHeight {
+           context.coordinator.lastCompactPreview == isCompactPreview {
             return
         }
         context.coordinator.lastRawText = rawText
         context.coordinator.lastMode = mode
         context.coordinator.lastIsDark = isDark
         context.coordinator.lastIncludeMathJax = includeMathJax
-        context.coordinator.lastCompact = compactMaxHeight
+        context.coordinator.lastCompactPreview = isCompactPreview
 
         let b64 = Data(rawText.utf8).base64EncodedString()
         let modeFlag = mode == .markdown ? "1" : "0"
@@ -284,7 +289,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         var lastMode: PayloadMode?
         var lastIsDark: Bool?
         var lastIncludeMathJax: Bool?
-        var lastCompact: CGFloat?
+        var lastCompactPreview: Bool?
 
         init(_ parent: DiaryBodyRichWebView) {
             self.parent = parent

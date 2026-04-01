@@ -27,6 +27,8 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
             }
 
+            topScrollChromeMaterial
+
             if showAppearanceOverlay {
                 appearanceTopOverlay
             }
@@ -89,6 +91,35 @@ struct ContentView: View {
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
+    }
+
+    /// App Store–style frosted band so scrolling content does not muddy the status bar / time.
+    private var topScrollChromeMaterial: some View {
+        GeometryReader { proxy in
+            let bandHeight = proxy.safeAreaInsets.top + 58
+            VStack(spacing: 0) {
+                ZStack(alignment: .bottom) {
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.07),
+                            Color.black.opacity(0.02),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: bandHeight + 28)
+                }
+                .frame(height: bandHeight)
+                .frame(maxWidth: .infinity)
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        .allowsHitTesting(false)
+        .ignoresSafeArea(edges: .top)
     }
 
     private var selectedEntryBinding: Binding<DiaryEntry?> {
