@@ -2,6 +2,11 @@ import CoreLocation
 import Foundation
 import Combine
 
+final class LocationStore {
+    static let shared = LocationStore()
+    var lastCoordinate: CLLocationCoordinate2D?
+}
+
 final class LocationManager: NSObject, ObservableObject {
     @Published var currentLocationText: String = "No location selected"
     @Published var didResolveLocation: Bool = false
