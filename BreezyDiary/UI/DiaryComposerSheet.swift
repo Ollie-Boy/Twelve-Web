@@ -29,6 +29,7 @@ struct DiaryComposerSheet: View {
     @State private var showMapPicker = false
     @State private var showDatePicker = false
     @State private var showTimePicker = false
+    @State private var timePickerDraftDate: Date = Date()
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -123,11 +124,13 @@ struct DiaryComposerSheet: View {
                         Picker("Weather", selection: $weather) {
                             ForEach(WeatherOption.allCases) { item in
                                 Text(item.title)
+                                    .font(BreezyTheme.appFont(size: 14))
                                     .foregroundStyle(.black)
                                     .tag(item)
                             }
                         }
                         .pickerStyle(.menu)
+                        .font(BreezyTheme.appFont(size: 14, weight: .medium))
                         .tint(.black)
                     }
 
@@ -283,7 +286,7 @@ struct DiaryComposerSheet: View {
             }
             .sheet(isPresented: $showDatePicker) {
                 NavigationStack {
-                    VStack {
+                    VStack(alignment: .leading, spacing: 0) {
                         DatePicker(
                             "Date",
                             selection: $entryDate,
@@ -292,7 +295,6 @@ struct DiaryComposerSheet: View {
                         .datePickerStyle(.graphical)
                         .labelsHidden()
                         .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                        Spacer()
                     }
                     .padding(18)
                     .navigationTitle("Choose Date")
@@ -307,27 +309,44 @@ struct DiaryComposerSheet: View {
             }
             .sheet(isPresented: $showTimePicker) {
                 NavigationStack {
-                    VStack {
+                    VStack(alignment: .leading, spacing: 0) {
                         DatePicker(
                             "Time",
-                            selection: $entryDate,
+                            selection: $timePickerDraftDate,
                             displayedComponents: .hourAndMinute
                         )
                         .datePickerStyle(.wheel)
                         .labelsHidden()
                         .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                        Spacer()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .frame(height: 216)
+                        .clipped()
                     }
                     .padding(18)
                     .navigationTitle("Choose Time")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Cancel") { showTimePicker = false }
+                        }
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") { showTimePicker = false }
+                            Button("Done") {
+                                let calendar = Calendar.current
+                                let components = calendar.dateComponents([.hour, .minute], from: timePickerDraftDate)
+                                if let updated = calendar.date(bySettingHour: components.hour ?? 0, minute: components.minute ?? 0, second: 0, of: entryDate) {
+                                    entryDate = updated
+                                }
+                                showTimePicker = false
+                            }
                         }
                     }
                 }
                 .presentationDetents([.fraction(0.35)])
+            }
+            .onChange(of: showTimePicker) { isPresented in
+                if isPresented {
+                    timePickerDraftDate = entryDate
+                }
             }
             .scrollDismissesKeyboard(.interactively)
             .contentShape(Rectangle())
