@@ -164,7 +164,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             mathJaxTag = ""
         }
 
-        let bodyFontStack = BreezyTheme.webContentFontFamilyCSS
+        let bodyFontStack = TwelveTheme.webContentFontFamilyCSS
         let html = """
         <!DOCTYPE html>
         <html><head>

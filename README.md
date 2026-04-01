@@ -16,7 +16,7 @@ This repository includes an Xcode project (`Twelve.xcodeproj`) for an offline iP
   - Create
   - Edit
   - Delete (with confirmation)
-- Windy animated background (floating clouds + breezy streaks)
+- Windy animated background (floating clouds + wind streaks)
 - Adaptive layout for modern iPhone screens
 - English-only in-app text
 - Fully offline local persistence (`UserDefaults`)

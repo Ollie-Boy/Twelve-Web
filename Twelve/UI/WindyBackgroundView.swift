@@ -19,8 +19,8 @@ struct WindyBackgroundView: View {
                 ZStack {
                     LinearGradient(
                         colors: [
-                            BreezyTheme.backgroundTop,
-                            BreezyTheme.backgroundBottom
+                            TwelveTheme.backgroundTop,
+                            TwelveTheme.backgroundBottom
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -37,7 +37,7 @@ struct WindyBackgroundView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: cloud.size, height: cloud.size * 0.62)
-                                .foregroundStyle(BreezyTheme.cloudTint.opacity(cloud.opacity))
+                                .foregroundStyle(TwelveTheme.cloudTint.opacity(cloud.opacity))
                                 .position(x: x, y: y)
                         }
                     }

@@ -12,7 +12,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            BreezyTheme.background.ignoresSafeArea()
+            TwelveTheme.background.ignoresSafeArea()
             WindyBackgroundView()
 
             ScrollView {
@@ -114,8 +114,8 @@ struct ContentView: View {
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
             Text("Twelve")
-                .font(BreezyTheme.handwrittenFont(size: 40))
-                .foregroundStyle(BreezyTheme.textPrimary)
+                .font(TwelveTheme.handwrittenFont(size: 40))
+                .foregroundStyle(TwelveTheme.textPrimary)
             Spacer(minLength: 8)
             Menu {
                 ForEach(AppearancePreference.allCases) { option in
@@ -124,20 +124,20 @@ struct ContentView: View {
                     } label: {
                         HStack {
                             Text(option.title)
-                                .font(BreezyTheme.appFont(size: 16))
+                                .font(TwelveTheme.appFont(size: 16))
                             Spacer(minLength: 10)
                             if appearance.preference == option {
                                 Image(systemName: "checkmark")
-                                    .font(BreezyTheme.appFont(size: 14, weight: .semibold))
-                                    .foregroundStyle(BreezyTheme.primaryBlue)
+                                    .font(TwelveTheme.appFont(size: 14, weight: .semibold))
+                                    .foregroundStyle(TwelveTheme.primaryBlue)
                             }
                         }
                     }
                 }
             } label: {
                 Image(systemName: "circle.lefthalf.filled")
-                    .font(BreezyTheme.appFont(size: 20, weight: .medium))
-                    .foregroundStyle(BreezyTheme.primaryBlue)
+                    .font(TwelveTheme.appFont(size: 20, weight: .medium))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
             }
@@ -150,14 +150,14 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 18) {
             if entries.isEmpty {
                 Text("No diary yet. Tap + to start writing.")
-                    .font(BreezyTheme.appFont(size: 16))
-                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .font(TwelveTheme.appFont(size: 16))
+                    .foregroundStyle(TwelveTheme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
-                    .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(BreezyTheme.hairline, lineWidth: 1)
+                            .stroke(TwelveTheme.hairline, lineWidth: 1)
                     )
             } else {
                 entryListByMonthAndDay
@@ -181,15 +181,15 @@ struct ContentView: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text(month.formatted(.dateTime.year().month(.wide)))
-                            .font(BreezyTheme.appFont(size: 22, weight: .bold))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 22, weight: .bold))
+                            .foregroundStyle(TwelveTheme.textPrimary)
 
                         ForEach(sortedDays, id: \.self) { day in
                             if let dayEntries = groupedByDay[day] {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(day.formatted(.dateTime.month(.wide).day()))
-                                        .font(BreezyTheme.appFont(size: 16, weight: .semibold))
-                                        .foregroundStyle(BreezyTheme.textPrimary)
+                                        .font(TwelveTheme.appFont(size: 16, weight: .semibold))
+                                        .foregroundStyle(TwelveTheme.textPrimary)
                                         .padding(.leading, 2)
                                     ForEach(dayEntries.sorted { $0.selectedDate > $1.selectedDate }) { entry in
                                         EntryCardView(
@@ -213,19 +213,19 @@ struct ContentView: View {
             isComposerPresented = true
         } label: {
             Image(systemName: "plus")
-                .font(BreezyTheme.appFont(size: 18, weight: .bold))
+                .font(TwelveTheme.appFont(size: 18, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(width: 56, height: 56)
                 .background(
                     Circle().fill(
                         LinearGradient(
-                            colors: [BreezyTheme.primaryBlue, BreezyTheme.primaryBlueDark],
+                            colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                 )
-                .shadow(color: BreezyTheme.primaryBlue.opacity(0.3), radius: 12, y: 7)
+                .shadow(color: TwelveTheme.primaryBlue.opacity(0.3), radius: 12, y: 7)
         }
         .padding(.trailing, 20)
         .padding(.bottom, 24)

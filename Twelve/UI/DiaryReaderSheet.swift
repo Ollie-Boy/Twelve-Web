@@ -41,7 +41,7 @@ struct DiaryReaderPagerSheet: View {
                 .transition(.opacity)
             } else {
                 Text("No entry available")
-                    .font(BreezyTheme.appFont(size: 16))
+                    .font(TwelveTheme.appFont(size: 16))
             }
         }
         .animation(.easeOut(duration: 0.18), value: currentIndex)
@@ -107,8 +107,8 @@ struct DiaryReaderSheet: View {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 16) {
                         Text(entry.title)
-                            .font(BreezyTheme.appFont(size: 30, weight: .bold))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 30, weight: .bold))
+                            .foregroundStyle(TwelveTheme.textPrimary)
 
                         HStack(spacing: 10) {
                             if entry.weather != .none {
@@ -119,12 +119,12 @@ struct DiaryReaderSheet: View {
                                     .lineLimit(1)
                             }
                         }
-                        .font(BreezyTheme.appFont(size: 13))
-                        .foregroundStyle(BreezyTheme.textPrimary)
+                        .font(TwelveTheme.appFont(size: 13))
+                        .foregroundStyle(TwelveTheme.textPrimary)
 
                         Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
-                            .font(BreezyTheme.appFont(size: 13))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13))
+                            .foregroundStyle(TwelveTheme.textSecondary)
 
                         if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
                             HStack(spacing: 8) {
@@ -135,8 +135,8 @@ struct DiaryReaderSheet: View {
                                     Text(trimmedEmotion)
                                 }
                             }
-                            .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                            .foregroundStyle(TwelveTheme.textSecondary)
                         }
 
                         if !entry.body.isEmpty {
@@ -160,7 +160,7 @@ struct DiaryReaderSheet: View {
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .background(BreezyTheme.background)
+            .background(TwelveTheme.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -198,10 +198,10 @@ struct DiaryReaderSheet: View {
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(BreezyTheme.hairline, lineWidth: 1)
+                        .stroke(TwelveTheme.hairline, lineWidth: 1)
                 )
             }
         }
@@ -274,8 +274,8 @@ struct DiaryReaderSheet: View {
                             Spacer()
                             Image(systemName: "arrow.up.right.square")
                         }
-                        .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                        .foregroundStyle(BreezyTheme.textPrimary)
+                        .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                        .foregroundStyle(TwelveTheme.textPrimary)
                         .padding(.vertical, 6)
                     }
                     .buttonStyle(.plain)
@@ -287,14 +287,14 @@ struct DiaryReaderSheet: View {
     private var imageLoadFallbackView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(BreezyTheme.secondarySurface)
+                .fill(TwelveTheme.secondarySurface)
             VStack(spacing: 8) {
                 Image(systemName: "photo")
-                    .font(BreezyTheme.appFont(size: 22, weight: .semibold))
+                    .font(TwelveTheme.appFont(size: 22, weight: .semibold))
                 Text("Unable to load image")
-                    .font(BreezyTheme.appFont(size: 13, weight: .medium))
+                    .font(TwelveTheme.appFont(size: 13, weight: .medium))
             }
-            .foregroundStyle(BreezyTheme.textSecondary)
+            .foregroundStyle(TwelveTheme.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 220)
@@ -333,28 +333,28 @@ private struct InlineAudioPreview: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "waveform.circle.fill")
-                .font(BreezyTheme.appFont(size: 24, weight: .semibold))
-                .foregroundStyle(BreezyTheme.primaryBlueDark)
+                .font(TwelveTheme.appFont(size: 24, weight: .semibold))
+                .foregroundStyle(TwelveTheme.primaryBlueDark)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Audio")
-                    .font(BreezyTheme.appFont(size: 15, weight: .semibold))
-                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textPrimary)
                 Text(isPlaying ? "Playing" : "Tap to play")
-                    .font(BreezyTheme.appFont(size: 12))
-                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .font(TwelveTheme.appFont(size: 12))
+                    .foregroundStyle(TwelveTheme.textSecondary)
             }
             Spacer()
             Button {
                 togglePlayback()
             } label: {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .foregroundStyle(BreezyTheme.textSecondary)
-                    .font(BreezyTheme.appFont(size: 16, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textSecondary)
+                    .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                     .frame(width: 28, height: 28)
             }
         }
         .padding(12)
-        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)) { _ in
             isPlaying = false
             player.seek(to: .zero)
@@ -402,7 +402,7 @@ private struct FullscreenImageViewer: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(BreezyTheme.appFont(size: 30, weight: .semibold))
+                    .font(TwelveTheme.appFont(size: 30, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.92))
                     .padding(16)
             }

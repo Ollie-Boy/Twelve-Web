@@ -58,7 +58,7 @@ struct DiaryComposerSheet: View {
                 VStack(alignment: .leading, spacing: 14) {
                     TextField("Title", text: $titleText)
                         .textFieldStyle(.plain)
-                        .font(BreezyTheme.appFont(size: 20, weight: .semibold))
+                        .font(TwelveTheme.appFont(size: 20, weight: .semibold))
                         .submitLabel(.done)
                         .focused($titleFocused)
                         .onSubmit {
@@ -66,12 +66,12 @@ struct DiaryComposerSheet: View {
                         }
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
-                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                     HStack(alignment: .center, spacing: 8) {
                         Text("Date & Time")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
                             .fixedSize(horizontal: true, vertical: false)
 
                         Spacer(minLength: 6)
@@ -88,11 +88,11 @@ struct DiaryComposerSheet: View {
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.75)
                             }
-                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textPrimary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 8)
-                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         .layoutPriority(1)
@@ -109,11 +109,11 @@ struct DiaryComposerSheet: View {
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.75)
                             }
-                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textPrimary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 8)
-                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         .layoutPriority(1)
@@ -122,14 +122,14 @@ struct DiaryComposerSheet: View {
                             entryDate = Date()
                             dismissKeyboard()
                         }
-                        .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                        .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
                         .fixedSize(horizontal: true, vertical: false)
                     }
 
                     HStack {
                         Text("Weather")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
                         Spacer()
                         Button {
                             dismissKeyboard()
@@ -139,51 +139,51 @@ struct DiaryComposerSheet: View {
                                 Image(systemName: weather.symbolName)
                                 Text(weather.title)
                             }
-                            .font(BreezyTheme.appFont(size: 14, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textPrimary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 8)
-                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
                         .buttonStyle(.plain)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Emotion")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
                         TextField("e.g. calm, excited, tired", text: $emotion)
                             .textFieldStyle(.plain)
-                            .font(BreezyTheme.appFont(size: 14))
+                            .font(TwelveTheme.appFont(size: 14))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
-                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Tag")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
                         TextField("e.g. work", text: $tagText)
                             .textFieldStyle(.plain)
-                            .font(BreezyTheme.appFont(size: 14))
+                            .font(TwelveTheme.appFont(size: 14))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
-                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Location")
-                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
 
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(spacing: 10) {
                                 Image(systemName: "mappin.and.ellipse")
-                                    .foregroundStyle(BreezyTheme.textSecondary)
+                                    .foregroundStyle(TwelveTheme.textSecondary)
                                 Text(location.isEmpty ? "No address selected" : location)
-                                    .font(BreezyTheme.appFont(size: 13))
-                                    .foregroundStyle(location.isEmpty ? BreezyTheme.textTertiary : BreezyTheme.textSecondary)
+                                    .font(TwelveTheme.appFont(size: 13))
+                                    .foregroundStyle(location.isEmpty ? TwelveTheme.textTertiary : TwelveTheme.textSecondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             HStack(spacing: 8) {
@@ -191,47 +191,47 @@ struct DiaryComposerSheet: View {
                                     dismissKeyboard()
                                     locationManager.requestCurrentLocation()
                                 }
-                                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.surfaceTintBlue))
+                                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.surfaceTintBlue))
 
                                 Button("Pick on Map") {
                                     dismissKeyboard()
                                     showMapPicker = true
                                 }
-                                .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
 
                                 if !location.isEmpty {
                                     Button("No Address") {
                                         location = ""
                                         weather = .none
                                     }
-                                    .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softYellow))
+                                    .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softYellow))
                                 }
                             }
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
-                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Content")
-                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
-                                .foregroundStyle(BreezyTheme.textSecondary)
+                                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                                .foregroundStyle(TwelveTheme.textSecondary)
                             Spacer()
                             PhotosPicker(selection: $selectedPhotoItems, maxSelectionCount: 10, matching: .images) {
                                 Text("Photo")
                             }
-                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
                             PhotosPicker(selection: $selectedVideoItems, maxSelectionCount: 5, matching: .videos) {
                                 Text("Video")
                             }
-                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
                             Button("Audio") {
                                 dismissKeyboard()
                                 showAudioRecorder = true
                             }
-                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
                         }
                         WiggleTextEditor(text: $bodyText)
                             .frame(minHeight: 180)
@@ -249,16 +249,16 @@ struct DiaryComposerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text(modeTitle)
-                        .font(BreezyTheme.appFont(size: 17, weight: .semibold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textPrimary)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { isPresented = false }
-                        .font(BreezyTheme.appFont(size: 17))
+                        .font(TwelveTheme.appFont(size: 17))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") { save() }
-                        .font(BreezyTheme.appFont(size: 17, weight: .semibold))
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 }
             }
             .onAppear { configureFromMode() }
@@ -314,7 +314,7 @@ struct DiaryComposerSheet: View {
                         )
                         .datePickerStyle(.graphical)
                         .labelsHidden()
-                        .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        .tint(TwelveTheme.primaryBlueDark.opacity(0.75))
                         .id(datePickerSheetIdentity)
                         .frame(maxWidth: .infinity, alignment: .top)
                     }
@@ -345,7 +345,7 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
-                .font(BreezyTheme.appFont(size: 16))
+                .font(TwelveTheme.appFont(size: 16))
                 .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showTimePicker) {
@@ -358,7 +358,7 @@ struct DiaryComposerSheet: View {
                         )
                         .datePickerStyle(.wheel)
                         .labelsHidden()
-                        .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                        .tint(TwelveTheme.primaryBlueDark.opacity(0.75))
                         .id(timePickerSheetIdentity)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .frame(height: 216)
@@ -383,7 +383,7 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
-                .font(BreezyTheme.appFont(size: 16))
+                .font(TwelveTheme.appFont(size: 16))
                 .presentationDetents([.fraction(0.35)])
             }
             .sheet(isPresented: $showWeatherPicker) {
@@ -396,17 +396,17 @@ struct DiaryComposerSheet: View {
                             } label: {
                                 HStack(spacing: 10) {
                                     Image(systemName: item.symbolName)
-                                        .font(BreezyTheme.appFont(size: 15, weight: .semibold))
+                                        .font(TwelveTheme.appFont(size: 15, weight: .semibold))
                                     Text(item.title)
-                                        .font(BreezyTheme.appFont(size: 16))
+                                        .font(TwelveTheme.appFont(size: 16))
                                     Spacer()
                                     if item == weather {
                                         Image(systemName: "checkmark")
-                                            .font(BreezyTheme.appFont(size: 14, weight: .bold))
-                                            .foregroundStyle(BreezyTheme.primaryBlueDark)
+                                            .font(TwelveTheme.appFont(size: 14, weight: .bold))
+                                            .foregroundStyle(TwelveTheme.primaryBlueDark)
                                     }
                                 }
-                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .foregroundStyle(TwelveTheme.textPrimary)
                             }
                             .buttonStyle(.plain)
                         }
@@ -420,7 +420,7 @@ struct DiaryComposerSheet: View {
                         }
                     }
                 }
-                .font(BreezyTheme.appFont(size: 16))
+                .font(TwelveTheme.appFont(size: 16))
                 .presentationDetents([.fraction(0.45), .medium])
             }
             .scrollDismissesKeyboard(.interactively)
@@ -433,7 +433,7 @@ struct DiaryComposerSheet: View {
             )
         }
         // Root app uses handwritten body font; reset here so DatePicker, lists, and nav use rounded UI typography.
-        .font(BreezyTheme.appFont(size: 16))
+        .font(TwelveTheme.appFont(size: 16))
     }
 
     private var modeTitle: String {
@@ -466,11 +466,11 @@ struct DiaryComposerSheet: View {
                 Image(systemName: "xmark.circle.fill")
             }
         }
-        .font(BreezyTheme.appFont(size: 13))
+        .font(TwelveTheme.appFont(size: 13))
         .foregroundStyle(.primary)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private func configureFromMode() {
@@ -616,8 +616,8 @@ private struct ComposerLocationPickerSheet: View {
 
                 VStack {
                     Text("Tap map to select an exact point, then confirm")
-                        .font(BreezyTheme.appFont(size: 12, weight: .medium))
-                        .foregroundStyle(BreezyTheme.textSecondary)
+                        .font(TwelveTheme.appFont(size: 12, weight: .medium))
+                        .foregroundStyle(TwelveTheme.textSecondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(.ultraThinMaterial, in: Capsule())
@@ -626,15 +626,15 @@ private struct ComposerLocationPickerSheet: View {
                         ProgressView()
                     } else if let errorText {
                         Text(errorText)
-                            .font(BreezyTheme.appFont(size: 12))
+                            .font(TwelveTheme.appFont(size: 12))
                             .foregroundStyle(.red)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(.ultraThinMaterial, in: Capsule())
                     } else if !pickedAddressText.isEmpty {
                         Text(pickedAddressText)
-                            .font(BreezyTheme.appFont(size: 12))
-                            .foregroundStyle(BreezyTheme.textPrimary)
+                            .font(TwelveTheme.appFont(size: 12))
+                            .foregroundStyle(TwelveTheme.textPrimary)
                             .lineLimit(2)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
@@ -655,14 +655,14 @@ private struct ComposerLocationPickerSheet: View {
                             } label: {
                                 Image(systemName: "location.fill")
                                     .frame(width: 36, height: 36)
-                                    .background(BreezyTheme.surface, in: Circle())
+                                    .background(TwelveTheme.surface, in: Circle())
                             }
                             Button {
                                 useMapCenter()
                             } label: {
                                 Image(systemName: "checkmark")
                                     .frame(width: 36, height: 36)
-                                    .background(BreezyTheme.primaryBlue, in: Circle())
+                                    .background(TwelveTheme.primaryBlue, in: Circle())
                                     .foregroundStyle(.white)
                             }
                         }
@@ -800,26 +800,26 @@ private struct AudioRecorderSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 Text(recorder.isRecording ? "Recording..." : "Tap to start recording")
-                    .font(BreezyTheme.appFont(size: 16, weight: .medium))
-                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                    .foregroundStyle(TwelveTheme.textPrimary)
 
                 Text(recorder.elapsedText)
                     .font(.system(size: 28, weight: .bold, design: .monospaced))
-                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .foregroundStyle(TwelveTheme.textPrimary)
 
                 Button {
                     recorder.toggleRecording()
                 } label: {
                     Image(systemName: recorder.isRecording ? "stop.fill" : "mic.fill")
-                        .font(BreezyTheme.appFont(size: 28, weight: .bold))
+                        .font(TwelveTheme.appFont(size: 28, weight: .bold))
                         .foregroundStyle(.white)
                         .frame(width: 86, height: 86)
-                        .background(recorder.isRecording ? Color.red : BreezyTheme.primaryBlue, in: Circle())
+                        .background(recorder.isRecording ? Color.red : TwelveTheme.primaryBlue, in: Circle())
                 }
 
                 if let errorText = recorder.errorMessage, !errorText.isEmpty {
                     Text(errorText)
-                        .font(BreezyTheme.appFont(size: 13))
+                        .font(TwelveTheme.appFont(size: 13))
                         .foregroundStyle(.red)
                         .multilineTextAlignment(.center)
                 }

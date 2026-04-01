@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-enum BreezyTheme {
+enum TwelveTheme {
     private static func adaptive(_ light: UIColor, _ dark: UIColor) -> Color {
         Color(
             UIColor { traits in

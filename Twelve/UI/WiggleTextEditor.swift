@@ -7,17 +7,17 @@ struct WiggleTextEditor: View {
 
     var body: some View {
         TextEditor(text: $text)
-            .font(BreezyTheme.appFont(size: 18))
-            .foregroundStyle(BreezyTheme.textPrimary)
+            .font(TwelveTheme.appFont(size: 18))
+            .foregroundStyle(TwelveTheme.textPrimary)
             .scrollContentBackground(.hidden)
             .padding(14)
             .frame(minHeight: 180)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(BreezyTheme.cardBackground)
+                    .fill(TwelveTheme.cardBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(BreezyTheme.strokeSoft, lineWidth: 1)
+                            .stroke(TwelveTheme.strokeSoft, lineWidth: 1)
                     )
             )
             .rotationEffect(.degrees(wiggleAngle))

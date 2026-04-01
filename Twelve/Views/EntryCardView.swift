@@ -51,18 +51,18 @@ struct EntryCardView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 8) {
                             Label(entry.weather.title, systemImage: entry.weather.symbol)
-                                .font(BreezyTheme.appFont(size: 11, weight: .semibold))
-                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .font(TwelveTheme.appFont(size: 11, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textPrimary)
                             Spacer(minLength: 4)
                             Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
-                                .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                                .foregroundStyle(BreezyTheme.textSecondary)
+                                .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textSecondary)
                         }
 
                         if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Text(entry.title)
-                                .font(BreezyTheme.appFont(size: 18, weight: .bold))
-                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .font(TwelveTheme.appFont(size: 18, weight: .bold))
+                                .foregroundStyle(TwelveTheme.textPrimary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -74,8 +74,8 @@ struct EntryCardView: View {
                                 Image(systemName: "paperclip")
                                 Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
                             }
-                            .font(BreezyTheme.appFont(size: 11, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textTertiary)
+                            .font(TwelveTheme.appFont(size: 11, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textTertiary)
                         }
 
                         Spacer(minLength: 0)
@@ -89,19 +89,19 @@ struct EntryCardView: View {
                 .frame(height: Self.cardFixedHeight, alignment: .top)
 
                 Text(dateText)
-                    .font(BreezyTheme.appFont(size: 11, weight: .medium))
-                    .foregroundStyle(BreezyTheme.textTertiary)
+                    .font(TwelveTheme.appFont(size: 11, weight: .medium))
+                    .foregroundStyle(TwelveTheme.textTertiary)
                     .padding(.trailing, 16)
                     .padding(.bottom, 10)
                     .allowsHitTesting(false)
             }
-            .background(BreezyTheme.cardSurface)
+            .background(TwelveTheme.cardSurface)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(BreezyTheme.cardBorder, lineWidth: 1)
+                    .stroke(TwelveTheme.cardBorder, lineWidth: 1)
             )
-            .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
+            .shadow(color: TwelveTheme.cardShadow, radius: 18, y: 10)
             .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -129,8 +129,8 @@ struct EntryCardView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    BreezyTheme.placeholderCoverTop,
-                    BreezyTheme.placeholderCoverBottom
+                    TwelveTheme.placeholderCoverTop,
+                    TwelveTheme.placeholderCoverBottom
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -139,7 +139,7 @@ struct EntryCardView: View {
             VStack(spacing: 12) {
                 ForEach(0..<3, id: \.self) { idx in
                     Capsule()
-                        .fill(BreezyTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
+                        .fill(TwelveTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
                         .frame(width: 230 + CGFloat(idx * 30), height: 12)
                         .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
                 }
@@ -147,11 +147,11 @@ struct EntryCardView: View {
 
             VStack(spacing: 8) {
                 Image(systemName: "book.pages.fill")
-                    .font(BreezyTheme.appFont(size: 28, weight: .semibold))
+                    .font(TwelveTheme.appFont(size: 28, weight: .semibold))
                 Text("Twelve")
-                    .font(BreezyTheme.handwrittenFont(size: 20))
+                    .font(TwelveTheme.handwrittenFont(size: 20))
             }
-            .foregroundStyle(BreezyTheme.textPrimary.opacity(0.72))
+            .foregroundStyle(TwelveTheme.textPrimary.opacity(0.72))
         }
         .frame(maxWidth: .infinity)
         .frame(height: Self.topBandHeight)
@@ -184,7 +184,7 @@ struct EntryCardView: View {
                 .clipped()
         } else {
             Rectangle()
-                .fill(BreezyTheme.secondarySurface.opacity(0.4))
+                .fill(TwelveTheme.secondarySurface.opacity(0.4))
         }
     }
 }
