@@ -59,7 +59,28 @@ enum BreezyTheme {
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
+            switch weight {
+            case .bold, .heavy, .black:
+                return .custom("ChalkboardSE-Bold", size: size)
+            case .semibold, .medium:
+                return .custom("ChalkboardSE-Bold", size: size)
+            default:
+                return .custom("ChalkboardSE-Regular", size: size)
+            }
+        }
+        if UIFont(name: "Noteworthy-Light", size: size) != nil {
+            switch weight {
+            case .bold, .heavy, .black, .semibold, .medium:
+                return .custom("Noteworthy-Bold", size: size)
+            default:
+                return .custom("Noteworthy-Light", size: size)
+            }
+        }
+        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
+            return .custom("MarkerFelt-Wide", size: size)
+        }
+        return .system(size: size, weight: weight, design: .rounded)
     }
 
     static var appTypographyDesign: Font.Design { .rounded }

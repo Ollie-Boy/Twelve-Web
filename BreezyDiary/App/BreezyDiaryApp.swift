@@ -5,7 +5,7 @@ struct BreezyDiaryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .font(BreezyTheme.appFont(size: 16))
+                .font(BreezyTheme.handwrittenFont(size: 16))
         }
     }
 }
