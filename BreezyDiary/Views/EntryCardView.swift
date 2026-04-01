@@ -8,9 +8,7 @@ struct EntryCardView: View {
     let onDelete: () -> Void
 
     private static let topBandHeight: CGFloat = 154
-    private static let bodyPreviewHeight: CGFloat = 76
-    /// Slightly taller than photo-only layout to fit title + rendered preview under title.
-    private static let cardFixedHeight: CGFloat = 420
+    private static let cardFixedHeight: CGFloat = 382
 
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
@@ -38,10 +36,6 @@ struct EntryCardView: View {
 
     private var hasImageCover: Bool {
         !imageAttachments.isEmpty
-    }
-
-    private var trimmedBody: String {
-        entry.body.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
@@ -72,38 +66,6 @@ struct EntryCardView: View {
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.trailing, 8)
-                        }
-
-                        if !hasImageCover, !trimmedBody.isEmpty {
-                            ZStack(alignment: .bottom) {
-                                DiaryBodyContentView(
-                                    text: entry.body,
-                                    compactMaxHeight: Self.bodyPreviewHeight
-                                )
-                                .padding(.horizontal, 4)
-
-                                LinearGradient(
-                                    stops: [
-                                        .init(color: .clear, location: 0),
-                                        .init(color: BreezyTheme.cardSurface.opacity(0.35), location: 0.5),
-                                        .init(color: BreezyTheme.cardSurface.opacity(0.95), location: 0.88),
-                                        .init(color: BreezyTheme.cardSurface, location: 1)
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                                .frame(height: 36)
-                                .allowsHitTesting(false)
-                            }
-                            .frame(height: Self.bodyPreviewHeight)
-                            .clipped()
-                        }
-
-                        if hasImageCover, !trimmedBody.isEmpty {
-                            Text(entry.body)
-                                .font(BreezyTheme.appFont(size: 15))
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                                .lineLimit(3)
                         }
 
                         if !entry.attachments.isEmpty {
