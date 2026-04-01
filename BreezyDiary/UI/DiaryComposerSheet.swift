@@ -1,5 +1,6 @@
 import SwiftUI
-import UniformTypeIdentifiers
+import PhotosUI
+import AVFoundation
 
 struct DiaryComposerSheet: View {
     enum Mode {
@@ -18,8 +19,9 @@ struct DiaryComposerSheet: View {
     @State private var weather: WeatherOption = .sunny
     @State private var location: String = ""
     @State private var attachments: [DiaryAttachment] = []
-    @State private var showMediaPicker = false
-    @State private var pickerKind: MediaPicker.Kind = .photo
+    @State private var selectedPhotoItems: [PhotosPickerItem] = []
+    @State private var selectedVideoItems: [PhotosPickerItem] = []
+    @State private var showAudioRecorder = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -47,8 +49,12 @@ struct DiaryComposerSheet: View {
                         .padding(.vertical, 12)
                         .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                    HStack(spacing: 12) {
-                        HStack(spacing: 6) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Date & Time")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+
+                        HStack(spacing: 10) {
                             Image(systemName: "calendar")
                                 .foregroundStyle(BreezyTheme.textSecondary)
                             DatePicker(
@@ -58,9 +64,13 @@ struct DiaryComposerSheet: View {
                             )
                             .datePickerStyle(.compact)
                             .labelsHidden()
+                            Spacer()
                         }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                        HStack(spacing: 6) {
+                        HStack(spacing: 10) {
                             Image(systemName: "clock")
                                 .foregroundStyle(BreezyTheme.textSecondary)
                             DatePicker(
@@ -70,19 +80,17 @@ struct DiaryComposerSheet: View {
                             )
                             .datePickerStyle(.compact)
                             .labelsHidden()
+                            Spacer()
+                            Button("Now") {
+                                entryDate = Date()
+                                dismissKeyboard()
+                            }
+                            .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                         }
-
-                        Spacer()
-
-                        Button("Now") {
-                            entryDate = Date()
-                            bodyFocused = false
-                            titleFocused = false
-                        }
-                        .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundStyle(.primary)
 
                     Text(dateFormatter.string(from: entryDate))
                         .font(.system(size: 13, weight: .regular))
@@ -140,25 +148,17 @@ struct DiaryComposerSheet: View {
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textSecondary)
                             Spacer()
-                            Button("Photo") {
-                                titleFocused = false
-                                bodyFocused = false
-                                pickerKind = .photo
-                                showMediaPicker = true
+                            PhotosPicker(selection: $selectedPhotoItems, maxSelectionCount: 10, matching: .images) {
+                                Text("Photo")
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
-                            Button("Video") {
-                                titleFocused = false
-                                bodyFocused = false
-                                pickerKind = .video
-                                showMediaPicker = true
+                            PhotosPicker(selection: $selectedVideoItems, maxSelectionCount: 5, matching: .videos) {
+                                Text("Video")
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                             Button("Audio") {
-                                titleFocused = false
-                                bodyFocused = false
-                                pickerKind = .audio
-                                showMediaPicker = true
+                                dismissKeyboard()
+                                showAudioRecorder = true
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                         }
@@ -209,17 +209,42 @@ struct DiaryComposerSheet: View {
             .onAppear { configureFromMode() }
             .onReceive(locationManager.$currentLocationText) { newValue in
                 guard !newValue.isEmpty else { return }
-                if !newValue.localizedCaseInsensitiveContains("error")
-                    && !newValue.localizedCaseInsensitiveContains("denied")
-                {
-                    location = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.localizedCaseInsensitiveContains("error"),
+                      !trimmed.localizedCaseInsensitiveContains("denied"),
+                      !trimmed.localizedCaseInsensitiveContains("unavailable"),
+                      !trimmed.localizedCaseInsensitiveContains("location found")
+                else { return }
+                location = trimmed
+                weather = WeatherOption.suggestedForRecognizedAddress(trimmed, date: entryDate)
+            }
+            .onChange(of: selectedPhotoItems) { items in
+                Task {
+                    await importPhotos(from: items)
+                    selectedPhotoItems = []
                 }
             }
-            .sheet(isPresented: $showMediaPicker) {
-                MediaPicker(kind: pickerKind) { pickedURLs in
-                    attachments.append(contentsOf: attachmentService.importPickedFiles(pickedURLs))
+            .onChange(of: selectedVideoItems) { items in
+                Task {
+                    await importVideos(from: items)
+                    selectedVideoItems = []
                 }
             }
+            .sheet(isPresented: $showAudioRecorder) {
+                AudioRecorderSheet { recordedURL in
+                    if let attachment = try? attachmentService.importFile(from: recordedURL) {
+                        attachments.append(attachment)
+                    }
+                }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .contentShape(Rectangle())
+            .gesture(
+                TapGesture().onEnded {
+                    dismissKeyboard()
+                },
+                including: .gesture
+            )
         }
     }
 
@@ -253,8 +278,7 @@ struct DiaryComposerSheet: View {
     }
 
     private func save() {
-        bodyFocused = false
-        titleFocused = false
+        dismissKeyboard()
         let title = titleText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Day" : titleText
         let trimmedLocation = location.trimmingCharacters(in: .whitespacesAndNewlines)
         let resolvedLocation = trimmedLocation.isEmpty ? nil : trimmedLocation
@@ -287,5 +311,198 @@ struct DiaryComposerSheet: View {
         }
         onSave(entry)
         isPresented = false
+    }
+
+    private func dismissKeyboard() {
+        bodyFocused = false
+        titleFocused = false
+    }
+
+    private func importPhotos(from items: [PhotosPickerItem]) async {
+        guard !items.isEmpty else { return }
+        var imported: [DiaryAttachment] = []
+        for item in items {
+            guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
+            let ext = item.supportedContentTypes.first?.preferredFilenameExtension ?? "jpg"
+            let fileName = "photo_\(UUID().uuidString).\(ext)"
+            if let attachment = try? attachmentService.importData(data, fileName: fileName, kind: .image) {
+                imported.append(attachment)
+            }
+        }
+        attachments.append(contentsOf: imported)
+    }
+
+    private func importVideos(from items: [PhotosPickerItem]) async {
+        guard !items.isEmpty else { return }
+        var imported: [DiaryAttachment] = []
+        for item in items {
+            guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
+            let ext = item.supportedContentTypes.first?.preferredFilenameExtension ?? "mov"
+            let fileName = "video_\(UUID().uuidString).\(ext)"
+            if let attachment = try? attachmentService.importData(data, fileName: fileName, kind: .video) {
+                imported.append(attachment)
+            }
+        }
+        attachments.append(contentsOf: imported)
+    }
+}
+
+private struct AudioRecorderSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let onSave: (URL) -> Void
+    @StateObject private var recorder = AudioRecorderController()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text(recorder.isRecording ? "Recording..." : "Tap to start recording")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+
+                Text(recorder.elapsedText)
+                    .font(.system(size: 28, weight: .bold, design: .monospaced))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+
+                Button {
+                    recorder.toggleRecording()
+                } label: {
+                    Image(systemName: recorder.isRecording ? "stop.fill" : "mic.fill")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 86, height: 86)
+                        .background(recorder.isRecording ? Color.red : BreezyTheme.primaryBlue, in: Circle())
+                }
+
+                if let errorText = recorder.errorMessage, !errorText.isEmpty {
+                    Text(errorText)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .padding(24)
+            .navigationTitle("Record Audio")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        recorder.cancelAndDiscard()
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Insert") {
+                        recorder.stopRecording()
+                        if let url = recorder.recordedURL {
+                            onSave(url)
+                        }
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(recorder.recordedURL == nil && !recorder.isRecording)
+                }
+            }
+            .onAppear {
+                recorder.requestPermission()
+            }
+            .onDisappear {
+                recorder.stopRecording()
+            }
+        }
+    }
+}
+
+private final class AudioRecorderController: ObservableObject {
+    @Published var isRecording = false
+    @Published var recordedURL: URL?
+    @Published var errorMessage: String?
+    @Published var elapsedSeconds: Int = 0
+
+    private var recorder: AVAudioRecorder?
+    private var timer: Timer?
+
+    var elapsedText: String {
+        let minutes = elapsedSeconds / 60
+        let seconds = elapsedSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    func requestPermission() {
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            DispatchQueue.main.async {
+                if !granted {
+                    self.errorMessage = "Microphone permission is required to record audio."
+                }
+            }
+        }
+    }
+
+    func toggleRecording() {
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
+    }
+
+    func startRecording() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+            try session.setActive(true)
+
+            let fileURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent("diary_audio_\(UUID().uuidString).m4a")
+
+            let settings: [String: Any] = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 44_100,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+
+            let recorder = try AVAudioRecorder(url: fileURL, settings: settings)
+            recorder.record()
+            self.recorder = recorder
+            self.recordedURL = nil
+            self.errorMessage = nil
+            self.elapsedSeconds = 0
+            self.isRecording = true
+            startTimer()
+        } catch {
+            errorMessage = "Unable to start recording."
+        }
+    }
+
+    func stopRecording() {
+        guard isRecording || recorder != nil else { return }
+        recorder?.stop()
+        if let url = recorder?.url {
+            recordedURL = url
+        }
+        recorder = nil
+        isRecording = false
+        stopTimer()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    func cancelAndDiscard() {
+        stopRecording()
+        if let url = recordedURL {
+            try? FileManager.default.removeItem(at: url)
+        }
+        recordedURL = nil
+    }
+
+    private func startTimer() {
+        stopTimer()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.elapsedSeconds += 1
+        }
+    }
+
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
 }

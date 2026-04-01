@@ -48,5 +48,9 @@
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Used to attach current coordinates to your diary entry.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Used to let you pick photos and videos for diary entries.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Used to record audio clips for diary entries.</string>
 </dict>
 </plist>

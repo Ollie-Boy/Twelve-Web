@@ -56,4 +56,22 @@ enum WeatherOption: String, CaseIterable, Codable, Identifiable {
         let rawValue = (try? container.decode(String.self)) ?? "none"
         self = WeatherOption(rawValue: rawValue) ?? .none
     }
+
+    static func suggestedForRecognizedAddress(_ address: String, date: Date) -> WeatherOption {
+        let lowercase = address.lowercased()
+        if lowercase.contains("snow") || lowercase.contains("ice") {
+            return .snowy
+        }
+        if lowercase.contains("rain") || lowercase.contains("storm") {
+            return .rainy
+        }
+        if lowercase.contains("wind") {
+            return .windy
+        }
+        let hour = Calendar.current.component(.hour, from: date)
+        if hour >= 6 && hour <= 17 {
+            return .sunny
+        }
+        return .cloudy
+    }
 }

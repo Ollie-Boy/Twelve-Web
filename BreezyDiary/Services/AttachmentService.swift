@@ -29,6 +29,19 @@ final class AttachmentService {
         )
     }
 
+    func importData(_ data: Data, fileName: String, kind: DiaryAttachmentKind) throws -> DiaryAttachment {
+        let attachmentsDir = try ensureAttachmentsDirectory()
+        let sanitizedName = fileName.replacingOccurrences(of: " ", with: "_")
+        let destinationURL = attachmentsDir.appendingPathComponent("\(UUID().uuidString)_\(sanitizedName)")
+        try data.write(to: destinationURL, options: .atomic)
+        let relativePath = "\(Self.rootDirectoryName)/\(destinationURL.lastPathComponent)"
+        return DiaryAttachment(
+            fileName: fileName,
+            relativePath: relativePath,
+            kind: kind
+        )
+    }
+
     static func resolveAttachmentKind(for url: URL) -> DiaryAttachmentKind {
         let ext = url.pathExtension.lowercased()
         let type = UTType(filenameExtension: ext)
