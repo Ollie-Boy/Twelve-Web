@@ -607,16 +607,10 @@ private struct ComposerLegacyMapView: UIViewRepresentable {
 
         let existingPins = uiView.annotations.filter { !($0 is MKUserLocation) }
         if let selectedCoordinate {
-            if let pin = existingPins.first {
-                pin.coordinate = selectedCoordinate
-            } else {
-                let pin = MKPointAnnotation()
-                pin.coordinate = selectedCoordinate
-                uiView.addAnnotation(pin)
-            }
-            if existingPins.count > 1 {
-                uiView.removeAnnotations(Array(existingPins.dropFirst()))
-            }
+            uiView.removeAnnotations(existingPins)
+            let pin = MKPointAnnotation()
+            pin.coordinate = selectedCoordinate
+            uiView.addAnnotation(pin)
         } else if !existingPins.isEmpty {
             uiView.removeAnnotations(existingPins)
         }
