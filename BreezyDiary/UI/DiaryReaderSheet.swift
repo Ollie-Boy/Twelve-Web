@@ -195,73 +195,79 @@ struct DiaryReaderSheet: View {
         }
     }
 
-    @ViewBuilder
-    private func mediaPreview(for displayItem: AttachmentDisplayItem) -> some View {
+    private func mediaPreview(for displayItem: AttachmentDisplayItem) -> AnyView {
         switch displayItem {
         case .imageGroup(let imageAttachments):
             if imageAttachments.count > 1 {
-                TabView {
-                    ForEach(imageAttachments) { imageItem in
-                        Button {
-                            selectedImageURL = imageItem.url
-                        } label: {
-                            if let image = UIImage(contentsOfFile: imageItem.url.path) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 220)
-                                    .clipped()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                            } else {
-                                imageLoadFallbackView
+                return AnyView(
+                    TabView {
+                        ForEach(imageAttachments) { imageItem in
+                            Button {
+                                selectedImageURL = imageItem.url
+                            } label: {
+                                if let image = UIImage(contentsOfFile: imageItem.url.path) {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 220)
+                                        .clipped()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                } else {
+                                    imageLoadFallbackView
+                                }
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
-                }
-                .frame(height: 220)
-                .tabViewStyle(.page(indexDisplayMode: .automatic))
-            } else {
-                let imageItem = imageAttachments[0]
-                Button {
-                    selectedImageURL = imageItem.url
-                } label: {
-                    if let image = UIImage(contentsOfFile: imageItem.url.path) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 220)
-                            .clipped()
-                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    } else {
-                        imageLoadFallbackView
-                    }
-                }
-                .buttonStyle(.plain)
+                    .frame(height: 220)
+                    .tabViewStyle(.page(indexDisplayMode: .automatic))
+                )
             }
+            if let imageItem = imageAttachments.first {
+                return AnyView(
+                    Button {
+                        selectedImageURL = imageItem.url
+                    } label: {
+                        if let image = UIImage(contentsOfFile: imageItem.url.path) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 220)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        } else {
+                            imageLoadFallbackView
+                        }
+                    }
+                    .buttonStyle(.plain)
+                )
+            }
+            return AnyView(imageLoadFallbackView)
         case .single(let item):
             switch item.kind {
             case .video:
-                InlineVideoPreview(url: item.url, height: 220)
+                return AnyView(InlineVideoPreview(url: item.url, height: 220))
             case .audio:
-                InlineAudioPreview(url: item.url)
+                return AnyView(InlineAudioPreview(url: item.url))
             default:
-                Button {
-                    quickLookURL = item.url
-                } label: {
-                    HStack {
-                        Image(systemName: item.kind.iconName)
-                        Text(item.kind.title)
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
+                return AnyView(
+                    Button {
+                        quickLookURL = item.url
+                    } label: {
+                        HStack {
+                            Image(systemName: item.kind.iconName)
+                            Text(item.kind.title)
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textPrimary)
+                        .padding(.vertical, 6)
                     }
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(BreezyTheme.textPrimary)
-                    .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
+                    .buttonStyle(.plain)
+                )
             }
         }
     }
