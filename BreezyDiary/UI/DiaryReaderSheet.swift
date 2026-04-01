@@ -127,7 +127,7 @@ struct DiaryReaderSheet: View {
                             .foregroundStyle(BreezyTheme.textSecondary)
 
                         if !entry.body.isEmpty {
-                            MarkdownOrPlainTextView(text: entry.body)
+                            DiaryBodyContentView(text: entry.body)
                         }
 
                         if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
@@ -406,37 +406,6 @@ private struct FullscreenImageViewer: View {
                     .foregroundStyle(.white.opacity(0.92))
                     .padding(16)
             }
-        }
-    }
-}
-
-private struct MarkdownOrPlainTextView: View {
-    let text: String
-
-    var body: some View {
-        if text.contains("$") || text.contains("\\(") || text.contains("\\[") {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("LaTeX")
-                    .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                    .foregroundStyle(BreezyTheme.textSecondary)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    Text(text)
-                        .font(.system(size: 15, weight: .regular, design: .monospaced))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-                        .textSelection(.enabled)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else if let attributed = try? AttributedString(markdown: text) {
-            Text(attributed)
-                .font(BreezyTheme.appFont(size: 16))
-                .foregroundStyle(BreezyTheme.textPrimary)
-                .textSelection(.enabled)
-        } else {
-            Text(text)
-                .font(BreezyTheme.appFont(size: 16))
-                .foregroundStyle(BreezyTheme.textPrimary)
-                .textSelection(.enabled)
         }
     }
 }
