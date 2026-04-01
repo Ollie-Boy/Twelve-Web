@@ -213,6 +213,8 @@ struct DiaryReaderSheet: View {
                                     .frame(height: 220)
                                     .clipped()
                                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            } else {
+                                missingImagePlaceholder
                             }
                         }
                         .buttonStyle(.plain)
@@ -233,6 +235,8 @@ struct DiaryReaderSheet: View {
                             .frame(height: 220)
                             .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    } else {
+                        missingImagePlaceholder
                     }
                 }
                 .buttonStyle(.plain)
@@ -278,6 +282,22 @@ struct DiaryReaderSheet: View {
                 onOpenEntry(sorted[prevIndex])
             }
         }
+    }
+
+    private var missingImagePlaceholder: some View {
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .fill(BreezyTheme.secondarySurface)
+            .frame(maxWidth: .infinity)
+            .frame(height: 220)
+            .overlay {
+                VStack(spacing: 8) {
+                    Image(systemName: "photo")
+                        .font(.system(size: 28, weight: .regular))
+                    Text("Unable to load image")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .foregroundStyle(BreezyTheme.textSecondary)
+            }
     }
 
 }
