@@ -453,21 +453,16 @@ private struct ComposerLocationPickerSheet: View {
             ZStack {
                 ComposerLegacyMapView(
                     region: $region,
+                    selectedCoordinate: $selectedCoordinate,
                     onTapCoordinate: { coordinate in
                         selectedCoordinate = coordinate
-                        region.center = coordinate
                         resolveAddress(for: coordinate, shouldDismiss: false)
                     }
                 )
                     .ignoresSafeArea(edges: .bottom)
 
-                Image(systemName: "mappin.circle.fill")
-                    .font(.system(size: 34))
-                    .foregroundStyle(BreezyTheme.primaryBlue)
-                    .shadow(radius: 4)
-
                 VStack {
-                    Text("Tap map to pick a point, or move map then tap confirm")
+                    Text("Tap map to select an exact point, then confirm")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(BreezyTheme.textSecondary)
                         .padding(.horizontal, 12)
@@ -587,6 +582,7 @@ private struct ComposerLocationPickerSheet: View {
 
 private struct ComposerLegacyMapView: UIViewRepresentable {
     @Binding var region: MKCoordinateRegion
+    @Binding var selectedCoordinate: CLLocationCoordinate2D?
     var onTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
 
     func makeUIView(context: Context) -> MKMapView {
@@ -608,6 +604,22 @@ private struct ComposerLegacyMapView: UIViewRepresentable {
         {
             uiView.setRegion(region, animated: false)
         }
+
+        let existingPins = uiView.annotations.filter { !($0 is MKUserLocation) }
+        if let selectedCoordinate {
+            if let pin = existingPins.first {
+                pin.coordinate = selectedCoordinate
+            } else {
+                let pin = MKPointAnnotation()
+                pin.coordinate = selectedCoordinate
+                uiView.addAnnotation(pin)
+            }
+            if existingPins.count > 1 {
+                uiView.removeAnnotations(Array(existingPins.dropFirst()))
+            }
+        } else if !existingPins.isEmpty {
+            uiView.removeAnnotations(existingPins)
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -626,7 +638,7 @@ private struct ComposerLegacyMapView: UIViewRepresentable {
             guard let mapView = recognizer.view as? MKMapView else { return }
             let point = recognizer.location(in: mapView)
             let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
-            parent.region.center = coordinate
+            parent.selectedCoordinate = coordinate
             parent.onTapCoordinate?(coordinate)
         }
     }
