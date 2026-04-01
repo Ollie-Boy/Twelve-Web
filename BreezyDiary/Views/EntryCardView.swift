@@ -18,11 +18,18 @@ struct EntryCardView: View {
         )
     }
 
-    private var coverAttachment: DiaryAttachment? {
-        let imageAttachments = entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
+    private var imageAttachments: [DiaryAttachment] {
+        entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
+    }
+
+    private func rotatingCoverAttachment(for date: Date) -> DiaryAttachment? {
         guard !imageAttachments.isEmpty else { return nil }
-        let hash = entry.id.uuidString.hashValue
-        let index = ((hash % imageAttachments.count) + imageAttachments.count) % imageAttachments.count
+        if imageAttachments.count == 1 {
+            return imageAttachments[0]
+        }
+        let tick = Int(date.timeIntervalSinceReferenceDate / 4.0)
+        let base = abs(entry.id.uuidString.hashValue)
+        let index = (base + tick) % imageAttachments.count
         return imageAttachments[index]
     }
 
@@ -87,7 +94,18 @@ struct EntryCardView: View {
 
     @ViewBuilder
     private var coverView: some View {
-        if let coverAttachment, let image = UIImage(contentsOfFile: coverAttachment.url.path) {
+        if imageAttachments.count > 1 {
+            TimelineView(.periodic(from: .now, by: 4.0)) { context in
+                coverImageView(for: rotatingCoverAttachment(for: context.date))
+            }
+        } else {
+            coverImageView(for: imageAttachments.first)
+        }
+    }
+
+    @ViewBuilder
+    private func coverImageView(for attachment: DiaryAttachment?) -> some View {
+        if let attachment, let image = UIImage(contentsOfFile: attachment.url.path) {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
@@ -97,15 +115,28 @@ struct EntryCardView: View {
         } else {
             ZStack {
                 LinearGradient(
-                    colors: [BreezyTheme.softBlue, BreezyTheme.accentYellow],
+                    colors: [
+                        Color(red: 0.80, green: 0.90, blue: 1.00),
+                        Color.white
+                    ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
+
+                VStack(spacing: 12) {
+                    ForEach(0..<3, id: \.self) { idx in
+                        Capsule()
+                            .fill(Color.white.opacity(0.55 - Double(idx) * 0.10))
+                            .frame(width: 230 + CGFloat(idx * 30), height: 12)
+                            .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
+                    }
+                }
+
                 VStack(spacing: 8) {
                     Image(systemName: "book.pages.fill")
                         .font(.system(size: 28, weight: .semibold))
-                    Text("Breezy Diary")
-                        .font(.system(size: 13, weight: .semibold))
+                    Text("Twelve")
+                        .font(BreezyTheme.handwrittenFont(size: 20))
                 }
                 .foregroundStyle(BreezyTheme.textPrimary.opacity(0.72))
             }

@@ -220,9 +220,6 @@ struct DiaryReaderSheet: View {
 
     private var attachmentSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Attachments")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(BreezyTheme.textPrimary)
             ForEach(displayAttachments) { attachment in
                 VStack(alignment: .leading, spacing: 10) {
                     mediaPreview(for: attachment)

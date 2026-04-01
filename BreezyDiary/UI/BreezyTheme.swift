@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 enum BreezyTheme {
     static let backgroundTop = Color(red: 0.97, green: 0.98, blue: 1.00)
@@ -46,4 +47,14 @@ enum BreezyTheme {
     static let todayFeatureDetailStroke = Color.black.opacity(0.08)
     static let todayFeatureCloseBackground = Color.black.opacity(0.24)
     static let todayFeatureCloseIcon = Color.white
+
+    static func handwrittenFont(size: CGFloat) -> Font {
+        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
+            return .custom("MarkerFelt-Wide", size: size)
+        }
+        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
+            return .custom("ChalkboardSE-Regular", size: size)
+        }
+        return .system(size: size, weight: .semibold, design: .rounded)
+    }
 }

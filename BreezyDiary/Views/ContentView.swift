@@ -94,7 +94,7 @@ struct ContentView: View {
 
     private var headerBar: some View {
         Text("Twelve")
-            .font(.system(size: 36, weight: .bold))
+            .font(BreezyTheme.handwrittenFont(size: 38))
             .foregroundStyle(BreezyTheme.textPrimary)
             .frame(maxWidth: .infinity, alignment: .leading)
     }

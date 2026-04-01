@@ -351,9 +351,6 @@ struct DiaryComposerSheet: View {
 
     private var attachmentsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Attachments")
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(BreezyTheme.textSecondary)
             ForEach(attachments) { attachment in
                 attachmentRow(for: attachment)
             }
