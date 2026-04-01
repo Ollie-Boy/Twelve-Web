@@ -446,11 +446,19 @@ private struct ComposerLocationPickerSheet: View {
     @State private var pickedAddressText = ""
     @State private var isResolving = false
     @State private var errorText: String?
+    @State private var selectedCoordinate: CLLocationCoordinate2D?
 
     var body: some View {
         NavigationStack {
             ZStack {
-                ComposerLegacyMapView(region: $region)
+                ComposerLegacyMapView(
+                    region: $region,
+                    onTapCoordinate: { coordinate in
+                        selectedCoordinate = coordinate
+                        region.center = coordinate
+                        resolveAddress(for: coordinate, shouldDismiss: false)
+                    }
+                )
                     .ignoresSafeArea(edges: .bottom)
 
                 Image(systemName: "mappin.circle.fill")
@@ -459,7 +467,7 @@ private struct ComposerLocationPickerSheet: View {
                     .shadow(radius: 4)
 
                 VStack {
-                    Text("Move map, then tap Use Center")
+                    Text("Tap map to pick a point, or move map then tap confirm")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(BreezyTheme.textSecondary)
                         .padding(.horizontal, 12)
@@ -535,15 +543,17 @@ private struct ComposerLocationPickerSheet: View {
 
     private func useCurrentLocation() {
         if let coordinate = LocationStore.shared.lastCoordinate {
+            selectedCoordinate = coordinate
             region.center = coordinate
         }
     }
 
     private func useMapCenter() {
-        resolveAddress(for: region.center)
+        let target = selectedCoordinate ?? region.center
+        resolveAddress(for: target, shouldDismiss: true)
     }
 
-    private func resolveAddress(for coordinate: CLLocationCoordinate2D) {
+    private func resolveAddress(for coordinate: CLLocationCoordinate2D, shouldDismiss: Bool = true) {
         errorText = nil
         isResolving = true
         let geocoder = CLGeocoder()
@@ -567,14 +577,17 @@ private struct ComposerLocationPickerSheet: View {
                 return
             }
             pickedAddressText = address
-            onPickAddress(address)
-            dismiss()
+            if shouldDismiss {
+                onPickAddress(address)
+                dismiss()
+            }
         }
     }
 }
 
 private struct ComposerLegacyMapView: UIViewRepresentable {
     @Binding var region: MKCoordinateRegion
+    var onTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
 
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView()
@@ -582,10 +595,14 @@ private struct ComposerLegacyMapView: UIViewRepresentable {
         map.showsScale = false
         map.setRegion(region, animated: false)
         map.delegate = context.coordinator
+        let tapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleMapTap(_:)))
+        tapRecognizer.cancelsTouchesInView = false
+        map.addGestureRecognizer(tapRecognizer)
         return map
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
+        context.coordinator.parent = self
         if abs(uiView.region.center.latitude - region.center.latitude) > 0.00001
             || abs(uiView.region.center.longitude - region.center.longitude) > 0.00001
         {
@@ -603,6 +620,14 @@ private struct ComposerLegacyMapView: UIViewRepresentable {
 
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
             parent.region = mapView.region
+        }
+
+        @objc func handleMapTap(_ recognizer: UITapGestureRecognizer) {
+            guard let mapView = recognizer.view as? MKMapView else { return }
+            let point = recognizer.location(in: mapView)
+            let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
+            parent.region.center = coordinate
+            parent.onTapCoordinate?(coordinate)
         }
     }
 }
