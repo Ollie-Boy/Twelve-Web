@@ -22,13 +22,13 @@ struct LocationPickerMapSheet: View {
                     .ignoresSafeArea(edges: .bottom)
 
                 Image(systemName: "mappin.circle.fill")
-                    .font(.system(size: 34))
+                    .font(BreezyTheme.appFont(size: 34, weight: .semibold))
                     .foregroundStyle(BreezyTheme.primaryBlue)
                     .shadow(radius: 4)
 
                 VStack {
                     Text("Move map, then tap Use Center")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(BreezyTheme.appFont(size: 12, weight: .medium))
                         .foregroundStyle(BreezyTheme.textSecondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
@@ -38,14 +38,14 @@ struct LocationPickerMapSheet: View {
                         ProgressView()
                     } else if let errorText {
                         Text(errorText)
-                            .font(.system(size: 12))
+                            .font(BreezyTheme.appFont(size: 12))
                             .foregroundStyle(.red)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(.ultraThinMaterial, in: Capsule())
                     } else if !pickedAddressText.isEmpty {
                         Text(pickedAddressText)
-                            .font(.system(size: 12))
+                            .font(BreezyTheme.appFont(size: 12))
                             .foregroundStyle(BreezyTheme.textPrimary)
                             .lineLimit(2)
                             .padding(.horizontal, 10)

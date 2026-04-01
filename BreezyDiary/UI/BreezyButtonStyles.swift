@@ -5,7 +5,7 @@ struct BreezyPrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 17, weight: .semibold, design: .rounded))
+            .font(BreezyTheme.appFont(size: 17, weight: .semibold))
             .foregroundStyle(.white)
             .padding(.vertical, 13)
             .padding(.horizontal, 14)
@@ -37,7 +37,7 @@ struct BreezyPillButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 13, weight: .medium, design: .rounded))
+            .font(BreezyTheme.appFont(size: 13, weight: .medium))
             .foregroundStyle(BreezyTheme.textPrimary)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)

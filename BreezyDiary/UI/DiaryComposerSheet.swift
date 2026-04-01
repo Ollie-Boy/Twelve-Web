@@ -52,7 +52,7 @@ struct DiaryComposerSheet: View {
                 VStack(alignment: .leading, spacing: 14) {
                     TextField("Title", text: $titleText)
                         .textFieldStyle(.plain)
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(BreezyTheme.appFont(size: 20, weight: .semibold))
                         .submitLabel(.done)
                         .focused($titleFocused)
                         .onSubmit {
@@ -64,7 +64,7 @@ struct DiaryComposerSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Date & Time")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
                         HStack(spacing: 12) {
@@ -77,7 +77,7 @@ struct DiaryComposerSheet: View {
                                     Text(dateFormatter.string(from: entryDate))
                                         .lineLimit(1)
                                 }
-                                .font(.system(size: 14, weight: .medium))
+                                .font(BreezyTheme.appFont(size: 14, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textPrimary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
@@ -95,7 +95,7 @@ struct DiaryComposerSheet: View {
                                     Text(timeFormatter.string(from: entryDate))
                                         .lineLimit(1)
                                 }
-                                .font(.system(size: 14, weight: .medium))
+                                .font(BreezyTheme.appFont(size: 14, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textPrimary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 10)
@@ -117,7 +117,7 @@ struct DiaryComposerSheet: View {
 
                     HStack {
                         Text("Weather")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
                         Spacer()
                         Picker("Weather", selection: $weather) {
@@ -133,11 +133,11 @@ struct DiaryComposerSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Emotion")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
                         TextField("e.g. calm, excited, tired", text: $emotion)
                             .textFieldStyle(.plain)
-                            .font(.system(size: 14))
+                            .font(BreezyTheme.appFont(size: 14))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -145,11 +145,11 @@ struct DiaryComposerSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Tag")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
                         TextField("e.g. work", text: $tagText)
                             .textFieldStyle(.plain)
-                            .font(.system(size: 14))
+                            .font(BreezyTheme.appFont(size: 14))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -157,7 +157,7 @@ struct DiaryComposerSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Location")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(BreezyTheme.textSecondary)
 
                         VStack(alignment: .leading, spacing: 10) {
@@ -165,7 +165,7 @@ struct DiaryComposerSheet: View {
                                 Image(systemName: "mappin.and.ellipse")
                                     .foregroundStyle(BreezyTheme.textSecondary)
                                 Text(location.isEmpty ? "No address selected" : location)
-                                    .font(.system(size: 13))
+                                    .font(BreezyTheme.appFont(size: 13))
                                     .foregroundStyle(location.isEmpty ? BreezyTheme.textTertiary : BreezyTheme.textSecondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
@@ -199,7 +199,7 @@ struct DiaryComposerSheet: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Content")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(BreezyTheme.appFont(size: 13, weight: .medium))
                                 .foregroundStyle(BreezyTheme.textSecondary)
                             Spacer()
                             PhotosPicker(selection: $selectedPhotoItems, maxSelectionCount: 10, matching: .images) {
@@ -370,7 +370,7 @@ struct DiaryComposerSheet: View {
                 Image(systemName: "xmark.circle.fill")
             }
         }
-        .font(.system(size: 13))
+        .font(BreezyTheme.appFont(size: 13))
         .foregroundStyle(.primary)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
@@ -520,7 +520,7 @@ private struct ComposerLocationPickerSheet: View {
 
                 VStack {
                     Text("Tap map to select an exact point, then confirm")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(BreezyTheme.appFont(size: 12, weight: .medium))
                         .foregroundStyle(BreezyTheme.textSecondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
@@ -530,14 +530,14 @@ private struct ComposerLocationPickerSheet: View {
                         ProgressView()
                     } else if let errorText {
                         Text(errorText)
-                            .font(.system(size: 12))
+                            .font(BreezyTheme.appFont(size: 12))
                             .foregroundStyle(.red)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(.ultraThinMaterial, in: Capsule())
                     } else if !pickedAddressText.isEmpty {
                         Text(pickedAddressText)
-                            .font(.system(size: 12))
+                            .font(BreezyTheme.appFont(size: 12))
                             .foregroundStyle(BreezyTheme.textPrimary)
                             .lineLimit(2)
                             .padding(.horizontal, 10)
@@ -704,7 +704,7 @@ private struct AudioRecorderSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 Text(recorder.isRecording ? "Recording..." : "Tap to start recording")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(BreezyTheme.appFont(size: 16, weight: .medium))
                     .foregroundStyle(BreezyTheme.textPrimary)
 
                 Text(recorder.elapsedText)
@@ -715,7 +715,7 @@ private struct AudioRecorderSheet: View {
                     recorder.toggleRecording()
                 } label: {
                     Image(systemName: recorder.isRecording ? "stop.fill" : "mic.fill")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(BreezyTheme.appFont(size: 28, weight: .bold))
                         .foregroundStyle(.white)
                         .frame(width: 86, height: 86)
                         .background(recorder.isRecording ? Color.red : BreezyTheme.primaryBlue, in: Circle())
@@ -723,7 +723,7 @@ private struct AudioRecorderSheet: View {
 
                 if let errorText = recorder.errorMessage, !errorText.isEmpty {
                     Text(errorText)
-                        .font(.system(size: 13))
+                        .font(BreezyTheme.appFont(size: 13))
                         .foregroundStyle(.red)
                         .multilineTextAlignment(.center)
                 }

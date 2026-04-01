@@ -49,12 +49,18 @@ enum BreezyTheme {
     static let todayFeatureCloseIcon = Color.white
 
     static func handwrittenFont(size: CGFloat) -> Font {
-        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
-            return .custom("MarkerFelt-Wide", size: size)
+        if UIFont(name: "Noteworthy-Bold", size: size) != nil {
+            return .custom("Noteworthy-Bold", size: size)
         }
-        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
-            return .custom("ChalkboardSE-Regular", size: size)
+        if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
+            return .custom("ChalkboardSE-Bold", size: size)
         }
         return .system(size: size, weight: .semibold, design: .rounded)
     }
+
+    static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
+    }
+
+    static var appTypographyDesign: Font.Design { .rounded }
 }

@@ -7,7 +7,7 @@ struct WiggleTextEditor: View {
 
     var body: some View {
         TextEditor(text: $text)
-            .font(.system(size: 18, weight: .regular, design: .rounded))
+            .font(BreezyTheme.appFont(size: 18))
             .foregroundStyle(BreezyTheme.textPrimary)
             .scrollContentBackground(.hidden)
             .padding(14)

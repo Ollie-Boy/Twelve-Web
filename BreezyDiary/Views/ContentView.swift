@@ -94,7 +94,7 @@ struct ContentView: View {
 
     private var headerBar: some View {
         Text("Twelve")
-            .font(BreezyTheme.handwrittenFont(size: 38))
+            .font(BreezyTheme.handwrittenFont(size: 40))
             .foregroundStyle(BreezyTheme.textPrimary)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -103,7 +103,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 18) {
             if entries.isEmpty {
                 Text("No diary yet. Tap + to start writing.")
-                    .font(.system(size: 16, weight: .regular))
+                    .font(BreezyTheme.appFont(size: 16))
                     .foregroundStyle(BreezyTheme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
@@ -134,14 +134,14 @@ struct ContentView: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text(month.formatted(.dateTime.year().month(.wide)))
-                            .font(.system(size: 22, weight: .bold))
+                            .font(BreezyTheme.appFont(size: 22, weight: .bold))
                             .foregroundStyle(BreezyTheme.textPrimary)
 
                         ForEach(sortedDays, id: \.self) { day in
                             if let dayEntries = groupedByDay[day] {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(day.formatted(.dateTime.month(.wide).day()))
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(BreezyTheme.appFont(size: 16, weight: .semibold))
                                         .foregroundStyle(BreezyTheme.textPrimary)
                                         .padding(.leading, 2)
                                     ForEach(dayEntries.sorted { $0.selectedDate > $1.selectedDate }) { entry in
@@ -166,7 +166,7 @@ struct ContentView: View {
             isComposerPresented = true
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 18, weight: .bold))
+                .font(BreezyTheme.appFont(size: 18, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(width: 56, height: 56)
                 .background(

@@ -71,12 +71,12 @@ struct TodayFeatureCardOverlay: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 Text("Offline. Private. Playful.")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 20, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textPrimary)
                     .matchedGeometryEffect(id: "today.body.title", in: todayCardNamespace)
 
                 Text("Write with animated text feel, adjust date and weather, and save everything locally on your iPhone.")
-                    .font(.system(size: 15, weight: .regular))
+                    .font(BreezyTheme.appFont(size: 15))
                     .foregroundStyle(BreezyTheme.textSecondary)
                     .lineSpacing(3)
                     .matchedGeometryEffect(id: "today.body.subtitle", in: todayCardNamespace)
@@ -86,7 +86,7 @@ struct TodayFeatureCardOverlay: View {
                         dismiss()
                     } label: {
                         Text("Not now")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(BreezyTheme.appFont(size: 15, weight: .medium))
                     }
                     .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
 
@@ -120,7 +120,7 @@ struct TodayFeatureCardOverlay: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 14, weight: .semibold))
                     .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
                     .frame(width: 30, height: 30)
                     .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
@@ -195,7 +195,7 @@ struct TodayFeatureCardOverlay: View {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(BreezyTheme.appFont(size: 14, weight: .semibold))
                         .foregroundStyle(BreezyTheme.todayFeatureCloseIcon)
                         .frame(width: 32, height: 32)
                         .background(BreezyTheme.todayFeatureCloseBackground, in: Circle())
@@ -228,11 +228,11 @@ struct TodayFeatureCardOverlay: View {
         VStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 18) {
                 Text("Create with App Store-inspired calm.")
-                    .font(.system(size: 30, weight: .bold))
+                    .font(BreezyTheme.appFont(size: 30, weight: .bold))
                     .foregroundStyle(BreezyTheme.textPrimary)
 
                 Text("Twelve keeps your entries fully offline while offering a playful writing feel. Use time and weather controls, pick location source, and maintain your own private moment log with smooth card interactions.")
-                    .font(.system(size: 16, weight: .regular))
+                    .font(BreezyTheme.appFont(size: 16))
                     .foregroundStyle(BreezyTheme.textSecondary)
                     .lineSpacing(3)
             }
@@ -248,7 +248,7 @@ struct TodayFeatureCardOverlay: View {
                 Label("Windy ambient animation with subtle motion", systemImage: "wind")
                 Label("No account and no network required", systemImage: "lock.shield")
             }
-            .font(.system(size: 15, weight: .medium))
+            .font(BreezyTheme.appFont(size: 15, weight: .medium))
             .foregroundStyle(BreezyTheme.textPrimary)
             .padding(.horizontal, 24)
             .padding(.bottom, 20)
@@ -288,7 +288,7 @@ struct TodayFeatureCardOverlay: View {
         return VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Text("TODAY")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 11, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textSecondary)
                 Text("Twelve")
                     .font(BreezyTheme.handwrittenFont(size: 22))
@@ -349,7 +349,7 @@ struct TodayFeatureCardOverlay: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("TODAY")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 13, weight: .semibold))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.92))
                     .matchedGeometryEffect(id: "today.hero.kicker", in: todayCardNamespace)
                 Text("Twelve")
@@ -357,7 +357,7 @@ struct TodayFeatureCardOverlay: View {
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage)
                     .matchedGeometryEffect(id: "today.hero.title", in: todayCardNamespace)
                 Text("A calm, playful place for your daily stories.")
-                    .font(.system(size: 17, weight: .regular))
+                    .font(BreezyTheme.appFont(size: 17))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.9))
                     .lineSpacing(3)
                     .matchedGeometryEffect(id: "today.hero.subtitle", in: todayCardNamespace)
@@ -374,7 +374,7 @@ struct TodayFeatureCardOverlay: View {
         .overlay(alignment: .bottomLeading) {
             if !isDetail {
                 Text("Swipe down to close")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(BreezyTheme.appFont(size: 12, weight: .medium))
                     .foregroundStyle(BreezyTheme.todayCardTextOnImage.opacity(0.88))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)

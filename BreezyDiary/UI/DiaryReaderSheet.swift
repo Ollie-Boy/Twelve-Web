@@ -139,7 +139,7 @@ struct DiaryReaderSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text(entry.title)
-                        .font(.system(size: 30, weight: .bold))
+                        .font(BreezyTheme.appFont(size: 30, weight: .bold))
                         .foregroundStyle(BreezyTheme.textPrimary)
 
                     HStack(spacing: 10) {
@@ -151,11 +151,11 @@ struct DiaryReaderSheet: View {
                                 .lineLimit(1)
                         }
                     }
-                    .font(.system(size: 13, weight: .regular))
+                    .font(BreezyTheme.appFont(size: 13))
                     .foregroundStyle(.black)
 
                     Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
-                        .font(.system(size: 13, weight: .regular))
+                        .font(BreezyTheme.appFont(size: 13))
                         .foregroundStyle(BreezyTheme.textSecondary)
 
                     if !entry.body.isEmpty {
@@ -171,7 +171,7 @@ struct DiaryReaderSheet: View {
                                 Text(trimmedEmotion)
                             }
                         }
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(BreezyTheme.appFont(size: 12, weight: .semibold))
                         .foregroundStyle(BreezyTheme.textSecondary)
                     }
 
@@ -302,7 +302,7 @@ struct DiaryReaderSheet: View {
                             Spacer()
                             Image(systemName: "arrow.up.right.square")
                         }
-                        .font(.system(size: 14, weight: .medium))
+                        .font(BreezyTheme.appFont(size: 14, weight: .medium))
                         .foregroundStyle(BreezyTheme.textPrimary)
                         .padding(.vertical, 6)
                     }
@@ -318,9 +318,9 @@ struct DiaryReaderSheet: View {
                 .fill(BreezyTheme.secondarySurface)
             VStack(spacing: 8) {
                 Image(systemName: "photo")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 22, weight: .semibold))
                 Text("Unable to load image")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(BreezyTheme.appFont(size: 13, weight: .medium))
             }
             .foregroundStyle(BreezyTheme.textSecondary)
         }
@@ -379,14 +379,14 @@ private struct InlineAudioPreview: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "waveform.circle.fill")
-                .font(.system(size: 24))
+                .font(BreezyTheme.appFont(size: 24, weight: .semibold))
                 .foregroundStyle(BreezyTheme.primaryBlueDark)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Audio")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 15, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textPrimary)
                 Text(isPlaying ? "Playing" : "Tap to play")
-                    .font(.system(size: 12))
+                    .font(BreezyTheme.appFont(size: 12))
                     .foregroundStyle(BreezyTheme.textSecondary)
             }
             Spacer()
@@ -395,7 +395,7 @@ private struct InlineAudioPreview: View {
             } label: {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .foregroundStyle(BreezyTheme.textSecondary)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 16, weight: .semibold))
                     .frame(width: 28, height: 28)
             }
         }
@@ -448,7 +448,7 @@ private struct FullscreenImageViewer: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 30))
+                    .font(BreezyTheme.appFont(size: 30, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.92))
                     .padding(16)
             }
@@ -463,7 +463,7 @@ private struct MarkdownOrPlainTextView: View {
         if text.contains("$") || text.contains("\\(") || text.contains("\\[") {
             VStack(alignment: .leading, spacing: 8) {
                 Text("LaTeX")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(BreezyTheme.appFont(size: 12, weight: .semibold))
                     .foregroundStyle(BreezyTheme.textSecondary)
                 ScrollView(.horizontal, showsIndicators: false) {
                     Text(text)
@@ -475,12 +475,12 @@ private struct MarkdownOrPlainTextView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if let attributed = try? AttributedString(markdown: text) {
             Text(attributed)
-                .font(.system(size: 16))
+                .font(BreezyTheme.appFont(size: 16))
                 .foregroundStyle(BreezyTheme.textPrimary)
                 .textSelection(.enabled)
         } else {
             Text(text)
-                .font(.system(size: 16))
+                .font(BreezyTheme.appFont(size: 16))
                 .foregroundStyle(BreezyTheme.textPrimary)
                 .textSelection(.enabled)
         }

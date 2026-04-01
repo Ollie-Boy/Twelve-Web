@@ -6,6 +6,8 @@ struct EntryCardView: View {
     let onOpen: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
+    @State private var rotatingCoverIndex: Int = 0
+    private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
 
     private var dateText: String {
         entry.selectedDate.formatted(
@@ -22,82 +24,97 @@ struct EntryCardView: View {
         entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
     }
 
-    private func rotatingCoverAttachment(for date: Date) -> DiaryAttachment? {
+    private var initialCoverIndex: Int {
+        guard !imageAttachments.isEmpty else { return 0 }
+        let hash = abs(entry.id.uuidString.hashValue)
+        return hash % imageAttachments.count
+    }
+
+    private var currentCoverAttachment: DiaryAttachment? {
         guard !imageAttachments.isEmpty else { return nil }
-        if imageAttachments.count == 1 {
-            return imageAttachments[0]
-        }
-        let tick = Int(date.timeIntervalSinceReferenceDate / 4.0)
-        let base = abs(entry.id.uuidString.hashValue)
-        let index = (base + tick) % imageAttachments.count
-        return imageAttachments[index]
+        let safeIndex = rotatingCoverIndex % imageAttachments.count
+        return imageAttachments[safeIndex]
     }
 
     var body: some View {
-        Button(action: onOpen) {
+        VStack(alignment: .leading, spacing: 12) {
+            coverView
+
             VStack(alignment: .leading, spacing: 12) {
-                coverView
-
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label(entry.weather.title, systemImage: entry.weather.symbol)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.black)
-                        Spacer()
-                        Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(BreezyTheme.textSecondary)
-                    }
-
-                    if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Text(entry.title)
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(BreezyTheme.textPrimary)
-                    }
-
-                    Text(entry.body)
-                        .font(.system(size: 15, weight: .regular))
+                HStack {
+                    Label(entry.weather.title, systemImage: entry.weather.symbol)
+                        .font(BreezyTheme.appFont(size: 12, weight: .semibold))
+                        .foregroundStyle(.black)
+                    Spacer()
+                    Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
+                        .font(BreezyTheme.appFont(size: 13, weight: .semibold))
                         .foregroundStyle(BreezyTheme.textSecondary)
-                        .lineLimit(3)
-
-                    if !entry.attachments.isEmpty {
-                        HStack(spacing: 6) {
-                            Image(systemName: "paperclip")
-                            Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
-                        }
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(BreezyTheme.textTertiary)
-                    }
                 }
-                .padding(.horizontal, 22)
-                .padding(.bottom, 22)
-                .padding(.top, 2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(BreezyTheme.cardSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(BreezyTheme.cardBorder, lineWidth: 1)
-            )
-            .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
-            .overlay(alignment: .bottomTrailing) {
-                Text(dateText)
-                    .font(.system(size: 11, weight: .medium))
+
+                if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(entry.title)
+                        .font(BreezyTheme.appFont(size: 24, weight: .bold))
+                        .foregroundStyle(BreezyTheme.textPrimary)
+                }
+
+                Text(entry.body)
+                    .font(BreezyTheme.appFont(size: 15))
+                    .foregroundStyle(BreezyTheme.textSecondary)
+                    .lineLimit(3)
+
+                if !entry.attachments.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: "paperclip")
+                        Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
+                    }
+                    .font(BreezyTheme.appFont(size: 12, weight: .medium))
                     .foregroundStyle(BreezyTheme.textTertiary)
-                    .padding(.trailing, 16)
-                    .padding(.bottom, 14)
+                }
+            }
+            .padding(.horizontal, 22)
+            .padding(.bottom, 22)
+            .padding(.top, 2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(BreezyTheme.cardSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(BreezyTheme.cardBorder, lineWidth: 1)
+        )
+        .shadow(color: BreezyTheme.cardShadow, radius: 18, y: 10)
+        .overlay(alignment: .bottomTrailing) {
+            Text(dateText)
+                .font(BreezyTheme.appFont(size: 11, weight: .medium))
+                .foregroundStyle(BreezyTheme.textTertiary)
+                .padding(.trailing, 16)
+                .padding(.bottom, 14)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .onTapGesture {
+            onOpen()
+        }
+        .onAppear {
+            rotatingCoverIndex = initialCoverIndex
+        }
+        .onReceive(coverRotationTimer) { _ in
+            guard imageAttachments.count > 1 else { return }
+            withAnimation(.easeInOut(duration: 0.55)) {
+                rotatingCoverIndex = (rotatingCoverIndex + 1) % imageAttachments.count
             }
         }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder
     private var coverView: some View {
         if imageAttachments.count > 1 {
-            TimelineView(.periodic(from: .now, by: 4.0)) { context in
-                coverImageView(for: rotatingCoverAttachment(for: context.date))
+            ZStack {
+                ForEach(Array(imageAttachments.enumerated()), id: \.element.id) { index, attachment in
+                    coverImageView(for: attachment)
+                        .opacity(index == rotatingCoverIndex ? 1 : 0)
+                }
             }
+            .animation(.easeInOut(duration: 0.55), value: rotatingCoverIndex)
         } else {
             coverImageView(for: imageAttachments.first)
         }
@@ -134,7 +151,7 @@ struct EntryCardView: View {
 
                 VStack(spacing: 8) {
                     Image(systemName: "book.pages.fill")
-                        .font(.system(size: 28, weight: .semibold))
+                        .font(BreezyTheme.appFont(size: 28, weight: .semibold))
                     Text("Twelve")
                         .font(BreezyTheme.handwrittenFont(size: 20))
                 }
