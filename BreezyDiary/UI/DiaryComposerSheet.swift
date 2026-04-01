@@ -3,6 +3,7 @@ import PhotosUI
 import AVFoundation
 import MapKit
 import CoreLocation
+import UIKit
 
 struct DiaryComposerSheet: View {
     enum Mode {
@@ -16,19 +17,19 @@ struct DiaryComposerSheet: View {
 
     @StateObject private var locationManager = LocationManager()
     @State private var titleText: String = ""
-    @State private var bodyText: String = ""
+    @State private var bodyFormat: DiaryBodyFormat = .markdown
     @State private var entryDate: Date = Date()
     @State private var weather: WeatherOption = .sunny
     @State private var emotion: String = ""
     @State private var tagText: String = ""
     @State private var location: String = ""
-    @State private var attachments: [DiaryAttachment] = []
+    @State private var contentBlocks: [DiaryContentBlock] = [DiaryContentBlock()]
+    @State private var insertionBlockID: UUID?
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
     @State private var selectedVideoItems: [PhotosPickerItem] = []
     @State private var showAudioRecorder = false
     @State private var showMapPicker = false
     @FocusState private var titleFocused: Bool
-    @FocusState private var bodyFocused: Bool
 
     private let attachmentService = AttachmentService()
     private let dateFormatter: DateFormatter = {
@@ -60,34 +61,37 @@ struct DiaryComposerSheet: View {
                             .foregroundStyle(BreezyTheme.textSecondary)
 
                         HStack(spacing: 10) {
-                            Image(systemName: "calendar")
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            DatePicker(
-                                "",
-                                selection: $entryDate,
-                                displayedComponents: .date
-                            )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                            Spacer()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            HStack(spacing: 8) {
+                                Image(systemName: "calendar")
+                                    .foregroundStyle(BreezyTheme.textSecondary)
+                                DatePicker(
+                                    "",
+                                    selection: $entryDate,
+                                    displayedComponents: .date
+                                )
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                            }
 
-                        HStack(spacing: 10) {
-                            Image(systemName: "clock")
-                                .foregroundStyle(BreezyTheme.textSecondary)
-                            DatePicker(
-                                "",
-                                selection: $entryDate,
-                                displayedComponents: .hourAndMinute
-                            )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                            .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
-                            Spacer()
+                            Divider()
+                                .frame(height: 22)
+
+                            HStack(spacing: 8) {
+                                Image(systemName: "clock")
+                                    .foregroundStyle(BreezyTheme.textSecondary)
+                                DatePicker(
+                                    "",
+                                    selection: $entryDate,
+                                    displayedComponents: .hourAndMinute
+                                )
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .tint(BreezyTheme.primaryBlueDark.opacity(0.75))
+                            }
+
+                            Spacer(minLength: 0)
+
                             Button("Now") {
                                 entryDate = Date()
                                 dismissKeyboard()
@@ -111,12 +115,12 @@ struct DiaryComposerSheet: View {
                         Picker("Weather", selection: $weather) {
                             ForEach(WeatherOption.allCases) { item in
                                 Text(item.title)
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(BreezyTheme.textPrimary)
                                     .tag(item)
                             }
                         }
                         .pickerStyle(.menu)
-                        .tint(.black)
+                        .tint(BreezyTheme.textPrimary)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -204,13 +208,29 @@ struct DiaryComposerSheet: View {
                             }
                             .buttonStyle(BreezyPillButtonStyle(accent: BreezyTheme.softBlue))
                         }
-                        WiggleTextEditor(text: $bodyText)
-                            .frame(minHeight: 180)
-                            .focused($bodyFocused)
-                    }
+                        Picker("Format", selection: $bodyFormat) {
+                            ForEach(DiaryBodyFormat.allCases) { format in
+                                Text(format.title).tag(format)
+                            }
+                        }
+                        .pickerStyle(.segmented)
 
-                    if !attachments.isEmpty {
-                        attachmentsSection
+                        ForEach(contentBlocks) { block in
+                            VStack(alignment: .leading, spacing: 8) {
+                                WiggleTextEditor(text: bindingForBlockText(id: block.id))
+                                    .frame(minHeight: 130)
+                                    .onTapGesture {
+                                        insertionBlockID = block.id
+                                    }
+
+                                let blockAttachments = attachmentsForBlock(id: block.id)
+                                if !blockAttachments.isEmpty {
+                                    blockAttachmentsView(blockID: block.id, attachments: blockAttachments)
+                                }
+                            }
+                            .padding(12)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
                     }
                 }
                 .padding(18)
@@ -253,7 +273,7 @@ struct DiaryComposerSheet: View {
             .sheet(isPresented: $showAudioRecorder) {
                 AudioRecorderSheet { recordedURL in
                     if let attachment = try? attachmentService.importFile(from: recordedURL) {
-                        attachments.append(attachment)
+                        appendImportedAttachments([attachment])
                     }
                 }
             }
@@ -289,58 +309,64 @@ struct DiaryComposerSheet: View {
         }
     }
 
-    private var attachmentsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Attachments")
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(BreezyTheme.textSecondary)
+    @ViewBuilder
+    private func blockAttachmentsView(blockID: UUID, attachments: [DiaryAttachment]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
             ForEach(attachments) { attachment in
-                attachmentRow(for: attachment)
+                HStack {
+                    Image(systemName: attachment.kind.iconName)
+                    Text(attachmentLabel(attachment))
+                        .lineLimit(1)
+                    Spacer()
+                    Button(role: .destructive) {
+                        removeAttachment(attachment.id, from: blockID)
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                }
+                .font(.system(size: 13))
+                .foregroundStyle(BreezyTheme.textPrimary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
         }
-    }
-
-    private func attachmentRow(for attachment: DiaryAttachment) -> some View {
-        let label = attachmentLabel(attachment)
-        return HStack {
-            Image(systemName: attachment.kind.iconName)
-            Text(label)
-                .lineLimit(1)
-            Spacer()
-            Button(role: .destructive) {
-                attachments.removeAll { $0.id == attachment.id }
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-            }
-        }
-        .font(.system(size: 13))
-        .foregroundStyle(.primary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private func configureFromMode() {
         switch mode {
         case .create:
             titleText = ""
-            bodyText = ""
+            bodyFormat = .markdown
             entryDate = Date()
             weather = .none
             emotion = ""
             tagText = ""
             location = ""
-            attachments = []
+            contentBlocks = [DiaryContentBlock()]
+            insertionBlockID = contentBlocks.first?.id
         case .edit(let entry):
             titleText = entry.title
-            bodyText = entry.body
+            bodyFormat = entry.bodyFormat
             entryDate = entry.selectedDate
             weather = entry.weather
             emotion = entry.emotion ?? ""
             tagText = entry.tags.first ?? ""
             let existingLocation = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             location = existingLocation
-            attachments = entry.attachments
+            let trimmedBody = entry.body.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !entry.contentBlocks.isEmpty {
+                contentBlocks = entry.contentBlocks
+            } else if !trimmedBody.isEmpty || !entry.attachments.isEmpty {
+                contentBlocks = [DiaryContentBlock(text: entry.body, attachments: entry.attachments)]
+            } else {
+                contentBlocks = [DiaryContentBlock()]
+            }
+            if let last = contentBlocks.last,
+               !last.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !last.attachments.isEmpty {
+                contentBlocks.append(DiaryContentBlock())
+            }
+            insertionBlockID = contentBlocks.last?.id
         }
     }
 
@@ -352,7 +378,15 @@ struct DiaryComposerSheet: View {
         let resolvedTags = resolvedTag.isEmpty ? [] : [resolvedTag]
         let trimmedLocation = location.trimmingCharacters(in: .whitespacesAndNewlines)
         let resolvedLocation = trimmedLocation.isEmpty ? nil : trimmedLocation
-        let markdownBody = bodyText
+        let normalizedBlocks = contentBlocks.filter {
+            !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !$0.attachments.isEmpty
+        }
+        let bodyText = normalizedBlocks
+            .map(\.text)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
+        let flattenedAttachments = normalizedBlocks.flatMap(\.attachments)
 
         let entry: DiaryEntry
         switch mode {
@@ -362,12 +396,14 @@ struct DiaryComposerSheet: View {
                 createdAt: Date(),
                 selectedDate: entryDate,
                 title: title,
-                body: markdownBody,
+                body: bodyText,
+                bodyFormat: bodyFormat,
                 weather: weather,
                 location: resolvedLocation,
                 tags: resolvedTags,
                 emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
-                attachments: attachments
+                attachments: flattenedAttachments,
+                contentBlocks: normalizedBlocks
             )
         case .edit(let existing):
             entry = DiaryEntry(
@@ -375,12 +411,14 @@ struct DiaryComposerSheet: View {
                 createdAt: existing.createdAt,
                 selectedDate: entryDate,
                 title: title,
-                body: markdownBody,
+                body: bodyText,
+                bodyFormat: bodyFormat,
                 weather: weather,
                 location: resolvedLocation,
                 tags: resolvedTags,
                 emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
-                attachments: attachments
+                attachments: flattenedAttachments,
+                contentBlocks: normalizedBlocks
             )
         }
         onSave(entry)
@@ -388,8 +426,8 @@ struct DiaryComposerSheet: View {
     }
 
     private func dismissKeyboard() {
-        bodyFocused = false
         titleFocused = false
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     private func attachmentLabel(_ attachment: DiaryAttachment) -> String {
@@ -405,6 +443,62 @@ struct DiaryComposerSheet: View {
         }
     }
 
+    private func attachmentsForBlock(id: UUID) -> [DiaryAttachment] {
+        guard let block = contentBlocks.first(where: { $0.id == id }) else { return [] }
+        return block.attachments
+    }
+
+    private func bindingForBlockText(id: UUID) -> Binding<String> {
+        Binding(
+            get: { contentBlocks.first(where: { $0.id == id })?.text ?? "" },
+            set: { newValue in
+                guard let index = contentBlocks.firstIndex(where: { $0.id == id }) else { return }
+                contentBlocks[index].text = newValue
+                insertionBlockID = id
+            }
+        )
+    }
+
+    private func removeAttachment(_ attachmentID: UUID, from blockID: UUID) {
+        guard let index = contentBlocks.firstIndex(where: { $0.id == blockID }) else { return }
+        contentBlocks[index].attachments.removeAll { $0.id == attachmentID }
+    }
+
+    private func ensureContentBlockPresence() {
+        if contentBlocks.isEmpty {
+            let block = DiaryContentBlock()
+            contentBlocks = [block]
+            insertionBlockID = block.id
+        }
+    }
+
+    private func appendImportedAttachments(_ imported: [DiaryAttachment]) {
+        guard !imported.isEmpty else { return }
+        ensureContentBlockPresence()
+        let targetID = insertionBlockID ?? contentBlocks.last?.id
+        guard let targetID,
+              let targetIndex = contentBlocks.firstIndex(where: { $0.id == targetID })
+        else { return }
+
+        contentBlocks[targetIndex].attachments.append(contentsOf: imported)
+
+        let nextIndex = targetIndex + 1
+        if contentBlocks.indices.contains(nextIndex) {
+            let next = contentBlocks[nextIndex]
+            if next.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && next.attachments.isEmpty {
+                insertionBlockID = next.id
+            } else {
+                let newBlock = DiaryContentBlock()
+                contentBlocks.insert(newBlock, at: nextIndex)
+                insertionBlockID = newBlock.id
+            }
+        } else {
+            let newBlock = DiaryContentBlock()
+            contentBlocks.append(newBlock)
+            insertionBlockID = newBlock.id
+        }
+    }
+
     private func importPhotos(from items: [PhotosPickerItem]) async {
         guard !items.isEmpty else { return }
         var imported: [DiaryAttachment] = []
@@ -416,7 +510,9 @@ struct DiaryComposerSheet: View {
                 imported.append(attachment)
             }
         }
-        attachments.append(contentsOf: imported)
+        await MainActor.run {
+            appendImportedAttachments(imported)
+        }
     }
 
     private func importVideos(from items: [PhotosPickerItem]) async {
@@ -430,7 +526,9 @@ struct DiaryComposerSheet: View {
                 imported.append(attachment)
             }
         }
-        attachments.append(contentsOf: imported)
+        await MainActor.run {
+            appendImportedAttachments(imported)
+        }
     }
 }
 

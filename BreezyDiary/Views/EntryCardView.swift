@@ -35,7 +35,7 @@ struct EntryCardView: View {
                     HStack {
                         Label(entry.weather.title, systemImage: entry.weather.symbol)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(BreezyTheme.textPrimary)
                         Spacer()
                         Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
                             .font(.system(size: 13, weight: .semibold))

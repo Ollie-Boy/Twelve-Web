@@ -16,8 +16,8 @@ enum BreezyTheme {
     static let primaryBlue = Color(red: 0.00, green: 0.48, blue: 1.00)
     static let primaryBlueDark = Color(red: 0.02, green: 0.35, blue: 0.88)
     static let softBlue = Color(red: 0.90, green: 0.95, blue: 1.00)
-    static let accentYellow = Color(red: 1.00, green: 0.95, blue: 0.80)
-    static let softYellow = Color(red: 1.00, green: 0.96, blue: 0.86)
+    static let accentYellow = Color(red: 0.83, green: 0.91, blue: 1.00)
+    static let softYellow = Color(red: 0.93, green: 0.97, blue: 1.00)
 
     static let textPrimary = Color(red: 0.11, green: 0.11, blue: 0.12)
     static let textSecondary = Color(red: 0.41, green: 0.43, blue: 0.47)
@@ -39,7 +39,7 @@ enum BreezyTheme {
 
     static let todayCardBlueStart = Color(red: 0.80, green: 0.90, blue: 1.00)
     static let todayCardBlueEnd = Color(red: 0.92, green: 0.96, blue: 1.00)
-    static let todayCardYellow = Color(red: 1.00, green: 0.95, blue: 0.82)
+    static let todayCardYellow = Color(red: 0.90, green: 0.95, blue: 1.00)
     static let todayCardTextOnImage = Color.white
     static let todayFeatureDetailBackground = Color(red: 0.96, green: 0.97, blue: 1.00)
     static let todayFeatureDetailCard = Color.white

@@ -2,6 +2,7 @@ import QuickLook
 import SwiftUI
 import AVKit
 import UIKit
+import Foundation
 
 extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
@@ -24,6 +25,19 @@ struct DiaryReaderPagerSheet: View {
     }
 
     var body: some View {
+        ZStack {
+            readerContent
+                .id(currentEntryID)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
+        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.86), value: currentEntryID)
+    }
+
+    @ViewBuilder
+    private var readerContent: some View {
         if let current = entries.first(where: { $0.id == currentEntryID }) {
             DiaryReaderSheet(
                 entry: current,
@@ -31,7 +45,9 @@ struct DiaryReaderPagerSheet: View {
                 onEdit: { onEdit(current) },
                 onDelete: { onDelete(current) },
                 onOpenEntry: { next in
-                    currentEntryID = next.id
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        currentEntryID = next.id
+                    }
                 }
             )
         } else if let fallback = entries.first {
@@ -41,7 +57,9 @@ struct DiaryReaderPagerSheet: View {
                 onEdit: { onEdit(fallback) },
                 onDelete: { onDelete(fallback) },
                 onOpenEntry: { next in
-                    currentEntryID = next.id
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                        currentEntryID = next.id
+                    }
                 }
             )
         } else {
@@ -61,6 +79,20 @@ struct DiaryReaderSheet: View {
     @State private var quickLookURL: URL?
     @State private var selectedImageURL: URL?
 
+    private enum BodyBlockItem: Identifiable {
+        case text(String, String)
+        case media(String, [DiaryAttachment])
+
+        var id: String {
+            switch self {
+            case .text(let id, _):
+                return id
+            case .media(let id, _):
+                return id
+            }
+        }
+    }
+
     private enum AttachmentDisplayItem: Identifiable {
         case imageGroup([DiaryAttachment])
         case single(DiaryAttachment)
@@ -75,14 +107,23 @@ struct DiaryReaderSheet: View {
         }
     }
 
-    private var displayAttachments: [AttachmentDisplayItem] {
-        let imageItems = entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
-        var items: [AttachmentDisplayItem] = []
-        if !imageItems.isEmpty {
-            items.append(.imageGroup(imageItems))
+    private var bodyBlocksToDisplay: [BodyBlockItem] {
+        let sourceBlocks: [DiaryContentBlock]
+        if entry.contentBlocks.isEmpty {
+            sourceBlocks = [DiaryContentBlock(text: entry.body, attachments: entry.attachments)]
+        } else {
+            sourceBlocks = entry.contentBlocks
         }
-        for item in entry.attachments where item.kind != .image && item.kind != .gif {
-            items.append(.single(item))
+
+        var items: [BodyBlockItem] = []
+        for block in sourceBlocks {
+            let trimmed = block.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                items.append(.text("\(block.id.uuidString)-text", block.text))
+            }
+            if !block.attachments.isEmpty {
+                items.append(.media("\(block.id.uuidString)-media", block.attachments))
+            }
         }
         return items
     }
@@ -109,15 +150,11 @@ struct DiaryReaderSheet: View {
                         }
                     }
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(BreezyTheme.textPrimary)
 
                     Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
                         .font(.system(size: 13, weight: .regular))
                         .foregroundStyle(BreezyTheme.textSecondary)
-
-                    if !entry.body.isEmpty {
-                        MarkdownOrPlainTextView(text: entry.body)
-                    }
 
                     if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
                         HStack(spacing: 8) {
@@ -132,8 +169,13 @@ struct DiaryReaderSheet: View {
                         .foregroundStyle(BreezyTheme.textSecondary)
                     }
 
-                    if !entry.attachments.isEmpty {
-                        attachmentSection
+                    ForEach(bodyBlocksToDisplay) { block in
+                        switch block {
+                        case .text(_, let blockText):
+                            MarkdownOrPlainTextView(text: blockText, format: entry.bodyFormat)
+                        case .media(_, let attachments):
+                            attachmentSection(attachments: attachments)
+                        }
                     }
                 }
                 .padding(20)
@@ -175,7 +217,8 @@ struct DiaryReaderSheet: View {
         )
     }
 
-    private var attachmentSection: some View {
+    private func attachmentSection(attachments: [DiaryAttachment]) -> some View {
+        let displayAttachments = groupedDisplayAttachments(from: attachments)
         VStack(alignment: .leading, spacing: 10) {
             Text("Attachments")
                 .font(.system(size: 18, weight: .semibold))
@@ -193,6 +236,18 @@ struct DiaryReaderSheet: View {
                 )
             }
         }
+    }
+
+    private func groupedDisplayAttachments(from attachments: [DiaryAttachment]) -> [AttachmentDisplayItem] {
+        let imageItems = attachments.filter { $0.kind == .image || $0.kind == .gif }
+        var items: [AttachmentDisplayItem] = []
+        if !imageItems.isEmpty {
+            items.append(.imageGroup(imageItems))
+        }
+        for item in attachments where item.kind != .image && item.kind != .gif {
+            items.append(.single(item))
+        }
+        return items
     }
 
     @ViewBuilder
@@ -392,9 +447,10 @@ private struct FullscreenImageViewer: View {
 
 private struct MarkdownOrPlainTextView: View {
     let text: String
+    let format: DiaryBodyFormat
 
     var body: some View {
-        if text.contains("$") || text.contains("\\(") || text.contains("\\[") {
+        if format == .latex {
             VStack(alignment: .leading, spacing: 8) {
                 Text("LaTeX")
                     .font(.system(size: 12, weight: .semibold))
@@ -407,7 +463,19 @@ private struct MarkdownOrPlainTextView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        } else if let attributed = try? AttributedString(markdown: text) {
+        } else if format == .html {
+            if let htmlAttributed = htmlAttributedString(from: text) {
+                Text(AttributedString(htmlAttributed))
+                    .font(.system(size: 16))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .textSelection(.enabled)
+            } else {
+                Text(text)
+                    .font(.system(size: 16))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .textSelection(.enabled)
+            }
+        } else if format == .markdown, let attributed = try? AttributedString(markdown: text) {
             Text(attributed)
                 .font(.system(size: 16))
                 .foregroundStyle(BreezyTheme.textPrimary)
@@ -418,6 +486,18 @@ private struct MarkdownOrPlainTextView: View {
                 .foregroundStyle(BreezyTheme.textPrimary)
                 .textSelection(.enabled)
         }
+    }
+
+    private func htmlAttributedString(from html: String) -> NSAttributedString? {
+        guard let data = html.data(using: .utf8) else { return nil }
+        return try? NSAttributedString(
+            data: data,
+            options: [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ],
+            documentAttributes: nil
+        )
     }
 }
 
