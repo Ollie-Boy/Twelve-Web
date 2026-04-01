@@ -19,6 +19,8 @@ struct DiaryComposerSheet: View {
     @State private var bodyText: String = ""
     @State private var entryDate: Date = Date()
     @State private var weather: WeatherOption = .sunny
+    @State private var emotion: String = ""
+    @State private var tagText: String = ""
     @State private var location: String = ""
     @State private var attachments: [DiaryAttachment] = []
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
@@ -115,6 +117,30 @@ struct DiaryComposerSheet: View {
                         }
                         .pickerStyle(.menu)
                         .tint(.black)
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Emotion")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+                        TextField("e.g. calm, excited, tired", text: $emotion)
+                            .textFieldStyle(.plain)
+                            .font(.system(size: 14))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Tag")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+                        TextField("e.g. work", text: $tagText)
+                            .textFieldStyle(.plain)
+                            .font(.system(size: 14))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(BreezyTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -301,6 +327,8 @@ struct DiaryComposerSheet: View {
             bodyText = ""
             entryDate = Date()
             weather = .none
+            emotion = ""
+            tagText = ""
             location = ""
             attachments = []
         case .edit(let entry):
@@ -308,6 +336,8 @@ struct DiaryComposerSheet: View {
             bodyText = entry.body
             entryDate = entry.selectedDate
             weather = entry.weather
+            emotion = entry.emotion ?? ""
+            tagText = entry.tags.first ?? ""
             let existingLocation = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             location = existingLocation
             attachments = entry.attachments
@@ -317,6 +347,9 @@ struct DiaryComposerSheet: View {
     private func save() {
         dismissKeyboard()
         let title = titleText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Day" : titleText
+        let resolvedEmotion = emotion.trimmingCharacters(in: .whitespacesAndNewlines)
+        let resolvedTag = tagText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let resolvedTags = resolvedTag.isEmpty ? [] : [resolvedTag]
         let trimmedLocation = location.trimmingCharacters(in: .whitespacesAndNewlines)
         let resolvedLocation = trimmedLocation.isEmpty ? nil : trimmedLocation
         let markdownBody = bodyText
@@ -331,6 +364,8 @@ struct DiaryComposerSheet: View {
                 title: title,
                 body: markdownBody,
                 weather: weather,
+                tags: resolvedTags,
+                emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
                 location: resolvedLocation,
                 attachments: attachments
             )
@@ -342,6 +377,8 @@ struct DiaryComposerSheet: View {
                 title: title,
                 body: markdownBody,
                 weather: weather,
+                tags: resolvedTags,
+                emotion: resolvedEmotion.isEmpty ? nil : resolvedEmotion,
                 location: resolvedLocation,
                 attachments: attachments
             )

@@ -6,11 +6,10 @@ struct DiaryYearSection: Identifiable {
     var id: Int { year }
 }
 
-struct DiaryMonthSection: Identifiable {
-    let year: Int
-    let month: Int
+struct DiaryDaySection: Identifiable {
+    let day: Date
     let entries: [DiaryEntry]
-    var id: String { "\(year)-\(month)" }
+    var id: Date { day }
 }
 
 struct ContentView: View {
@@ -20,6 +19,7 @@ struct ContentView: View {
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
     @State private var selectedYear: Int?
+    @State private var selectedDayInYear: Date?
 
     private let storage = DiaryStorage()
 
@@ -42,7 +42,9 @@ struct ContentView: View {
         .onAppear {
             entries = storage.loadEntries()
             sortEntries()
-            selectedYear = yearSections.first?.year
+            if selectedYear == nil {
+                selectedYear = yearSections.first?.year
+            }
         }
         .alert(item: $pendingDeletionEntry) { entry in
             Alert(
@@ -52,20 +54,18 @@ struct ContentView: View {
                 secondaryButton: .cancel()
             )
         }
-        .sheet(item: $selectedEntryForRead) { entry in
-            DiaryReaderSheet(
-                entry: entry,
-                onEdit: {
-                    selectedEntryForRead = nil
-                    selectedEntryForEdit = entry
-                },
+        .sheet(item: selectedEntryBinding) { entry in
+            DiaryReaderPagerSheet(
+                entries: entries,
+                initialEntryID: entry.id,
+                onEdit: { selectedEntryForEdit = $0 },
                 onDelete: {
-                    let entryID = entry.id
+                    let id = $0.id
                     selectedEntryForRead = nil
-                    if let liveEntry = entries.first(where: { $0.id == entryID }) {
+                    if let liveEntry = entries.first(where: { $0.id == id }) {
                         deleteEntry(liveEntry)
                     } else {
-                        deleteEntry(entry)
+                        deleteEntry($0)
                     }
                 }
             )
@@ -74,11 +74,7 @@ struct ContentView: View {
             DiaryComposerSheet(
                 isPresented: Binding(
                     get: { selectedEntryForEdit != nil },
-                    set: { presented in
-                        if !presented {
-                            selectedEntryForEdit = nil
-                        }
-                    }
+                    set: { if !$0 { selectedEntryForEdit = nil } }
                 ),
                 mode: .edit(entry),
                 onSave: { updated in
@@ -98,6 +94,7 @@ struct ContentView: View {
                     entries.insert(newEntry, at: 0)
                     sortEntries()
                     storage.saveEntries(entries)
+                    selectedYear = Calendar.current.component(.year, from: newEntry.selectedDate)
                 }
             )
         }
@@ -106,16 +103,18 @@ struct ContentView: View {
         }
     }
 
+    private var selectedEntryBinding: Binding<DiaryEntry?> {
+        Binding(
+            get: { selectedEntryForRead },
+            set: { selectedEntryForRead = $0 }
+        )
+    }
+
     private var headerBar: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Diary")
-                .font(.system(size: 36, weight: .bold))
-                .foregroundStyle(BreezyTheme.textPrimary)
-            Text("Browse entries by year, then by month and day.")
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(BreezyTheme.textSecondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        Text("Twelve")
+            .font(.system(size: 36, weight: .bold))
+            .foregroundStyle(BreezyTheme.textPrimary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var diaryListSection: some View {
@@ -132,74 +131,103 @@ struct ContentView: View {
                             .stroke(BreezyTheme.hairline, lineWidth: 1)
                     )
             } else {
-                yearCarousel
+                yearMainPage
                 if let selectedYear {
-                    yearDetailSection(year: selectedYear)
-                } else if let firstYear = yearSections.first?.year {
-                    yearDetailSection(year: firstYear)
+                    dayListForSelectedDate(in: selectedYear)
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var yearCarousel: some View {
+    private var yearMainPage: some View {
         TabView(selection: Binding(
             get: { selectedYear ?? yearSections.first?.year ?? 0 },
-            set: { selectedYear = $0 }
+            set: { newYear in
+                selectedYear = newYear
+                selectedDayInYear = nil
+            }
         )) {
             ForEach(yearSections) { section in
-                Button {
-                    selectedYear = section.year
-                } label: {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("\(section.year)")
-                            .font(.system(size: 34, weight: .bold))
-                            .foregroundStyle(BreezyTheme.textPrimary)
-                        Text("\(section.entries.count) entries")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(BreezyTheme.textSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(22)
-                    .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .stroke(BreezyTheme.hairline, lineWidth: 1)
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("\(section.year)")
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundStyle(BreezyTheme.textPrimary)
+                    Text("\(section.entries.count) entries")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+
+                    YearCalendarGrid(
+                        year: section.year,
+                        entries: section.entries,
+                        selectedDay: Binding(
+                            get: { selectedDayInYear },
+                            set: { selectedDayInYear = $0 }
+                        )
                     )
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(22)
+                .background(BreezyTheme.surface, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(BreezyTheme.hairline, lineWidth: 1)
+                )
                 .padding(.horizontal, 4)
                 .tag(section.year)
             }
         }
-        .frame(height: 146)
+        .frame(height: 560)
         .tabViewStyle(.page(indexDisplayMode: .automatic))
     }
 
     @ViewBuilder
-    private func yearDetailSection(year: Int) -> some View {
-        let monthSections = monthSections(for: year)
-        VStack(alignment: .leading, spacing: 14) {
-            Text("\(year)")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(BreezyTheme.textPrimary)
-                .padding(.leading, 2)
-
-            ForEach(monthSections) { section in
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(monthTitle(year: section.year, month: section.month))
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
-                        .padding(.leading, 4)
-
-                    ForEach(section.entries) { entry in
+    private func dayListForSelectedDate(in year: Int) -> some View {
+        if let selectedDayInYear {
+            let dayEntries = entriesForDay(selectedDayInYear)
+            VStack(alignment: .leading, spacing: 12) {
+                Text(selectedDayInYear.formatted(.dateTime.year().month(.wide).day()))
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                if dayEntries.isEmpty {
+                    Text("No entries for selected date.")
+                        .font(.system(size: 14))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                } else {
+                    ForEach(dayEntries) { entry in
                         EntryCardView(
                             entry: entry,
                             onOpen: { selectedEntryForRead = entry },
                             onEdit: { selectedEntryForEdit = entry },
                             onDelete: { pendingDeletionEntry = entry }
                         )
+                    }
+                }
+            }
+        } else {
+            let yearEntries = entries.filter { Calendar.current.component(.year, from: $0.selectedDate) == year }
+            let grouped = Dictionary(grouping: yearEntries) { Calendar.current.startOfDay(for: $0.selectedDate) }
+            let days = grouped.keys.sorted(by: >)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("All entries in \(year)")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                ForEach(days, id: \.self) { day in
+                    if let dayEntries = grouped[day] {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(day.formatted(.dateTime.month(.wide).day()))
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(BreezyTheme.textPrimary)
+                                .padding(.leading, 2)
+                            ForEach(dayEntries.sorted { $0.selectedDate > $1.selectedDate }) { entry in
+                                EntryCardView(
+                                    entry: entry,
+                                    onOpen: { selectedEntryForRead = entry },
+                                    onEdit: { selectedEntryForEdit = entry },
+                                    onDelete: { pendingDeletionEntry = entry }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -231,29 +259,17 @@ struct ContentView: View {
 
     private var yearSections: [DiaryYearSection] {
         let grouped = Dictionary(grouping: entries) { Calendar.current.component(.year, from: $0.selectedDate) }
-        return grouped.keys.sorted(by: >).map { year in
+        return grouped.keys.sorted(by: <).map { year in
             let yearEntries = (grouped[year] ?? []).sorted { $0.selectedDate > $1.selectedDate }
             return DiaryYearSection(year: year, entries: yearEntries)
         }
     }
 
-    private func monthSections(for year: Int) -> [DiaryMonthSection] {
-        let calendar = Calendar.current
-        let yearEntries = entries.filter { calendar.component(.year, from: $0.selectedDate) == year }
-        let grouped = Dictionary(grouping: yearEntries) { calendar.component(.month, from: $0.selectedDate) }
-        return grouped.keys.sorted(by: >).map { month in
-            let monthEntries = (grouped[month] ?? []).sorted { $0.selectedDate > $1.selectedDate }
-            return DiaryMonthSection(year: year, month: month, entries: monthEntries)
-        }
-    }
-
-    private func monthTitle(year: Int, month: Int) -> String {
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = 1
-        let date = Calendar.current.date(from: components) ?? Date()
-        return date.formatted(.dateTime.year().month(.wide))
+    private func entriesForDay(_ day: Date) -> [DiaryEntry] {
+        let target = Calendar.current.startOfDay(for: day)
+        return entries
+            .filter { Calendar.current.startOfDay(for: $0.selectedDate) == target }
+            .sorted { $0.selectedDate > $1.selectedDate }
     }
 
     private func deleteEntry(_ entry: DiaryEntry) {
@@ -265,11 +281,86 @@ struct ContentView: View {
         if selectedEntryForEdit?.id == entry.id {
             selectedEntryForEdit = nil
         }
-        selectedYear = yearSections.first?.year
+        if let selectedYear, !entries.contains(where: { Calendar.current.component(.year, from: $0.selectedDate) == selectedYear }) {
+            self.selectedYear = yearSections.first?.year
+            selectedDayInYear = nil
+        }
     }
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
+    }
+}
+
+private struct YearCalendarGrid: View {
+    let year: Int
+    let entries: [DiaryEntry]
+    @Binding var selectedDay: Date?
+
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(1...12, id: \.self) { month in
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(monthTitle(month))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(BreezyTheme.textSecondary)
+                    LazyVGrid(columns: columns, spacing: 4) {
+                        ForEach(daysInMonth(month), id: \.self) { day in
+                            if let dayDate = date(year: year, month: month, day: day) {
+                                let hasEntry = entries.contains { Calendar.current.isDate($0.selectedDate, inSameDayAs: dayDate) }
+                                Button {
+                                    selectedDay = dayDate
+                                } label: {
+                                    Text("\(day)")
+                                        .font(.system(size: 11, weight: .medium))
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 4)
+                                        .background(
+                                            hasEntry ? BreezyTheme.softBlue : Color.clear,
+                                            in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                                .stroke(hasEntry ? BreezyTheme.primaryBlue.opacity(0.45) : BreezyTheme.hairline, lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func date(year: Int, month: Int, day: Int) -> Date? {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        return Calendar.current.date(from: components)
+    }
+
+    private func daysInMonth(_ month: Int) -> [Int] {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        guard let date = Calendar.current.date(from: components),
+              let range = Calendar.current.range(of: .day, in: .month, for: date)
+        else { return [] }
+        return Array(range)
+    }
+
+    private func monthTitle(_ month: Int) -> String {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        let date = Calendar.current.date(from: components) ?? Date()
+        return date.formatted(.dateTime.month(.wide))
     }
 }
 

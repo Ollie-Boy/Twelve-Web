@@ -7,14 +7,89 @@ extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
 }
 
+struct DiaryReaderPagerSheet: View {
+    let entries: [DiaryEntry]
+    let initialEntryID: UUID
+    let onEdit: (DiaryEntry) -> Void
+    let onDelete: (DiaryEntry) -> Void
+
+    @State private var currentEntryID: UUID
+
+    init(entries: [DiaryEntry], initialEntryID: UUID, onEdit: @escaping (DiaryEntry) -> Void, onDelete: @escaping (DiaryEntry) -> Void) {
+        self.entries = entries
+        self.initialEntryID = initialEntryID
+        self.onEdit = onEdit
+        self.onDelete = onDelete
+        _currentEntryID = State(initialValue: initialEntryID)
+    }
+
+    var body: some View {
+        if let current = entries.first(where: { $0.id == currentEntryID }) {
+            DiaryReaderSheet(
+                entry: current,
+                allEntries: entries,
+                onEdit: { onEdit(current) },
+                onDelete: { onDelete(current) },
+                onOpenEntry: { next in
+                    currentEntryID = next.id
+                }
+            )
+        } else if let fallback = entries.first {
+            DiaryReaderSheet(
+                entry: fallback,
+                allEntries: entries,
+                onEdit: { onEdit(fallback) },
+                onDelete: { onDelete(fallback) },
+                onOpenEntry: { next in
+                    currentEntryID = next.id
+                }
+            )
+        } else {
+            Text("No entry available")
+        }
+    }
+}
+
 struct DiaryReaderSheet: View {
     let entry: DiaryEntry
+    var allEntries: [DiaryEntry] = []
     var onEdit: (() -> Void)?
     var onDelete: (() -> Void)?
+    var onOpenEntry: ((DiaryEntry) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @State private var quickLookURL: URL?
     @State private var selectedImageURL: URL?
+
+    private enum AttachmentDisplayItem: Identifiable {
+        case imageGroup([DiaryAttachment])
+        case single(DiaryAttachment)
+
+        var id: String {
+            switch self {
+            case .imageGroup(let items):
+                return "images-\(items.map(\.id.uuidString).joined(separator: "-"))"
+            case .single(let item):
+                return item.id.uuidString
+            }
+        }
+    }
+
+    private var displayAttachments: [AttachmentDisplayItem] {
+        let imageItems = entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
+        var items: [AttachmentDisplayItem] = []
+        if !imageItems.isEmpty {
+            items.append(.imageGroup(imageItems))
+        }
+        for item in entry.attachments where item.kind != .image && item.kind != .gif {
+            items.append(.single(item))
+        }
+        return items
+    }
+
+    private var trimmedEmotion: String {
+        entry.emotion?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
 
     var body: some View {
         NavigationStack {
@@ -42,6 +117,19 @@ struct DiaryReaderSheet: View {
 
                     if !entry.body.isEmpty {
                         MarkdownOrPlainTextView(text: entry.body)
+                    }
+
+                    if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(entry.tags, id: \.self) { tag in
+                                Text("#\(tag)")
+                            }
+                            if !trimmedEmotion.isEmpty {
+                                Text(trimmedEmotion)
+                            }
+                        }
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(BreezyTheme.textSecondary)
                     }
 
                     if !entry.attachments.isEmpty {
@@ -79,6 +167,12 @@ struct DiaryReaderSheet: View {
                 FullscreenImageViewer(imageURL: url)
             }
         }
+        .gesture(
+            DragGesture(minimumDistance: 24)
+                .onEnded { value in
+                    handleHorizontalSwipe(value.translation.width)
+                }
+        )
     }
 
     private var attachmentSection: some View {
@@ -86,9 +180,9 @@ struct DiaryReaderSheet: View {
             Text("Attachments")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(BreezyTheme.textPrimary)
-            ForEach(entry.attachments) { item in
+            ForEach(displayAttachments) { attachment in
                 VStack(alignment: .leading, spacing: 10) {
-                    mediaPreview(for: item)
+                    mediaPreview(for: attachment)
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,42 +196,87 @@ struct DiaryReaderSheet: View {
     }
 
     @ViewBuilder
-    private func mediaPreview(for item: DiaryAttachment) -> some View {
-        switch item.kind {
-        case .image, .gif:
-            Button {
-                selectedImageURL = item.url
-            } label: {
-                if let image = UIImage(contentsOfFile: item.url.path) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 220)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    private func mediaPreview(for displayItem: AttachmentDisplayItem) -> some View {
+        switch displayItem {
+        case .imageGroup(let imageAttachments):
+            if imageAttachments.count > 1 {
+                TabView {
+                    ForEach(imageAttachments) { imageItem in
+                        Button {
+                            selectedImageURL = imageItem.url
+                        } label: {
+                            if let image = UIImage(contentsOfFile: imageItem.url.path) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 220)
+                                    .clipped()
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
-            }
-            .buttonStyle(.plain)
-        case .video:
-            InlineVideoPreview(url: item.url, height: 220)
-        case .audio:
-            InlineAudioPreview(url: item.url)
-        default:
-            Button {
-                quickLookURL = item.url
-            } label: {
-                HStack {
-                    Image(systemName: item.kind.iconName)
-                    Text(item.kind.title)
-                    Spacer()
-                    Image(systemName: "arrow.up.right.square")
+                .frame(height: 220)
+                .tabViewStyle(.page(indexDisplayMode: .automatic))
+            } else {
+                let imageItem = imageAttachments[0]
+                Button {
+                    selectedImageURL = imageItem.url
+                } label: {
+                    if let image = UIImage(contentsOfFile: imageItem.url.path) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 220)
+                            .clipped()
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
                 }
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(BreezyTheme.textPrimary)
-                .padding(.vertical, 6)
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
+        case .single(let item):
+            switch item.kind {
+            case .video:
+                InlineVideoPreview(url: item.url, height: 220)
+            case .audio:
+                InlineAudioPreview(url: item.url)
+            default:
+                Button {
+                    quickLookURL = item.url
+                } label: {
+                    HStack {
+                        Image(systemName: item.kind.iconName)
+                        Text(item.kind.title)
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                    }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(BreezyTheme.textPrimary)
+                    .padding(.vertical, 6)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func handleHorizontalSwipe(_ width: CGFloat) {
+        guard abs(width) > 40 else { return }
+        guard let onOpenEntry else { return }
+        let sorted = allEntries.sorted { $0.selectedDate > $1.selectedDate }
+        guard let currentIndex = sorted.firstIndex(where: { $0.id == entry.id }) else { return }
+        if width < 0 {
+            let nextIndex = currentIndex + 1
+            if sorted.indices.contains(nextIndex) {
+                onOpenEntry(sorted[nextIndex])
+            }
+        } else {
+            let prevIndex = currentIndex - 1
+            if sorted.indices.contains(prevIndex) {
+                onOpenEntry(sorted[prevIndex])
+            }
         }
     }
 

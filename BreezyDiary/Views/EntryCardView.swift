@@ -21,7 +21,8 @@ struct EntryCardView: View {
     private var coverAttachment: DiaryAttachment? {
         let imageAttachments = entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
         guard !imageAttachments.isEmpty else { return nil }
-        let index = abs(entry.id.uuidString.hashValue) % imageAttachments.count
+        let hash = entry.id.uuidString.hashValue
+        let index = ((hash % imageAttachments.count) + imageAttachments.count) % imageAttachments.count
         return imageAttachments[index]
     }
 
