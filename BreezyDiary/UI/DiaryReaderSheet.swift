@@ -213,6 +213,8 @@ struct DiaryReaderSheet: View {
                                     .frame(height: 220)
                                     .clipped()
                                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            } else {
+                                missingImagePlaceholder
                             }
                         }
                         .buttonStyle(.plain)
@@ -233,6 +235,8 @@ struct DiaryReaderSheet: View {
                             .frame(height: 220)
                             .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    } else {
+                        missingImagePlaceholder
                     }
                 }
                 .buttonStyle(.plain)
@@ -260,6 +264,22 @@ struct DiaryReaderSheet: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    private var missingImagePlaceholder: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(BreezyTheme.secondarySurface)
+            VStack(spacing: 8) {
+                Image(systemName: "photo")
+                    .font(.system(size: 22, weight: .semibold))
+                Text("Unable to load image")
+                    .font(.system(size: 13, weight: .medium))
+            }
+            .foregroundStyle(BreezyTheme.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 220)
     }
 
     private func handleHorizontalSwipe(_ width: CGFloat) {
