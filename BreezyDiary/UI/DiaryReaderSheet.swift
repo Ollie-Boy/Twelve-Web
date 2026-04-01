@@ -14,9 +14,7 @@ struct DiaryReaderPagerSheet: View {
     let onDelete: (DiaryEntry) -> Void
 
     private let sortedEntries: [DiaryEntry]
-    @State private var selectedIndex: Int = 0
-    @State private var isPagerInteracting = false
-    @State private var blockMediaTapUntil = Date.distantPast
+    @State private var currentIndex: Int = 0
 
     init(entries: [DiaryEntry], initialEntryID: UUID, onEdit: @escaping (DiaryEntry) -> Void, onDelete: @escaping (DiaryEntry) -> Void) {
         self.entries = entries
@@ -26,49 +24,46 @@ struct DiaryReaderPagerSheet: View {
         let sorted = entries.sorted { $0.selectedDate > $1.selectedDate }
         self.sortedEntries = sorted
         let initialIndex = sorted.firstIndex(where: { $0.id == initialEntryID }) ?? 0
-        _selectedIndex = State(initialValue: initialIndex)
-    }
-
-    private var isMediaInteractionBlocked: Bool {
-        isPagerInteracting || Date() < blockMediaTapUntil
-    }
-
-    private func blockMediaTapForTransition() {
-        blockMediaTapUntil = Date().addingTimeInterval(0.35)
+        _currentIndex = State(initialValue: initialIndex)
     }
 
     var body: some View {
-        TabView(selection: $selectedIndex) {
-            ForEach(Array(sortedEntries.enumerated()), id: \.element.id) { index, currentEntry in
+        ZStack {
+            if sortedEntries.indices.contains(currentIndex) {
+                let currentEntry = sortedEntries[currentIndex]
                 DiaryReaderSheet(
                     entry: currentEntry,
-                    isMediaInteractionBlocked: isMediaInteractionBlocked,
+                    onHorizontalSwipe: handleHorizontalSwipe,
                     onEdit: { onEdit(currentEntry) },
                     onDelete: { onDelete(currentEntry) }
                 )
-                .tag(index)
+                .id(currentEntry.id)
+                .transition(.opacity)
+            } else {
+                Text("No entry available")
+                    .font(BreezyTheme.appFont(size: 16))
             }
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .onChange(of: selectedIndex) { _ in
-            blockMediaTapForTransition()
+        .animation(.easeOut(duration: 0.18), value: currentIndex)
+    }
+
+    private func handleHorizontalSwipe(_ width: CGFloat) {
+        guard abs(width) > 42 else { return }
+        if width < 0 {
+            let next = currentIndex + 1
+            guard sortedEntries.indices.contains(next) else { return }
+            currentIndex = next
+        } else {
+            let previous = currentIndex - 1
+            guard sortedEntries.indices.contains(previous) else { return }
+            currentIndex = previous
         }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 8)
-                .onChanged { _ in
-                    isPagerInteracting = true
-                }
-                .onEnded { _ in
-                    isPagerInteracting = false
-                    blockMediaTapForTransition()
-                }
-        )
     }
 }
 
 struct DiaryReaderSheet: View {
     let entry: DiaryEntry
-    var isMediaInteractionBlocked: Bool = false
+    var onHorizontalSwipe: ((CGFloat) -> Void)? = nil
     var onEdit: (() -> Void)?
     var onDelete: (() -> Void)?
 
@@ -110,42 +105,53 @@ struct DiaryReaderSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(entry.title)
-                        .font(BreezyTheme.appFont(size: 30, weight: .bold))
-                        .foregroundStyle(BreezyTheme.textPrimary)
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(entry.title)
+                            .font(BreezyTheme.appFont(size: 30, weight: .bold))
+                            .foregroundStyle(BreezyTheme.textPrimary)
 
-                    HStack(spacing: 10) {
-                        if entry.weather != .none {
-                            Label(entry.weather.title, systemImage: entry.weather.symbolName)
+                        HStack(spacing: 10) {
+                            if entry.weather != .none {
+                                Label(entry.weather.title, systemImage: entry.weather.symbolName)
+                            }
+                            if let location = entry.location, !location.isEmpty {
+                                Label(location, systemImage: "mappin.and.ellipse")
+                                    .lineLimit(1)
+                            }
                         }
-                        if let location = entry.location, !location.isEmpty {
-                            Label(location, systemImage: "mappin.and.ellipse")
-                                .lineLimit(1)
-                        }
-                    }
-                    .font(BreezyTheme.appFont(size: 13))
-                    .foregroundStyle(.black)
-
-                    Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
                         .font(BreezyTheme.appFont(size: 13))
-                        .foregroundStyle(BreezyTheme.textSecondary)
+                        .foregroundStyle(.black)
 
-                    if !entry.body.isEmpty {
-                        MarkdownOrPlainTextView(text: entry.body)
-                    }
+                        Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
+                            .font(BreezyTheme.appFont(size: 13))
+                            .foregroundStyle(BreezyTheme.textSecondary)
 
-                    if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
-                        HStack(spacing: 8) {
-                            ForEach(entry.tags, id: \.self) { tag in
-                                Text("#\(tag)")
-                            }
-                            if !trimmedEmotion.isEmpty {
-                                Text(trimmedEmotion)
-                            }
+                        if !entry.body.isEmpty {
+                            MarkdownOrPlainTextView(text: entry.body)
                         }
-                        .font(BreezyTheme.appFont(size: 12, weight: .semibold))
-                        .foregroundStyle(BreezyTheme.textSecondary)
+
+                        if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
+                            HStack(spacing: 8) {
+                                ForEach(entry.tags, id: \.self) { tag in
+                                    Text("#\(tag)")
+                                }
+                                if !trimmedEmotion.isEmpty {
+                                    Text(trimmedEmotion)
+                                }
+                            }
+                            .font(BreezyTheme.appFont(size: 12, weight: .semibold))
+                            .foregroundStyle(BreezyTheme.textSecondary)
+                        }
                     }
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 24)
+                            .onEnded { value in
+                                guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                onHorizontalSwipe?(value.translation.width)
+                            },
+                        including: .gesture
+                    )
 
                     if !entry.attachments.isEmpty {
                         attachmentSection
@@ -209,7 +215,6 @@ struct DiaryReaderSheet: View {
                     TabView {
                         ForEach(imageAttachments) { imageItem in
                             Button {
-                                guard !isMediaInteractionBlocked else { return }
                                 selectedImageURL = imageItem.url
                             } label: {
                                 if let image = UIImage(contentsOfFile: imageItem.url.path) {
@@ -234,7 +239,6 @@ struct DiaryReaderSheet: View {
             if let imageItem = imageAttachments.first {
                 return AnyView(
                     Button {
-                        guard !isMediaInteractionBlocked else { return }
                         selectedImageURL = imageItem.url
                     } label: {
                         if let image = UIImage(contentsOfFile: imageItem.url.path) {
