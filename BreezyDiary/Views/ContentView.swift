@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appearance: AppearanceStore
-    @Environment(\.colorScheme) private var colorScheme
     @State private var entries: [DiaryEntry] = []
     @State private var pendingDeletionEntry: DiaryEntry?
     @State private var selectedEntryForRead: DiaryEntry?
@@ -27,7 +26,7 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
             }
 
-            topScrollChromeGradient
+            statusBarBlurStrip
         }
         .onAppear {
             entries = storage.loadEntries()
@@ -89,23 +88,14 @@ struct ContentView: View {
         }
     }
 
-    /// Subtle top gradient so status bar stays readable when content scrolls under it (no material).
-    private var topScrollChromeGradient: some View {
+    /// Full-width blur only in the status bar vertical band (matches system status bar height).
+    private var statusBarBlurStrip: some View {
         GeometryReader { proxy in
-            let bandHeight = proxy.safeAreaInsets.top + 50
-            let topOpacity = colorScheme == .dark ? 0.42 : 0.14
             VStack(spacing: 0) {
-                LinearGradient(
-                    colors: [
-                        Color.black.opacity(topOpacity),
-                        Color.black.opacity(topOpacity * 0.35),
-                        Color.clear
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: bandHeight)
-                .frame(maxWidth: .infinity)
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .frame(height: proxy.safeAreaInsets.top)
+                    .frame(maxWidth: .infinity)
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

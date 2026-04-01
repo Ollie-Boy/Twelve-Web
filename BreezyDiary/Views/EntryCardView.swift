@@ -8,8 +8,9 @@ struct EntryCardView: View {
     let onDelete: () -> Void
 
     private static let topBandHeight: CGFloat = 154
-    /// Matches a typical card with photo: 154 band + meta (weather, 2-line title, 3-line body, attachment row, padding).
-    private static let cardFixedHeight: CGFloat = 382
+    private static let bodyPreviewHeight: CGFloat = 76
+    /// Slightly taller than photo-only layout to fit title + rendered preview under title.
+    private static let cardFixedHeight: CGFloat = 420
 
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
@@ -73,6 +74,31 @@ struct EntryCardView: View {
                                 .padding(.trailing, 8)
                         }
 
+                        if !hasImageCover, !trimmedBody.isEmpty {
+                            ZStack(alignment: .bottom) {
+                                DiaryBodyContentView(
+                                    text: entry.body,
+                                    compactMaxHeight: Self.bodyPreviewHeight
+                                )
+                                .padding(.horizontal, 4)
+
+                                LinearGradient(
+                                    stops: [
+                                        .init(color: .clear, location: 0),
+                                        .init(color: BreezyTheme.cardSurface.opacity(0.35), location: 0.5),
+                                        .init(color: BreezyTheme.cardSurface.opacity(0.95), location: 0.88),
+                                        .init(color: BreezyTheme.cardSurface, location: 1)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                .frame(height: 36)
+                                .allowsHitTesting(false)
+                            }
+                            .frame(height: Self.bodyPreviewHeight)
+                            .clipped()
+                        }
+
                         if hasImageCover, !trimmedBody.isEmpty {
                             Text(entry.body)
                                 .font(BreezyTheme.appFont(size: 15))
@@ -131,31 +157,42 @@ struct EntryCardView: View {
     private var topBand: some View {
         if hasImageCover {
             coverView
-        } else if !trimmedBody.isEmpty {
-            ZStack(alignment: .bottom) {
-                DiaryBodyContentView(text: entry.body, compactMaxHeight: Self.topBandHeight)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 6)
-
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0),
-                        .init(color: BreezyTheme.cardSurface.opacity(0.25), location: 0.45),
-                        .init(color: BreezyTheme.cardSurface.opacity(0.92), location: 0.82),
-                        .init(color: BreezyTheme.cardSurface, location: 1)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: 52)
-                .allowsHitTesting(false)
-            }
-            .frame(maxWidth: .infinity)
-            .clipped()
         } else {
-            Rectangle()
-                .fill(BreezyTheme.secondarySurface.opacity(0.4))
+            placeholderCoverBand
         }
+    }
+
+    private var placeholderCoverBand: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    BreezyTheme.placeholderCoverTop,
+                    BreezyTheme.placeholderCoverBottom
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 12) {
+                ForEach(0..<3, id: \.self) { idx in
+                    Capsule()
+                        .fill(BreezyTheme.entryPlaceholderCapsuleBase.opacity(1.0 - Double(idx) * 0.12))
+                        .frame(width: 230 + CGFloat(idx * 30), height: 12)
+                        .offset(x: idx % 2 == 0 ? -28 : 30, y: CGFloat(idx * 8))
+                }
+            }
+
+            VStack(spacing: 8) {
+                Image(systemName: "book.pages.fill")
+                    .font(BreezyTheme.appFont(size: 28, weight: .semibold))
+                Text("Twelve")
+                    .font(BreezyTheme.handwrittenFont(size: 20))
+            }
+            .foregroundStyle(BreezyTheme.textPrimary.opacity(0.72))
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: Self.topBandHeight)
+        .clipped()
     }
 
     @ViewBuilder
