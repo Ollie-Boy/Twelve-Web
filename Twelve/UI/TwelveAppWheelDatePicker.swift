@@ -1,8 +1,15 @@
+import QuartzCore
 import SwiftUI
 import UIKit
 
-/// Subclasses `UIDatePicker` so we re-apply fonts after the wheel builds or scrolls its rows.
+/// Subclasses `UIDatePicker` so fonts stay correct while the wheel scrolls (system resets row views during tracking).
 final class TwelveStyledWheelDatePicker: UIDatePicker {
+    private var fontRefreshLink: CADisplayLink?
+
+    deinit {
+        stopFontRefreshLink()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         TwelveTheme.applyAppTypographyToWheelDatePicker(self)
@@ -10,12 +17,33 @@ final class TwelveStyledWheelDatePicker: UIDatePicker {
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        TwelveTheme.applyAppTypographyToWheelDatePicker(self)
-        // Wheels sometimes materialize row labels after the first layout pass.
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+        if window != nil {
+            startFontRefreshLink()
             TwelveTheme.applyAppTypographyToWheelDatePicker(self)
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                TwelveTheme.applyAppTypographyToWheelDatePicker(self)
+            }
+        } else {
+            stopFontRefreshLink()
         }
+    }
+
+    private func startFontRefreshLink() {
+        stopFontRefreshLink()
+        let link = CADisplayLink(target: self, selector: #selector(fontRefreshTick))
+        link.preferredFramesPerSecond = 30
+        link.add(to: .main, forMode: .common)
+        fontRefreshLink = link
+    }
+
+    private func stopFontRefreshLink() {
+        fontRefreshLink?.invalidate()
+        fontRefreshLink = nil
+    }
+
+    @objc private func fontRefreshTick() {
+        TwelveTheme.applyAppTypographyToWheelDatePicker(self)
     }
 }
 
@@ -105,16 +133,34 @@ extension TwelveTheme {
                 ? UIColor(red: 0.94, green: 0.95, blue: 0.97, alpha: 1)
                 : UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha: 1)
         }
-        func styleLabels(in view: UIView) {
-            if let label = view as? UILabel {
-                label.font = font
-                label.textColor = textColor
+
+        func applyToLabel(_ label: UILabel) {
+            if label.attributedText != nil {
+                let plain = label.attributedText?.string ?? label.text ?? ""
+                label.attributedText = nil
+                label.text = plain
             }
-            view.subviews.forEach { styleLabels(in: $0) }
+            label.font = font
+            label.textColor = textColor
         }
-        styleLabels(in: picker)
+
+        func styleViews(in view: UIView) {
+            if let label = view as? UILabel {
+                applyToLabel(label)
+            } else if let field = view as? UITextField {
+                field.font = font
+                field.textColor = textColor
+                var attrs = field.defaultTextAttributes
+                attrs[.font] = font
+                attrs[.foregroundColor] = textColor
+                field.defaultTextAttributes = attrs
+            }
+            view.subviews.forEach { styleViews(in: $0) }
+        }
+
+        styleViews(in: picker)
         picker.backgroundColor = TwelveTheme.backgroundSolidUIColor
-        // Wheel scroll views often use the grouped table background; tint to match the app sheet.
+
         func tintScrollViews(in view: UIView) {
             if let scroll = view as? UIScrollView {
                 scroll.backgroundColor = TwelveTheme.backgroundSolidUIColor
