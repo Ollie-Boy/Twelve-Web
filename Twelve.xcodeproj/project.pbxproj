@@ -31,6 +31,7 @@
         9A10000FA100000100000001 /* AttachmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000011A100000100000001 /* AttachmentService.swift */; };
         9A100010A100000100000001 /* MediaPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000012A100000100000001 /* MediaPicker.swift */; };
         9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000013A100000100000001 /* DiaryComposerSheet.swift */; };
+        9A100030A100000100000001 /* ComposerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */; };
         9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000014A100000100000001 /* DiaryReaderSheet.swift */; };
         9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000016A100000100000001 /* DiaryBodyContentView.swift */; };
         9A100016A100000100000001 /* marked.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000018A100000100000001 /* marked.min.js */; };
@@ -56,7 +57,7 @@
         B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */; };
         B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000EB100000100000001 /* LedgerSwipeActionRow.swift */; };
         B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000FB100000100000001 /* LedgerDecimalFormatting.swift */; };
-        B100023B100000100000001 /* LedgerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000010B100000100000001 /* LedgerLocationPickerSheet.swift */; };
+        B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */; };
         B100024B100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -87,6 +88,7 @@
         9A000011A100000100000001 /* AttachmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentService.swift; sourceTree = "<group>"; };
         9A000012A100000100000001 /* MediaPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPicker.swift; sourceTree = "<group>"; };
         9A000013A100000100000001 /* DiaryComposerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryComposerSheet.swift; sourceTree = "<group>"; };
+        9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerLocationPickerSheet.swift; sourceTree = "<group>"; };
         9A000014A100000100000001 /* DiaryReaderSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryReaderSheet.swift; sourceTree = "<group>"; };
         9A000016A100000100000001 /* DiaryBodyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryBodyContentView.swift; sourceTree = "<group>"; };
         9A000018A100000100000001 /* marked.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "marked.min.js"; sourceTree = "<group>"; };
@@ -105,7 +107,6 @@
         B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
         B00000EB100000100000001 /* LedgerSwipeActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSwipeActionRow.swift; sourceTree = "<group>"; };
         B00000FB100000100000001 /* LedgerDecimalFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDecimalFormatting.swift; sourceTree = "<group>"; };
-        B000010B100000100000001 /* LedgerLocationPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerLocationPickerSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,7 +175,6 @@
                 B00000CB100000100000001 /* LedgerDayPickerSheet.swift */,
                 B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
                 B00000EB100000100000001 /* LedgerSwipeActionRow.swift */,
-                B000010B100000100000001 /* LedgerLocationPickerSheet.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -273,6 +273,7 @@
                 9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */,
                 9A000012A100000100000001 /* MediaPicker.swift */,
                 9A000013A100000100000001 /* DiaryComposerSheet.swift */,
+                9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */,
                 9A000020A100000100000001 /* TwelveAppWheelDatePicker.swift */,
                 9A000014A100000100000001 /* DiaryReaderSheet.swift */,
                 9A000016A100000100000001 /* DiaryBodyContentView.swift */,
@@ -402,6 +403,7 @@
                 9A10000FA100000100000001 /* AttachmentService.swift in Sources */,
                 9A100010A100000100000001 /* MediaPicker.swift in Sources */,
                 9A100011A100000100000001 /* DiaryComposerSheet.swift in Sources */,
+                9A100030A100000100000001 /* ComposerLocationPickerSheet.swift in Sources */,
                 9A100020A100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */,
                 9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */,
                 9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */,
@@ -432,7 +434,7 @@
                 B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */,
                 B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */,
                 B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */,
-                B100023B100000100000001 /* LedgerLocationPickerSheet.swift in Sources */,
+                B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */,
                 B100024B100000100000001 /* LocationManager.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;

@@ -2,13 +2,12 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-/// Same interaction as diary composer: tap map for pin, confirm with checkmark, optional current location.
-struct LedgerLocationPickerSheet: View {
+/// Map location picker shared by diary composer and Ledger (identical layout and chrome).
+struct ComposerLocationPickerSheet: View {
     var onPickAddress: (String) -> Void
     var onClearAddress: () -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var locationManager = LocationManager()
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -21,7 +20,7 @@ struct LedgerLocationPickerSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LedgerComposerMapView(
+                ComposerLegacyMapView(
                     region: $region,
                     selectedCoordinate: $selectedCoordinate,
                     onTapCoordinate: { coordinate in
@@ -68,13 +67,9 @@ struct LedgerLocationPickerSheet: View {
                         Spacer()
                         VStack(spacing: 10) {
                             Button {
-                                locationManager.requestCurrentLocation()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                    useCurrentLocation()
-                                }
+                                useCurrentLocation()
                             } label: {
                                 Image(systemName: "location.fill")
-                                    .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                                     .frame(width: 36, height: 36)
                                     .background(TwelveTheme.surface, in: Circle())
                             }
@@ -82,7 +77,6 @@ struct LedgerLocationPickerSheet: View {
                                 useMapCenter()
                             } label: {
                                 Image(systemName: "checkmark")
-                                    .font(TwelveTheme.appFont(size: 16, weight: .bold))
                                     .frame(width: 36, height: 36)
                                     .background(TwelveTheme.primaryBlue, in: Circle())
                                     .foregroundStyle(.white)
@@ -92,30 +86,23 @@ struct LedgerLocationPickerSheet: View {
                 }
                 .padding(14)
             }
-            .background(TwelveTheme.background)
             .navigationTitle("Choose Location")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(TwelveTheme.background, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
-                        .font(TwelveTheme.appFont(size: 17))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("No Address") {
                         onClearAddress()
                         dismiss()
                     }
-                    .font(TwelveTheme.appFont(size: 17))
                 }
             }
             .onAppear {
-                locationManager.requestCurrentLocation()
                 useCurrentLocation()
             }
         }
-        .font(TwelveTheme.appFont(size: 16))
     }
 
     private func useCurrentLocation() {
@@ -162,7 +149,7 @@ struct LedgerLocationPickerSheet: View {
     }
 }
 
-private struct LedgerComposerMapView: UIViewRepresentable {
+struct ComposerLegacyMapView: UIViewRepresentable {
     @Binding var region: MKCoordinateRegion
     @Binding var selectedCoordinate: CLLocationCoordinate2D?
     var onTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
@@ -203,8 +190,8 @@ private struct LedgerComposerMapView: UIViewRepresentable {
     }
 
     final class Coordinator: NSObject, MKMapViewDelegate {
-        var parent: LedgerComposerMapView
-        init(parent: LedgerComposerMapView) { self.parent = parent }
+        var parent: ComposerLegacyMapView
+        init(parent: ComposerLegacyMapView) { self.parent = parent }
 
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
             parent.region = mapView.region

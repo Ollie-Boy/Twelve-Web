@@ -174,7 +174,7 @@ struct LedgerAddTransactionSheet: View {
                 timePickerSheet
             }
             .sheet(isPresented: $showMapPicker) {
-                LedgerLocationPickerSheet(
+                ComposerLocationPickerSheet(
                     onPickAddress: { locationText = $0 },
                     onClearAddress: { locationText = "" }
                 )
