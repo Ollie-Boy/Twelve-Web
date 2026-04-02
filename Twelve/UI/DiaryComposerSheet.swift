@@ -32,9 +32,7 @@ struct DiaryComposerSheet: View {
     @State private var showWeatherPicker = false
     @State private var datePickerDraftDate: Date = Date()
     @State private var timePickerDraftDate: Date = Date()
-    /// Forces a fresh `DatePicker` identity each time the sheet opens (avoids graphical calendar layout drift).
-    @State private var datePickerSheetIdentity = UUID()
-    @State private var timePickerSheetIdentity = UUID()
+    @State private var datePickerDisplayedMonthStart: Date = DiaryComposerSheet.monthAnchor(for: Date())
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -78,8 +76,10 @@ struct DiaryComposerSheet: View {
 
                         Button {
                             dismissKeyboard()
-                            datePickerDraftDate = entryDate
-                            datePickerSheetIdentity = UUID()
+                            let cal = Calendar.current
+                            let start = cal.startOfDay(for: entryDate)
+                            datePickerDraftDate = start
+                            datePickerDisplayedMonthStart = Self.monthAnchor(for: start)
                             showDatePicker = true
                         } label: {
                             HStack(spacing: 6) {
@@ -100,7 +100,6 @@ struct DiaryComposerSheet: View {
                         Button {
                             dismissKeyboard()
                             timePickerDraftDate = entryDate
-                            timePickerSheetIdentity = UUID()
                             showTimePicker = true
                         } label: {
                             HStack(spacing: 6) {
@@ -307,24 +306,32 @@ struct DiaryComposerSheet: View {
             .sheet(isPresented: $showDatePicker) {
                 NavigationStack {
                     ScrollView {
-                        DatePicker(
-                            "Date",
-                            selection: $datePickerDraftDate,
-                            displayedComponents: .date
+                        CartoonMonthCalendar(
+                            selectedDay: Binding(
+                                get: { Calendar.current.startOfDay(for: datePickerDraftDate) },
+                                set: { datePickerDraftDate = $0 }
+                            ),
+                            displayedMonthStart: $datePickerDisplayedMonthStart,
+                            entryDates: []
                         )
-                        .datePickerStyle(.graphical)
-                        .labelsHidden()
-                        .tint(TwelveTheme.primaryBlueDark.opacity(0.75))
-                        .id(datePickerSheetIdentity)
-                        .frame(maxWidth: .infinity, alignment: .top)
+                        .padding(.top, 4)
                     }
                     .scrollBounceBehavior(.basedOnSize)
-                    .padding(18)
-                    .navigationTitle("Choose Date")
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 18)
+                    .background(TwelveTheme.background)
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbarBackground(TwelveTheme.background, for: .navigationBar)
+                    .toolbarBackground(.visible, for: .navigationBar)
                     .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("Choose Date")
+                                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textPrimary)
+                        }
                         ToolbarItem(placement: .topBarLeading) {
                             Button("Cancel") { showDatePicker = false }
+                                .font(TwelveTheme.appFont(size: 17))
                         }
                         ToolbarItem(placement: .topBarTrailing) {
                             Button("Done") {
@@ -342,6 +349,7 @@ struct DiaryComposerSheet: View {
                                 }
                                 showDatePicker = false
                             }
+                            .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                         }
                     }
                 }
@@ -350,26 +358,29 @@ struct DiaryComposerSheet: View {
             }
             .sheet(isPresented: $showTimePicker) {
                 NavigationStack {
-                    VStack(alignment: .leading, spacing: 0) {
-                        DatePicker(
-                            "Time",
+                    VStack(spacing: 0) {
+                        TwelveAppWheelDatePicker(
                             selection: $timePickerDraftDate,
-                            displayedComponents: .hourAndMinute
+                            mode: .time,
+                            minuteInterval: 1
                         )
-                        .datePickerStyle(.wheel)
-                        .labelsHidden()
-                        .tint(TwelveTheme.primaryBlueDark.opacity(0.75))
-                        .id(timePickerSheetIdentity)
-                        .frame(maxWidth: .infinity, alignment: .center)
                         .frame(height: 216)
                         .clipped()
                     }
                     .padding(18)
-                    .navigationTitle("Choose Time")
+                    .background(TwelveTheme.background)
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbarBackground(TwelveTheme.background, for: .navigationBar)
+                    .toolbarBackground(.visible, for: .navigationBar)
                     .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("Choose Time")
+                                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textPrimary)
+                        }
                         ToolbarItem(placement: .topBarLeading) {
                             Button("Cancel") { showTimePicker = false }
+                                .font(TwelveTheme.appFont(size: 17))
                         }
                         ToolbarItem(placement: .topBarTrailing) {
                             Button("Done") {
@@ -380,6 +391,7 @@ struct DiaryComposerSheet: View {
                                 }
                                 showTimePicker = false
                             }
+                            .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                         }
                     }
                 }
@@ -432,7 +444,7 @@ struct DiaryComposerSheet: View {
                 including: .gesture
             )
         }
-        // Root app uses handwritten body font; reset here so DatePicker, lists, and nav use rounded UI typography.
+        // Root app uses handwritten body font; reset here so lists and nav use rounded UI typography.
         .font(TwelveTheme.appFont(size: 16))
     }
 
@@ -443,6 +455,13 @@ struct DiaryComposerSheet: View {
         case .edit:
             return "Edit Entry"
         }
+    }
+
+    private static func monthAnchor(for date: Date) -> Date {
+        let cal = Calendar.current
+        let day = cal.startOfDay(for: date)
+        let c = cal.dateComponents([.year, .month], from: day)
+        return cal.date(from: c) ?? day
     }
 
     private var attachmentsSection: some View {
