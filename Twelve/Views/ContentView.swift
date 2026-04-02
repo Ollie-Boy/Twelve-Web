@@ -123,20 +123,12 @@ struct ContentView: View {
                 .font(TwelveTheme.handwrittenFont(size: 40))
                 .foregroundStyle(TwelveTheme.textPrimary)
             Spacer(minLength: 8)
-            HStack(spacing: 8) {
+            HStack(spacing: 10) {
                 Button {
                     showDayPickerSheet = true
                 } label: {
-                    Image(systemName: "calendar.circle.fill")
-                        .font(.system(size: 24, weight: .medium, design: .rounded))
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(TwelveTheme.primaryBlue, TwelveTheme.softBlue)
+                    SketchCalendarIcon(size: 28)
                         .frame(width: 44, height: 44)
-                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(TwelveTheme.hairline, lineWidth: 1)
-                        )
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -152,24 +144,16 @@ struct ContentView: View {
                                     .font(TwelveTheme.appFont(size: 16))
                                 Spacer(minLength: 10)
                                 if appearance.preference == option {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                                    Image(systemName: "checkmark")
+                                        .font(TwelveTheme.appFont(size: 14, weight: .bold))
                                         .foregroundStyle(TwelveTheme.primaryBlue)
                                 }
                             }
                         }
                     }
                 } label: {
-                    Image(systemName: "paintpalette.fill")
-                        .font(.system(size: 22, weight: .medium, design: .rounded))
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(TwelveTheme.primaryBlue, TwelveTheme.accentYellow.opacity(0.95))
+                    SketchPaletteIcon(size: 28)
                         .frame(width: 44, height: 44)
-                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(TwelveTheme.hairline, lineWidth: 1)
-                        )
                         .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Appearance")
@@ -252,9 +236,7 @@ struct ContentView: View {
                         endPoint: .bottomTrailing
                     )
                 )
-                Image(systemName: "plus")
-                    .font(.system(size: 26, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
+                SketchPlusIcon(size: 30, color: .white, lineWidth: 3.4)
             }
             .frame(width: 58, height: 58)
             .shadow(color: TwelveTheme.primaryBlue.opacity(0.35), radius: 14, y: 8)

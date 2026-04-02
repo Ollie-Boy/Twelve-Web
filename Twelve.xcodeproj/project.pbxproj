@@ -12,6 +12,7 @@
         9A100002A100000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000002A100000100000001 /* ContentView.swift */; };
         9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
         9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */; };
+        9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
         9A100004A100000100000001 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000004A100000100000001 /* DiaryEntry.swift */; };
         9A100005A100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
         9A100006A100000100000001 /* DiaryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000006A100000100000001 /* DiaryStorage.swift */; };
@@ -38,6 +39,7 @@
         9A000002A100000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
         9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
         9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDayPickerSheet.swift; sourceTree = "<group>"; };
+        9A00001CA100000100000001 /* SketchToolbarIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchToolbarIcons.swift; sourceTree = "<group>"; };
         9A000004A100000100000001 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
         9A000005A100000100000001 /* WeatherOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherOption.swift; sourceTree = "<group>"; };
         9A000006A100000100000001 /* DiaryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryStorage.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
                 9A000002A100000100000001 /* ContentView.swift */,
                 9A000003A100000100000001 /* EntryCardView.swift */,
                 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */,
+                9A00001CA100000100000001 /* SketchToolbarIcons.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -233,6 +236,7 @@
                 9A100002A100000100000001 /* ContentView.swift in Sources */,
                 9A100003A100000100000001 /* EntryCardView.swift in Sources */,
                 9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */,
+                9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */,
                 9A100004A100000100000001 /* DiaryEntry.swift in Sources */,
                 9A100005A100000100000001 /* WeatherOption.swift in Sources */,
                 9A100006A100000100000001 /* DiaryStorage.swift in Sources */,
