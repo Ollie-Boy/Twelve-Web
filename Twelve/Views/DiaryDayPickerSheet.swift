@@ -69,10 +69,8 @@ struct DiaryDayPickerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Jump to day")
-                        .font(TwelveTheme.handwrittenFont(size: 22))
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textPrimary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
