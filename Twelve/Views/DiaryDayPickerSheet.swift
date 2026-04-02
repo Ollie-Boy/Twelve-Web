@@ -7,6 +7,7 @@ struct DiaryDayPickerSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedDay: Date = Calendar.current.startOfDay(for: Date())
+    @State private var displayedMonthStart: Date = Calendar.current.startOfDay(for: Date())
 
     private var calendar: Calendar { Calendar.current }
 
@@ -17,16 +18,12 @@ struct DiaryDayPickerSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    DatePicker(
-                        "",
-                        selection: $selectedDay,
-                        displayedComponents: .date
+                VStack(alignment: .leading, spacing: 20) {
+                    CartoonMonthCalendar(
+                        selectedDay: $selectedDay,
+                        displayedMonthStart: $displayedMonthStart,
+                        entryDates: entryDatesByStartOfDay
                     )
-                    .datePickerStyle(.graphical)
-                    .labelsHidden()
-                    .tint(TwelveTheme.primaryBlueDark.opacity(0.85))
-                    .padding(.horizontal, 4)
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text(selectedDay.formatted(date: .complete, time: .omitted))
@@ -74,9 +71,23 @@ struct DiaryDayPickerSheet: View {
                         .font(TwelveTheme.appFont(size: 17))
                 }
             }
+            .onAppear {
+                let start = calendar.startOfDay(for: selectedDay)
+                selectedDay = start
+                displayedMonthStart = startOfMonth(containing: start)
+            }
         }
         .presentationDetents([.large])
         .font(TwelveTheme.appFont(size: 16))
+    }
+
+    private var entryDatesByStartOfDay: Set<Date> {
+        Set(entries.map { calendar.startOfDay(for: $0.selectedDate) })
+    }
+
+    private func startOfMonth(containing date: Date) -> Date {
+        let c = calendar.dateComponents([.year, .month], from: date)
+        return calendar.date(from: c) ?? date
     }
 
     private func entries(on day: Date) -> [DiaryEntry] {
@@ -113,5 +124,173 @@ struct DiaryDayPickerSheet: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .stroke(TwelveTheme.hairline, lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Cartoon month grid (replaces system DatePicker)
+
+private struct CartoonMonthCalendar: View {
+    @Binding var selectedDay: Date
+    @Binding var displayedMonthStart: Date
+    let entryDates: Set<Date>
+
+    private var calendar: Calendar { Calendar.current }
+
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
+
+    private var orderedShortWeekdays: [String] {
+        let syms = calendar.shortWeekdaySymbols
+        guard syms.count == 7 else { return syms }
+        let start = (calendar.firstWeekday - 1) % 7
+        return (0..<7).map { syms[(start + $0) % 7] }
+    }
+
+    var body: some View {
+        VStack(spacing: 14) {
+            monthHeader
+
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(Array(orderedShortWeekdays.enumerated()), id: \.offset) { _, sym in
+                    Text(sym.uppercased())
+                        .font(TwelveTheme.appFont(size: 11, weight: .bold))
+                        .foregroundStyle(TwelveTheme.textTertiary)
+                        .frame(maxWidth: .infinity)
+                }
+
+                ForEach(0..<leadingBlankCount, id: \.self) { _ in
+                    Color.clear.frame(height: 44)
+                }
+
+                ForEach(daysInMonth, id: \.self) { day in
+                    dayCell(day: day)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(TwelveTheme.surface)
+                .shadow(color: TwelveTheme.primaryBlue.opacity(0.12), radius: 1, x: 3, y: 4)
+                .shadow(color: Color.black.opacity(0.06), radius: 14, y: 8)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .stroke(TwelveTheme.primaryBlue.opacity(0.15), lineWidth: 2)
+        )
+    }
+
+    private var monthHeader: some View {
+        HStack(spacing: 12) {
+            monthNavButton(delta: -1, label: "‹")
+
+            Text(displayedMonthStart.formatted(.dateTime.month(.wide).year()))
+                .font(TwelveTheme.handwrittenFont(size: 26))
+                .foregroundStyle(TwelveTheme.textPrimary)
+                .minimumScaleFactor(0.75)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+
+            monthNavButton(delta: 1, label: "›")
+        }
+    }
+
+    private func monthNavButton(delta: Int, label: String) -> some View {
+        Button {
+            shiftMonth(by: delta)
+        } label: {
+            Text(label)
+                .font(TwelveTheme.handwrittenFont(size: 28))
+                .foregroundStyle(TwelveTheme.primaryBlue)
+                .frame(width: 44, height: 44)
+                .background(TwelveTheme.softBlue.opacity(0.65), in: Circle())
+                .overlay(Circle().stroke(TwelveTheme.primaryBlue.opacity(0.2), lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var firstOfDisplayedMonth: Date {
+        let c = calendar.dateComponents([.year, .month], from: displayedMonthStart)
+        return calendar.date(from: c) ?? displayedMonthStart
+    }
+
+    private var daysInMonth: [Int] {
+        guard let range = calendar.range(of: .day, in: .month, for: firstOfDisplayedMonth) else { return [] }
+        return Array(range)
+    }
+
+    private var leadingBlankCount: Int {
+        let first = firstOfDisplayedMonth
+        let weekday = calendar.component(.weekday, from: first)
+        let firstWeekday = calendar.firstWeekday
+        return (weekday - firstWeekday + 7) % 7
+    }
+
+    private func shiftMonth(by delta: Int) {
+        guard let next = calendar.date(byAdding: .month, value: delta, to: firstOfDisplayedMonth) else { return }
+        displayedMonthStart = next
+    }
+
+    private func dateForDay(_ day: Int) -> Date {
+        calendar.date(byAdding: .day, value: day - 1, to: firstOfDisplayedMonth) ?? firstOfDisplayedMonth
+    }
+
+    @ViewBuilder
+    private func dayCell(day: Int) -> some View {
+        let date = calendar.startOfDay(for: dateForDay(day))
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDay)
+        let hasEntries = entryDates.contains(date)
+        let isToday = calendar.isDateInToday(date)
+
+        Button {
+            selectedDay = date
+        } label: {
+            ZStack(alignment: .bottom) {
+                Text("\(day)")
+                    .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                    .foregroundStyle(isSelected ? Color.white : TwelveTheme.textPrimary)
+
+                if hasEntries && !isSelected {
+                    Circle()
+                        .fill(TwelveTheme.primaryBlue)
+                        .frame(width: 5, height: 5)
+                        .offset(y: 2)
+                } else if hasEntries && isSelected {
+                    Circle()
+                        .fill(Color.white.opacity(0.85))
+                        .frame(width: 4, height: 4)
+                        .offset(y: 2)
+                }
+            }
+            .frame(height: 44)
+            .frame(maxWidth: .infinity)
+            .background(
+                Group {
+                    if isSelected {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    } else if hasEntries {
+                        Circle()
+                            .fill(TwelveTheme.softBlue.opacity(0.45))
+                    } else {
+                        Circle()
+                            .fill(Color.clear)
+                    }
+                }
+            )
+            .overlay(
+                Circle()
+                    .stroke(
+                        isToday ? TwelveTheme.accentYellow : Color.clear,
+                        lineWidth: isToday ? 2.5 : 0
+                    )
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
