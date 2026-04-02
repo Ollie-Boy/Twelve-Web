@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Twelve app icon: soft sky + rounded card + simple stick figure (Pillow)."""
+"""Generate Twelve app icon: sky + rounded card + stick figure (hollow head, upper body only, fills frame)."""
 
 from __future__ import annotations
 
@@ -27,37 +27,48 @@ def draw_icon(size: int) -> Image.Image:
 
     draw = ImageDraw.Draw(img)
     s = size / 1024.0
-    pad = int(88 * s)
+    pad = int(56 * s)
+    corner_r = int(200 * s)
+    line = max(5, int(17 * s))
+    head_line = max(4, int(13 * s))
+    ink = (28, 52, 110, 255)
+    card_white = (255, 255, 255, 255)
+    rim = (0, 110, 230, 255)
+
     draw.rounded_rectangle(
         [pad, pad, size - pad, size - pad],
-        radius=int(190 * s),
-        fill=(255, 255, 255, 255),
-        outline=(0, 122, 255, 255),
-        width=max(4, int(14 * s)),
+        radius=corner_r,
+        fill=card_white,
+        outline=rim,
+        width=max(4, int(12 * s)),
     )
 
     cx = size // 2
-    head_y = int(320 * s) + pad // 2
-    head_r = int(62 * s)
-    draw.ellipse(
-        [cx - head_r, head_y - head_r, cx + head_r, head_y + head_r],
-        fill=(40, 55, 95, 255),
-        outline=(0, 90, 210, 255),
-        width=max(2, int(6 * s)),
-    )
+    # Inner content area (inside blue rim)
+    inset = pad + int(22 * s)
+    inner_h = (size - inset) - inset
 
-    body_top = head_y + head_r + int(8 * s)
-    body_bot = int(size * 0.72)
-    draw.line([(cx, body_top), (cx, body_bot)], fill=(40, 55, 95, 255), width=max(5, int(14 * s)))
+    # Large hollow head (white interior reads as empty ring on white card)
+    head_r = int(0.19 * inner_h)
+    head_cy = inset + head_r + int(0.04 * inner_h)
+    hb = [
+        cx - head_r,
+        head_cy - head_r,
+        cx + head_r,
+        head_cy + head_r,
+    ]
+    draw.ellipse(hb, fill=card_white, outline=ink, width=head_line)
 
-    arm_y = body_top + int(40 * s)
-    arm_w = int(120 * s)
-    draw.line([(cx - arm_w, arm_y), (cx + arm_w, arm_y)], fill=(40, 55, 95, 255), width=max(5, int(14 * s)))
+    shoulder_y = head_cy + head_r + int(0.035 * inner_h)
+    torso_bot = size - inset - int(0.06 * inner_h)
 
-    leg_spread = int(95 * s)
-    foot_y = int(size * 0.78)
-    draw.line([(cx, body_bot), (cx - leg_spread, foot_y)], fill=(40, 55, 95, 255), width=max(5, int(14 * s)))
-    draw.line([(cx, body_bot), (cx + leg_spread, foot_y)], fill=(40, 55, 95, 255), width=max(5, int(14 * s)))
+    # Torso
+    draw.line([(cx, shoulder_y), (cx, torso_bot)], fill=ink, width=line)
+
+    # Arms (one line across chest)
+    arm_y = shoulder_y + int(0.11 * inner_h)
+    arm_half = int(0.36 * (size - 2 * inset) * 0.5)
+    draw.line([(cx - arm_half, arm_y), (cx + arm_half, arm_y)], fill=ink, width=line)
 
     return img
 
