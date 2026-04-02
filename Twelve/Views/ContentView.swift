@@ -119,52 +119,61 @@ struct ContentView: View {
 
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
-            Button {
-                showDayPickerSheet = true
-            } label: {
-                Image(systemName: "calendar")
-                    .font(TwelveTheme.appFont(size: 20, weight: .medium))
-                    .foregroundStyle(TwelveTheme.primaryBlue)
-                    .frame(width: 44, height: 44)
-                    .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(TwelveTheme.hairline, lineWidth: 1)
-                    )
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Jump to date")
-
             Text("Twelve")
                 .font(TwelveTheme.handwrittenFont(size: 40))
                 .foregroundStyle(TwelveTheme.textPrimary)
             Spacer(minLength: 8)
-            Menu {
-                ForEach(AppearancePreference.allCases) { option in
-                    Button {
-                        appearance.setPreference(option)
-                    } label: {
-                        HStack {
-                            Text(option.title)
-                                .font(TwelveTheme.appFont(size: 16))
-                            Spacer(minLength: 10)
-                            if appearance.preference == option {
-                                Image(systemName: "checkmark")
-                                    .font(TwelveTheme.appFont(size: 14, weight: .semibold))
-                                    .foregroundStyle(TwelveTheme.primaryBlue)
+            HStack(spacing: 8) {
+                Button {
+                    showDayPickerSheet = true
+                } label: {
+                    Image(systemName: "calendar.circle.fill")
+                        .font(.system(size: 24, weight: .medium, design: .rounded))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(TwelveTheme.primaryBlue, TwelveTheme.softBlue)
+                        .frame(width: 44, height: 44)
+                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(TwelveTheme.hairline, lineWidth: 1)
+                        )
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Jump to date")
+
+                Menu {
+                    ForEach(AppearancePreference.allCases) { option in
+                        Button {
+                            appearance.setPreference(option)
+                        } label: {
+                            HStack {
+                                Text(option.title)
+                                    .font(TwelveTheme.appFont(size: 16))
+                                Spacer(minLength: 10)
+                                if appearance.preference == option {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                                        .foregroundStyle(TwelveTheme.primaryBlue)
+                                }
                             }
                         }
                     }
+                } label: {
+                    Image(systemName: "paintpalette.fill")
+                        .font(.system(size: 22, weight: .medium, design: .rounded))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(TwelveTheme.primaryBlue, TwelveTheme.accentYellow.opacity(0.95))
+                        .frame(width: 44, height: 44)
+                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(TwelveTheme.hairline, lineWidth: 1)
+                        )
+                        .contentShape(Rectangle())
                 }
-            } label: {
-                Image(systemName: "circle.lefthalf.filled")
-                    .font(TwelveTheme.appFont(size: 20, weight: .medium))
-                    .foregroundStyle(TwelveTheme.primaryBlue)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+                .accessibilityLabel("Appearance")
             }
-            .accessibilityLabel("Appearance")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -235,21 +244,22 @@ struct ContentView: View {
         Button {
             isComposerPresented = true
         } label: {
-            Image(systemName: "plus")
-                .font(TwelveTheme.appFont(size: 18, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 56, height: 56)
-                .background(
-                    Circle().fill(
-                        LinearGradient(
-                            colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+            ZStack {
+                Circle().fill(
+                    LinearGradient(
+                        colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                 )
-                .shadow(color: TwelveTheme.primaryBlue.opacity(0.3), radius: 12, y: 7)
+                Image(systemName: "plus")
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 58, height: 58)
+            .shadow(color: TwelveTheme.primaryBlue.opacity(0.35), radius: 14, y: 8)
         }
+        .buttonStyle(.plain)
         .padding(.trailing, 20)
         .padding(.bottom, 24)
     }
