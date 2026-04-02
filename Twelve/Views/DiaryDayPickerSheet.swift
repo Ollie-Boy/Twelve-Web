@@ -212,7 +212,7 @@ private struct CartoonMonthCalendar: View {
             monthNavButton(delta: -1, label: "‹")
 
             Text(firstOfDisplayedMonth.formatted(.dateTime.month(.wide).year()))
-                .font(TwelveTheme.handwrittenFont(size: 26))
+                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(TwelveTheme.textPrimary)
                 .minimumScaleFactor(0.75)
                 .lineLimit(1)

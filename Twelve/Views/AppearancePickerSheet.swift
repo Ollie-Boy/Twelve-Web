@@ -7,11 +7,6 @@ struct AppearancePickerSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 18) {
-                Text("Look & feel")
-                    .font(TwelveTheme.handwrittenFont(size: 28))
-                    .foregroundStyle(TwelveTheme.textPrimary)
-                    .frame(maxWidth: .infinity)
-
                 VStack(spacing: 12) {
                     ForEach(AppearancePreference.allCases) { option in
                         appearanceOptionButton(option)
@@ -30,7 +25,7 @@ struct AppearancePickerSheet: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Appearance")
+                    Text("Look & feel")
                         .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textPrimary)
                 }

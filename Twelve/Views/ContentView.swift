@@ -147,7 +147,7 @@ struct ContentView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Appearance")
+                .accessibilityLabel("Look and feel")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
