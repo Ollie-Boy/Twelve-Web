@@ -150,7 +150,9 @@ struct LedgerAddTransactionSheet: View {
             HStack(spacing: 6) {
                 kindPill(.expense)
                 kindPill(.income)
-                kindPill(.refund)
+                if case .edit = mode {
+                    kindPill(.refund)
+                }
             }
         }
     }
@@ -345,7 +347,7 @@ struct LedgerAddTransactionSheet: View {
         switch mode {
         case .create:
             transactionDate = Date()
-            kind = .expense
+            kind = .expense // Refund is only available when editing
             amountText = ""
             category = ""
             note = ""

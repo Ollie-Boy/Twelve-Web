@@ -54,6 +54,7 @@
         B100018B100000100000001 /* LedgerCurrencyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000BB100000100000001 /* LedgerCurrencyStore.swift */; };
         B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000CB100000100000001 /* LedgerDayPickerSheet.swift */; };
         B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */; };
+        B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000EB100000100000001 /* LedgerSwipeActionRow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -99,6 +100,7 @@
         B00000BB100000100000001 /* LedgerCurrencyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyStore.swift; sourceTree = "<group>"; };
         B00000CB100000100000001 /* LedgerDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDayPickerSheet.swift; sourceTree = "<group>"; };
         B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
+        B00000EB100000100000001 /* LedgerSwipeActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSwipeActionRow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
                 B000003B100000100000001 /* LedgerAddTransactionSheet.swift */,
                 B00000CB100000100000001 /* LedgerDayPickerSheet.swift */,
                 B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
+                B00000EB100000100000001 /* LedgerSwipeActionRow.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -412,6 +415,7 @@
                 B100018B100000100000001 /* LedgerCurrencyStore.swift in Sources */,
                 B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */,
                 B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */,
+                B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };

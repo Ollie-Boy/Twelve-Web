@@ -46,15 +46,6 @@ struct AppearancePickerSheet: View {
             dismiss()
         } label: {
             HStack(spacing: 14) {
-                ZStack {
-                    Circle()
-                        .fill(isOn ? TwelveTheme.softBlue.opacity(0.55) : TwelveTheme.secondarySurface)
-                        .frame(width: 40, height: 40)
-                    Text(optionShortLabel(option))
-                        .font(TwelveTheme.handwrittenFont(size: 18))
-                        .foregroundStyle(TwelveTheme.primaryBlue)
-                }
-
                 Text(option.title)
                     .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                     .foregroundStyle(TwelveTheme.textPrimary)
@@ -63,7 +54,7 @@ struct AppearancePickerSheet: View {
 
                 if isOn {
                     Text("✓")
-                        .font(TwelveTheme.handwrittenFont(size: 22))
+                        .font(TwelveTheme.appFont(size: 16, weight: .bold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                 }
             }
@@ -80,14 +71,6 @@ struct AppearancePickerSheet: View {
             )
         }
         .buttonStyle(.plain)
-    }
-
-    private func optionShortLabel(_ option: AppearancePreference) -> String {
-        switch option {
-        case .system: return "Aa"
-        case .light: return "Sun"
-        case .dark: return "Moon"
-        }
     }
 }
 

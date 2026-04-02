@@ -10,16 +10,25 @@ struct LedgerRootView: View {
     @State private var showAppearanceSheet = false
     @State private var showDayPickerSheet = false
     @State private var showCurrencySheet = false
+    @State private var summaryMonthSelection: Date = LedgerRootView.startOfMonth(for: Date())
 
     private let storage = LedgerStorage()
 
-    private var monthSummary: (income: Decimal, expense: Decimal) {
+    private var summaryPageMonths: [Date] {
+        var set = Set<Date>()
+        set.insert(Self.startOfMonth(for: Date()))
+        for e in entries {
+            set.insert(Self.startOfMonth(for: e.date))
+        }
+        return set.sorted()
+    }
+
+    private func monthSummary(for monthStart: Date) -> (income: Decimal, expense: Decimal) {
         let cal = Calendar.current
-        let now = Date()
         var income: Decimal = 0
         var expense: Decimal = 0
         for e in entries {
-            guard cal.isDate(e.date, equalTo: now, toGranularity: .month) else { continue }
+            guard cal.isDate(e.date, equalTo: monthStart, toGranularity: .month) else { continue }
             switch e.kind {
             case .expense:
                 expense += e.amount
@@ -52,6 +61,10 @@ struct LedgerRootView: View {
         .onAppear {
             entries = storage.loadEntries()
             sortEntries()
+            syncSummaryMonthSelection()
+        }
+        .onChange(of: entries) { _, _ in
+            syncSummaryMonthSelection()
         }
         .sheet(isPresented: $showAddSheet) {
             LedgerAddTransactionSheet(
@@ -104,6 +117,26 @@ struct LedgerRootView: View {
         }
     }
 
+    private func syncSummaryMonthSelection() {
+        let pages = summaryPageMonths
+        guard !pages.isEmpty else {
+            summaryMonthSelection = Self.startOfMonth(for: Date())
+            return
+        }
+        if !pages.contains(where: { Calendar.current.isDate($0, equalTo: summaryMonthSelection, toGranularity: .month) }) {
+            let current = Self.startOfMonth(for: Date())
+            summaryMonthSelection = pages.contains(where: { Calendar.current.isDate($0, equalTo: current, toGranularity: .month) })
+                ? current
+                : (pages.last ?? current)
+        }
+    }
+
+    private static func startOfMonth(for date: Date) -> Date {
+        let cal = Calendar.current
+        let c = cal.dateComponents([.year, .month], from: date)
+        return cal.date(from: c) ?? date
+    }
+
     private var statusBarBlurStrip: some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
@@ -140,11 +173,10 @@ struct LedgerRootView: View {
                     showCurrencySheet = true
                 } label: {
                     Text(currency.currencyCode)
-                        .font(TwelveTheme.appFont(size: 13, weight: .bold))
+                        .font(TwelveTheme.appFont(size: 14, weight: .bold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(minWidth: 44, minHeight: 44)
-                        .background(TwelveTheme.softBlue.opacity(0.55), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(TwelveTheme.primaryBlue.opacity(0.2), lineWidth: 1))
+                        .frame(minWidth: 40, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Currency")
@@ -164,12 +196,29 @@ struct LedgerRootView: View {
     }
 
     private var summaryPanel: some View {
-        let s = monthSummary
+        let pages = summaryPageMonths
+        return VStack(spacing: 10) {
+            TabView(selection: $summaryMonthSelection) {
+                ForEach(pages, id: \.self) { anchor in
+                    summaryPageContent(monthStart: anchor)
+                        .padding(.horizontal, 4)
+                        .tag(anchor)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 168)
+        }
+        .cartoonPanelChrome()
+    }
+
+    private func summaryPageContent(monthStart: Date) -> some View {
+        let s = monthSummary(for: monthStart)
         let net = s.income - s.expense
         return VStack(alignment: .leading, spacing: 12) {
-            Text(Date().formatted(.dateTime.month(.wide).year()))
+            Text(monthStart.formatted(.dateTime.month(.wide).year()))
                 .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(TwelveTheme.textPrimary)
+                .frame(maxWidth: .infinity)
 
             HStack(spacing: 16) {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
@@ -180,8 +229,6 @@ struct LedgerRootView: View {
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .cartoonPanelChrome()
     }
 
     private func summaryChip(title: String, value: Decimal, color: Color) -> some View {
@@ -234,57 +281,47 @@ struct LedgerRootView: View {
 
     private func transactionRow(_ entry: LedgerEntry) -> some View {
         let note = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
-        return HStack(alignment: .center, spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 8) {
-                    Text(entry.category)
-                        .font(TwelveTheme.appFont(size: 16, weight: .semibold))
-                        .foregroundStyle(TwelveTheme.textPrimary)
-                    if entry.kind == .refund {
-                        Text("Refund")
-                            .font(TwelveTheme.appFont(size: 10, weight: .bold))
-                            .foregroundStyle(TwelveTheme.primaryBlueDark)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 2)
-                            .background(TwelveTheme.softBlue.opacity(0.5), in: Capsule())
+        return LedgerSwipeActionRow(
+            onEdit: { entryToEdit = entry },
+            onDelete: { pendingDeletion = entry }
+        ) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(entry.category)
+                            .font(TwelveTheme.appFont(size: 16, weight: .semibold))
+                            .foregroundStyle(TwelveTheme.textPrimary)
+                        if entry.kind == .refund {
+                            Text("Refund")
+                                .font(TwelveTheme.appFont(size: 10, weight: .bold))
+                                .foregroundStyle(TwelveTheme.primaryBlueDark)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 2)
+                                .background(TwelveTheme.softBlue.opacity(0.5), in: Capsule())
+                        }
                     }
+                    if !note.isEmpty {
+                        Text(note)
+                            .font(TwelveTheme.appFont(size: 13))
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                            .lineLimit(2)
+                    }
+                    Text(entry.date.formatted(date: .abbreviated, time: .shortened))
+                        .font(TwelveTheme.appFont(size: 12))
+                        .foregroundStyle(TwelveTheme.textTertiary)
                 }
-                if !note.isEmpty {
-                    Text(note)
-                        .font(TwelveTheme.appFont(size: 13))
-                        .foregroundStyle(TwelveTheme.textSecondary)
-                        .lineLimit(2)
-                }
-                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(TwelveTheme.appFont(size: 12))
-                    .foregroundStyle(TwelveTheme.textTertiary)
+                Spacer(minLength: 8)
+                Text(rowAmountLabel(entry))
+                    .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                    .foregroundStyle(rowAmountColor(entry))
             }
-            Spacer(minLength: 8)
-            Text(rowAmountLabel(entry))
-                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
-                .foregroundStyle(rowAmountColor(entry))
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(TwelveTheme.hairline, lineWidth: 1)
-        )
-        .onLongPressGesture {
-            entryToEdit = entry
-        }
-        .contextMenu {
-            Button {
-                entryToEdit = entry
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            Button(role: .destructive) {
-                pendingDeletion = entry
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(TwelveTheme.hairline, lineWidth: 1)
+            )
         }
     }
 
