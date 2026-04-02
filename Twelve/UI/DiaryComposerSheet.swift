@@ -314,11 +314,11 @@ struct DiaryComposerSheet: View {
                             displayedMonthStart: $datePickerDisplayedMonthStart,
                             entryDates: []
                         )
-                        .padding(.top, 4)
+                        .padding(.top, 12)
+                        .padding(.bottom, 28)
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .padding(.horizontal, 18)
-                    .padding(.bottom, 18)
                     .background(TwelveTheme.background)
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbarBackground(TwelveTheme.background, for: .navigationBar)
@@ -354,20 +354,24 @@ struct DiaryComposerSheet: View {
                     }
                 }
                 .font(TwelveTheme.appFont(size: 16))
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.height(580), .large])
+                .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showTimePicker) {
                 NavigationStack {
-                    VStack(spacing: 0) {
+                    ZStack {
+                        TwelveTheme.background
+                            .ignoresSafeArea()
                         TwelveAppWheelDatePicker(
                             selection: $timePickerDraftDate,
                             mode: .time,
                             minuteInterval: 1
                         )
-                        .frame(height: 216)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 232)
                         .clipped()
                     }
-                    .padding(18)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(TwelveTheme.background)
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbarBackground(TwelveTheme.background, for: .navigationBar)
@@ -396,7 +400,8 @@ struct DiaryComposerSheet: View {
                     }
                 }
                 .font(TwelveTheme.appFont(size: 16))
-                .presentationDetents([.fraction(0.35)])
+                .presentationDetents([.height(320), .fraction(0.4)])
+                .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showWeatherPicker) {
                 NavigationStack {

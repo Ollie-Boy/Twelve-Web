@@ -24,6 +24,15 @@ enum TwelveTheme {
         endPoint: .bottom
     )
 
+    /// Solid UIKit color aligned with the sheet gradient (for `UIDatePicker` chrome behind wheels).
+    static var backgroundSolidUIColor: UIColor {
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.07, green: 0.09, blue: 0.13, alpha: 1)
+                : UIColor(red: 0.97, green: 0.98, blue: 1.00, alpha: 1)
+        }
+    }
+
     static let surface = adaptive(
         .white,
         UIColor(red: 0.14, green: 0.16, blue: 0.21, alpha: 1)
