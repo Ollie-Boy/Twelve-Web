@@ -31,12 +31,15 @@ struct LedgerRootView: View {
             guard cal.isDate(e.date, equalTo: monthStart, toGranularity: .month) else { continue }
             switch e.kind {
             case .expense:
-                expense += e.amount
-            case .income, .refund:
-                income += e.amount
+                expense += e.netAmount
+            case .income:
+                income += e.netAmount
             }
         }
-        return (income, expense)
+        return (
+            LedgerDecimalFormatting.round(income),
+            LedgerDecimalFormatting.round(expense)
+        )
     }
 
     var body: some View {
@@ -224,7 +227,7 @@ struct LedgerRootView: View {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
                 summaryChip(title: "Out", value: s.expense, color: TwelveTheme.primaryBlueDark)
             }
-            Text("Net \(currency.format(net))")
+            Text("Net \(currency.format(LedgerDecimalFormatting.round(net)))")
                 .font(TwelveTheme.appFont(size: 15, weight: .medium))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
         }
@@ -281,6 +284,7 @@ struct LedgerRootView: View {
 
     private func transactionRow(_ entry: LedgerEntry) -> some View {
         let note = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let loc = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return LedgerSwipeActionRow(
             onEdit: { entryToEdit = entry },
             onDelete: { pendingDeletion = entry }
@@ -291,7 +295,7 @@ struct LedgerRootView: View {
                         Text(entry.category)
                             .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                             .foregroundStyle(TwelveTheme.textPrimary)
-                        if entry.kind == .refund {
+                        if entry.refundTotal > 0 {
                             Text("Refund")
                                 .font(TwelveTheme.appFont(size: 10, weight: .bold))
                                 .foregroundStyle(TwelveTheme.primaryBlueDark)
@@ -306,14 +310,33 @@ struct LedgerRootView: View {
                             .foregroundStyle(TwelveTheme.textSecondary)
                             .lineLimit(2)
                     }
+                    if !loc.isEmpty {
+                        HStack(alignment: .top, spacing: 4) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .font(TwelveTheme.appFont(size: 11))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                            Text(loc)
+                                .font(TwelveTheme.appFont(size: 11))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                                .lineLimit(2)
+                        }
+                    }
                     Text(entry.date.formatted(date: .abbreviated, time: .shortened))
                         .font(TwelveTheme.appFont(size: 12))
                         .foregroundStyle(TwelveTheme.textTertiary)
                 }
                 Spacer(minLength: 8)
-                Text(rowAmountLabel(entry))
-                    .font(TwelveTheme.appFont(size: 17, weight: .semibold))
-                    .foregroundStyle(rowAmountColor(entry))
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(rowAmountLabel(entry))
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .foregroundStyle(rowAmountColor(entry))
+                    if entry.refundTotal > 0, entry.amount > entry.netAmount {
+                        Text("was \(currency.format(entry.amount))")
+                            .font(TwelveTheme.appFont(size: 11))
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                            .strikethrough(true, color: TwelveTheme.textTertiary)
+                    }
+                }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
@@ -328,9 +351,9 @@ struct LedgerRootView: View {
     private func rowAmountLabel(_ entry: LedgerEntry) -> String {
         switch entry.kind {
         case .expense:
-            return "−\(currency.format(entry.amount))"
-        case .income, .refund:
-            return "+\(currency.format(entry.amount))"
+            return "−\(currency.format(entry.netAmount))"
+        case .income:
+            return "+\(currency.format(entry.netAmount))"
         }
     }
 
@@ -340,8 +363,6 @@ struct LedgerRootView: View {
             return TwelveTheme.primaryBlueDark
         case .income:
             return TwelveTheme.primaryBlue
-        case .refund:
-            return TwelveTheme.accentYellow
         }
     }
 

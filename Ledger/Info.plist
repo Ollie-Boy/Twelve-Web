@@ -48,5 +48,7 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Used to pick an address on the map for this transaction.</string>
 </dict>
 </plist>

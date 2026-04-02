@@ -27,6 +27,8 @@ final class LedgerCurrencyStore: ObservableObject {
         f.numberStyle = .currency
         f.currencyCode = currencyCode
         f.locale = Locale.current
+        f.minimumFractionDigits = 2
+        f.maximumFractionDigits = 2
         return f
     }
 

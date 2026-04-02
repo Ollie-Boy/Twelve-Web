@@ -24,7 +24,7 @@ struct LedgerSwipeActionRow<Content: View>: View {
             .padding(.trailing, 6)
 
             content()
-                .background(TwelveTheme.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .offset(x: displayOffset)
                 .simultaneousGesture(
                     DragGesture(minimumDistance: 16, coordinateSpace: .local)

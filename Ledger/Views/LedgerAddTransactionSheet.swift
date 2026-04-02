@@ -14,16 +14,20 @@ struct LedgerAddTransactionSheet: View {
     @State private var transactionDate: Date = Date()
     @State private var kind: LedgerTransactionKind = .expense
     @State private var amountText: String = ""
+    @State private var refundText: String = ""
     @State private var category: String = ""
     @State private var note: String = ""
+    @State private var locationText: String = ""
 
     @State private var showDatePicker = false
     @State private var showTimePicker = false
+    @State private var showMapPicker = false
     @State private var datePickerDraftDate: Date = Date()
     @State private var datePickerDisplayedMonthStart: Date = LedgerAddTransactionSheet.monthAnchor(for: Date())
     @State private var timePickerDraftDate: Date = Date()
 
     @FocusState private var amountFocused: Bool
+    @FocusState private var refundFocused: Bool
     @FocusState private var categoryFocused: Bool
     @FocusState private var noteFocused: Bool
 
@@ -42,15 +46,20 @@ struct LedgerAddTransactionSheet: View {
     }()
 
     private var parsedAmount: Decimal? {
-        let trimmed = amountText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        let normalized = trimmed.replacingOccurrences(of: ",", with: ".")
-        return Decimal(string: normalized, locale: Locale(identifier: "en_US_POSIX"))
+        LedgerDecimalFormatting.parseAmount(from: amountText)
+    }
+
+    private var parsedRefund: Decimal? {
+        LedgerDecimalFormatting.parseAmount(from: refundText)
     }
 
     private var canSave: Bool {
         guard let a = parsedAmount, a > 0 else { return false }
-        return !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        guard !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        if let r = parsedRefund, r > 0 {
+            return r <= a
+        }
+        return true
     }
 
     private var sheetTitle: String {
@@ -75,12 +84,41 @@ struct LedgerAddTransactionSheet: View {
                             .textFieldStyle(.plain)
                             .font(TwelveTheme.appFont(size: 20, weight: .semibold))
                             .focused($amountFocused)
+                            .onChange(of: amountText) { _, new in
+                                let s = LedgerDecimalFormatting.sanitizeAmountInput(new)
+                                if s != new { amountText = s }
+                            }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 12)
                             .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
+                    if case .edit = mode {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Refund (optional)")
+                                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                                .foregroundStyle(TwelveTheme.textSecondary)
+                            TextField("0.00", text: $refundText)
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(.plain)
+                                .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                                .focused($refundFocused)
+                                .onChange(of: refundText) { _, new in
+                                    let s = LedgerDecimalFormatting.sanitizeAmountInput(new)
+                                    if s != new { refundText = s }
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 12)
+                                .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            Text("Reduces this line only (e.g. expense 100, refund 20 → net 80).")
+                                .font(TwelveTheme.appFont(size: 11))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
+                    }
+
                     dateTimeRow
+
+                    locationSection
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Category")
@@ -135,6 +173,12 @@ struct LedgerAddTransactionSheet: View {
             .sheet(isPresented: $showTimePicker) {
                 timePickerSheet
             }
+            .sheet(isPresented: $showMapPicker) {
+                LedgerLocationPickerSheet(
+                    onPickAddress: { locationText = $0 },
+                    onClearAddress: { locationText = "" }
+                )
+            }
             .scrollDismissesKeyboard(.interactively)
         }
         .font(TwelveTheme.appFont(size: 16))
@@ -150,9 +194,6 @@ struct LedgerAddTransactionSheet: View {
             HStack(spacing: 6) {
                 kindPill(.expense)
                 kindPill(.income)
-                if case .edit = mode {
-                    kindPill(.refund)
-                }
             }
         }
     }
@@ -182,6 +223,27 @@ struct LedgerAddTransactionSheet: View {
                 .overlay(Capsule().stroke(on ? Color.clear : TwelveTheme.strokeSoft, lineWidth: 0.8))
         }
         .buttonStyle(.plain)
+    }
+
+    private var locationSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Location")
+                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .foregroundStyle(TwelveTheme.textSecondary)
+            HStack(spacing: 10) {
+                Image(systemName: "mappin.and.ellipse")
+                    .foregroundStyle(TwelveTheme.textSecondary)
+                Text(locationText.isEmpty ? "No address selected" : locationText)
+                    .font(TwelveTheme.appFont(size: 13))
+                    .foregroundStyle(locationText.isEmpty ? TwelveTheme.textTertiary : TwelveTheme.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Button("Pick on Map") {
+                dismissKeyboard()
+                showMapPicker = true
+            }
+            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+        }
     }
 
     private var dateTimeRow: some View {
@@ -347,27 +409,21 @@ struct LedgerAddTransactionSheet: View {
         switch mode {
         case .create:
             transactionDate = Date()
-            kind = .expense // Refund is only available when editing
+            kind = .expense
             amountText = ""
+            refundText = ""
             category = ""
             note = ""
+            locationText = ""
         case .edit(let entry):
             transactionDate = entry.date
             kind = entry.kind
-            let ns = entry.amount as NSDecimalNumber
-            amountText = LedgerAddTransactionSheet.amountString(for: ns)
+            amountText = LedgerDecimalFormatting.displayString(for: entry.amount)
+            refundText = entry.refundTotal > 0 ? LedgerDecimalFormatting.displayString(for: entry.refundTotal) : ""
             category = entry.category
             note = entry.note
+            locationText = entry.location ?? ""
         }
-    }
-
-    private static func amountString(for ns: NSDecimalNumber) -> String {
-        let f = NumberFormatter()
-        f.numberStyle = .decimal
-        f.maximumFractionDigits = 2
-        f.minimumFractionDigits = 0
-        f.locale = Locale(identifier: "en_US_POSIX")
-        return f.string(from: ns) ?? "\(ns)"
     }
 
     private static func monthAnchor(for date: Date) -> Date {
@@ -382,6 +438,13 @@ struct LedgerAddTransactionSheet: View {
         let cat = category.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cat.isEmpty else { return }
         let n = note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let loc = locationText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let refundPortion: Decimal
+        if case .edit = mode, let r = parsedRefund, r > 0 {
+            refundPortion = min(LedgerDecimalFormatting.round(r), a)
+        } else {
+            refundPortion = 0
+        }
         let id: UUID
         switch mode {
         case .create:
@@ -394,8 +457,10 @@ struct LedgerAddTransactionSheet: View {
             date: transactionDate,
             amount: a,
             kind: kind,
+            refundTotal: refundPortion,
             category: cat,
-            note: n
+            note: n,
+            location: loc.isEmpty ? nil : loc
         )
         onSave(entry)
         isPresented = false
@@ -403,6 +468,7 @@ struct LedgerAddTransactionSheet: View {
 
     private func dismissKeyboard() {
         amountFocused = false
+        refundFocused = false
         categoryFocused = false
         noteFocused = false
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)

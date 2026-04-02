@@ -104,13 +104,14 @@ struct LedgerDayPickerSheet: View {
 
     private func dayRow(_ entry: LedgerEntry) -> some View {
         let note = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let loc = entry.location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     Text(entry.category)
                         .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textPrimary)
-                    if entry.kind == .refund {
+                    if entry.refundTotal > 0 {
                         Text("Refund")
                             .font(TwelveTheme.appFont(size: 11, weight: .bold))
                             .foregroundStyle(TwelveTheme.primaryBlue)
@@ -124,6 +125,17 @@ struct LedgerDayPickerSheet: View {
                         .font(TwelveTheme.appFont(size: 13))
                         .foregroundStyle(TwelveTheme.textSecondary)
                         .lineLimit(2)
+                }
+                if !loc.isEmpty {
+                    HStack(alignment: .top, spacing: 4) {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(TwelveTheme.appFont(size: 11))
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                        Text(loc)
+                            .font(TwelveTheme.appFont(size: 11))
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                            .lineLimit(2)
+                    }
                 }
                 Text(entry.date.formatted(date: .abbreviated, time: .shortened))
                     .font(TwelveTheme.appFont(size: 12))
@@ -147,9 +159,9 @@ struct LedgerDayPickerSheet: View {
     private func amountLabel(_ entry: LedgerEntry) -> String {
         switch entry.kind {
         case .expense:
-            return "−\(formatMoney(entry.amount))"
-        case .income, .refund:
-            return "+\(formatMoney(entry.amount))"
+            return "−\(formatMoney(entry.netAmount))"
+        case .income:
+            return "+\(formatMoney(entry.netAmount))"
         }
     }
 
@@ -159,8 +171,6 @@ struct LedgerDayPickerSheet: View {
             return TwelveTheme.primaryBlueDark
         case .income:
             return TwelveTheme.primaryBlue
-        case .refund:
-            return TwelveTheme.accentYellow
         }
     }
 }

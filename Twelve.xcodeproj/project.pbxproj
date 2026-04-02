@@ -55,6 +55,9 @@
         B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000CB100000100000001 /* LedgerDayPickerSheet.swift */; };
         B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */; };
         B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000EB100000100000001 /* LedgerSwipeActionRow.swift */; };
+        B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000FB100000100000001 /* LedgerDecimalFormatting.swift */; };
+        B100023B100000100000001 /* LedgerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000010B100000100000001 /* LedgerLocationPickerSheet.swift */; };
+        B100024B100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -101,6 +104,8 @@
         B00000CB100000100000001 /* LedgerDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDayPickerSheet.swift; sourceTree = "<group>"; };
         B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
         B00000EB100000100000001 /* LedgerSwipeActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSwipeActionRow.swift; sourceTree = "<group>"; };
+        B00000FB100000100000001 /* LedgerDecimalFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDecimalFormatting.swift; sourceTree = "<group>"; };
+        B000010B100000100000001 /* LedgerLocationPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerLocationPickerSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,10 +142,19 @@
                 B300003B100000100000001 /* Views */,
                 B300004B100000100000001 /* Models */,
                 B300005B100000100000001 /* Services */,
+                B300006B100000100000001 /* Utilities */,
                 B000009B100000100000001 /* Assets.xcassets */,
                 B000006B100000100000001 /* Info.plist */,
             );
             path = Ledger;
+            sourceTree = "<group>";
+        };
+        B300006B100000100000001 /* Utilities */ = {
+            isa = PBXGroup;
+            children = (
+                B00000FB100000100000001 /* LedgerDecimalFormatting.swift */,
+            );
+            path = Utilities;
             sourceTree = "<group>";
         };
         B300002B100000100000001 /* App */ = {
@@ -160,6 +174,7 @@
                 B00000CB100000100000001 /* LedgerDayPickerSheet.swift */,
                 B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
                 B00000EB100000100000001 /* LedgerSwipeActionRow.swift */,
+                B000010B100000100000001 /* LedgerLocationPickerSheet.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -416,6 +431,9 @@
                 B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */,
                 B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */,
                 B100021B100000100000001 /* LedgerSwipeActionRow.swift in Sources */,
+                B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */,
+                B100023B100000100000001 /* LedgerLocationPickerSheet.swift in Sources */,
+                B100024B100000100000001 /* LocationManager.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
