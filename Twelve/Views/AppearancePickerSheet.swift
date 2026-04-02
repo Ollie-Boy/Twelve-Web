@@ -25,9 +25,17 @@ struct AppearancePickerSheet: View {
             .padding(.top, 8)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(TwelveTheme.background)
-            .navigationTitle("Appearance")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(TwelveTheme.background, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Appearance")
+                        .font(TwelveTheme.handwrittenFont(size: 22))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
                         .font(TwelveTheme.appFont(size: 17))

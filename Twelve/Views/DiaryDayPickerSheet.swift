@@ -63,9 +63,17 @@ struct DiaryDayPickerSheet: View {
                 .padding(.bottom, 20)
             }
             .background(TwelveTheme.background)
-            .navigationTitle("Jump to day")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(TwelveTheme.background, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Jump to day")
+                        .font(TwelveTheme.handwrittenFont(size: 22))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
                         .font(TwelveTheme.appFont(size: 17))
