@@ -2,19 +2,16 @@ import SwiftUI
 
 struct LedgerRootView: View {
     @EnvironmentObject private var appearance: AppearanceStore
+    @EnvironmentObject private var currency: LedgerCurrencyStore
     @State private var entries: [LedgerEntry] = []
     @State private var pendingDeletion: LedgerEntry?
     @State private var showAddSheet = false
+    @State private var entryToEdit: LedgerEntry?
     @State private var showAppearanceSheet = false
+    @State private var showDayPickerSheet = false
+    @State private var showCurrencySheet = false
 
     private let storage = LedgerStorage()
-
-    private var currencyFormatter: NumberFormatter {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        f.locale = .current
-        return f
-    }
 
     private var monthSummary: (income: Decimal, expense: Decimal) {
         let cal = Calendar.current
@@ -23,9 +20,10 @@ struct LedgerRootView: View {
         var expense: Decimal = 0
         for e in entries {
             guard cal.isDate(e.date, equalTo: now, toGranularity: .month) else { continue }
-            if e.isExpense {
+            switch e.kind {
+            case .expense:
                 expense += e.amount
-            } else {
+            case .income, .refund:
                 income += e.amount
             }
         }
@@ -56,15 +54,42 @@ struct LedgerRootView: View {
             sortEntries()
         }
         .sheet(isPresented: $showAddSheet) {
-            LedgerAddTransactionSheet(isPresented: $showAddSheet) { new in
-                entries.insert(new, at: 0)
-                sortEntries()
-                storage.saveEntries(entries)
-            }
+            LedgerAddTransactionSheet(
+                isPresented: $showAddSheet,
+                mode: .create,
+                onSave: { new in
+                    entries.insert(new, at: 0)
+                    sortEntries()
+                    storage.saveEntries(entries)
+                }
+            )
+        }
+        .sheet(item: $entryToEdit) { entry in
+            LedgerAddTransactionSheet(
+                isPresented: Binding(
+                    get: { entryToEdit != nil },
+                    set: { if !$0 { entryToEdit = nil } }
+                ),
+                mode: .edit(entry),
+                onSave: { updated in
+                    if let i = entries.firstIndex(where: { $0.id == updated.id }) {
+                        entries[i] = updated
+                        sortEntries()
+                        storage.saveEntries(entries)
+                    }
+                    entryToEdit = nil
+                }
+            )
         }
         .sheet(isPresented: $showAppearanceSheet) {
             AppearancePickerSheet()
                 .environmentObject(appearance)
+        }
+        .sheet(isPresented: $showDayPickerSheet) {
+            LedgerDayPickerSheet(entries: entries, formatMoney: { currency.format($0) })
+        }
+        .sheet(isPresented: $showCurrencySheet) {
+            LedgerCurrencyPickerSheet(currency: currency)
         }
         .alert(item: $pendingDeletion) { entry in
             Alert(
@@ -100,15 +125,40 @@ struct LedgerRootView: View {
                 .font(TwelveTheme.handwrittenFont(size: 40))
                 .foregroundStyle(TwelveTheme.textPrimary)
             Spacer(minLength: 8)
-            Button {
-                showAppearanceSheet = true
-            } label: {
-                SketchPaletteIcon(size: 28)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+            HStack(spacing: 10) {
+                Button {
+                    showDayPickerSheet = true
+                } label: {
+                    SketchCalendarIcon(size: 28)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Jump to day")
+
+                Button {
+                    showCurrencySheet = true
+                } label: {
+                    Text(currency.currencyCode)
+                        .font(TwelveTheme.appFont(size: 13, weight: .bold))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .background(TwelveTheme.softBlue.opacity(0.55), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(TwelveTheme.primaryBlue.opacity(0.2), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Currency")
+
+                Button {
+                    showAppearanceSheet = true
+                } label: {
+                    SketchPaletteIcon(size: 28)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Look and feel")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Look and feel")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -125,7 +175,7 @@ struct LedgerRootView: View {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
                 summaryChip(title: "Out", value: s.expense, color: TwelveTheme.primaryBlueDark)
             }
-            Text("Net \(formatMoney(net))")
+            Text("Net \(currency.format(net))")
                 .font(TwelveTheme.appFont(size: 15, weight: .medium))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
         }
@@ -139,7 +189,7 @@ struct LedgerRootView: View {
             Text(title)
                 .font(TwelveTheme.appFont(size: 12, weight: .medium))
                 .foregroundStyle(TwelveTheme.textTertiary)
-            Text(formatMoney(value))
+            Text(currency.format(value))
                 .font(TwelveTheme.appFont(size: 18, weight: .semibold))
                 .foregroundStyle(color)
         }
@@ -186,23 +236,33 @@ struct LedgerRootView: View {
         let note = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
         return HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(entry.category)
-                    .font(TwelveTheme.appFont(size: 16, weight: .semibold))
-                    .foregroundStyle(TwelveTheme.textPrimary)
+                HStack(spacing: 8) {
+                    Text(entry.category)
+                        .font(TwelveTheme.appFont(size: 16, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                    if entry.kind == .refund {
+                        Text("Refund")
+                            .font(TwelveTheme.appFont(size: 10, weight: .bold))
+                            .foregroundStyle(TwelveTheme.primaryBlueDark)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2)
+                            .background(TwelveTheme.softBlue.opacity(0.5), in: Capsule())
+                    }
+                }
                 if !note.isEmpty {
                     Text(note)
                         .font(TwelveTheme.appFont(size: 13))
                         .foregroundStyle(TwelveTheme.textSecondary)
                         .lineLimit(2)
                 }
-                Text(entry.date.formatted(date: .abbreviated, time: .omitted))
+                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
                     .font(TwelveTheme.appFont(size: 12))
                     .foregroundStyle(TwelveTheme.textTertiary)
             }
             Spacer(minLength: 8)
-            Text(entry.isExpense ? "−\(formatMoney(entry.amount))" : "+\(formatMoney(entry.amount))")
+            Text(rowAmountLabel(entry))
                 .font(TwelveTheme.appFont(size: 17, weight: .semibold))
-                .foregroundStyle(entry.isExpense ? TwelveTheme.primaryBlueDark : TwelveTheme.primaryBlue)
+                .foregroundStyle(rowAmountColor(entry))
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -211,12 +271,40 @@ struct LedgerRootView: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(TwelveTheme.hairline, lineWidth: 1)
         )
+        .onLongPressGesture {
+            entryToEdit = entry
+        }
         .contextMenu {
+            Button {
+                entryToEdit = entry
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
             Button(role: .destructive) {
                 pendingDeletion = entry
             } label: {
                 Label("Delete", systemImage: "trash")
             }
+        }
+    }
+
+    private func rowAmountLabel(_ entry: LedgerEntry) -> String {
+        switch entry.kind {
+        case .expense:
+            return "−\(currency.format(entry.amount))"
+        case .income, .refund:
+            return "+\(currency.format(entry.amount))"
+        }
+    }
+
+    private func rowAmountColor(_ entry: LedgerEntry) -> Color {
+        switch entry.kind {
+        case .expense:
+            return TwelveTheme.primaryBlueDark
+        case .income:
+            return TwelveTheme.primaryBlue
+        case .refund:
+            return TwelveTheme.accentYellow
         }
     }
 
@@ -242,10 +330,6 @@ struct LedgerRootView: View {
         .padding(.bottom, 24)
     }
 
-    private func formatMoney(_ value: Decimal) -> String {
-        currencyFormatter.string(from: value as NSDecimalNumber) ?? "\(value)"
-    }
-
     private func delete(_ entry: LedgerEntry) {
         entries.removeAll { $0.id == entry.id }
         storage.saveEntries(entries)
@@ -259,4 +343,5 @@ struct LedgerRootView: View {
 #Preview {
     LedgerRootView()
         .environmentObject(AppearanceStore(storageKey: "ledgerAppearancePreference", legacyStorageKey: nil))
+        .environmentObject(LedgerCurrencyStore())
 }

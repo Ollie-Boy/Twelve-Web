@@ -47,7 +47,13 @@
         B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001DA100000100000001 /* CartoonPanelChrome.swift */; };
         B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
         B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001EA100000100000001 /* AppearancePickerSheet.swift */; };
-        B100013B100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A00000CA100000100000001 /* Assets.xcassets */; };
+        B100014B100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B000009B100000100000001 /* Assets.xcassets */; };
+        B100015B100000100000001 /* CartoonMonthCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */; };
+        B100016B100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000020A100000100000001 /* TwelveAppWheelDatePicker.swift */; };
+        B100017B100000100000001 /* LedgerTransactionKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000AB100000100000001 /* LedgerTransactionKind.swift */; };
+        B100018B100000100000001 /* LedgerCurrencyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000BB100000100000001 /* LedgerCurrencyStore.swift */; };
+        B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000CB100000100000001 /* LedgerDayPickerSheet.swift */; };
+        B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -88,6 +94,11 @@
         B000005B100000100000001 /* LedgerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStorage.swift; sourceTree = "<group>"; };
         B000006B100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
         B000007B100000100000001 /* Ledger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ledger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+        B000009B100000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        B00000AB100000100000001 /* LedgerTransactionKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerTransactionKind.swift; sourceTree = "<group>"; };
+        B00000BB100000100000001 /* LedgerCurrencyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyStore.swift; sourceTree = "<group>"; };
+        B00000CB100000100000001 /* LedgerDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDayPickerSheet.swift; sourceTree = "<group>"; };
+        B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +135,7 @@
                 B300003B100000100000001 /* Views */,
                 B300004B100000100000001 /* Models */,
                 B300005B100000100000001 /* Services */,
+                B000009B100000100000001 /* Assets.xcassets */,
                 B000006B100000100000001 /* Info.plist */,
             );
             path = Ledger;
@@ -133,6 +145,7 @@
             isa = PBXGroup;
             children = (
                 B000001B100000100000001 /* LedgerApp.swift */,
+                B00000BB100000100000001 /* LedgerCurrencyStore.swift */,
             );
             path = App;
             sourceTree = "<group>";
@@ -142,6 +155,8 @@
             children = (
                 B000002B100000100000001 /* LedgerRootView.swift */,
                 B000003B100000100000001 /* LedgerAddTransactionSheet.swift */,
+                B00000CB100000100000001 /* LedgerDayPickerSheet.swift */,
+                B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -150,6 +165,7 @@
             isa = PBXGroup;
             children = (
                 B000004B100000100000001 /* LedgerEntry.swift */,
+                B00000AB100000100000001 /* LedgerTransactionKind.swift */,
             );
             path = Models;
             sourceTree = "<group>";
@@ -335,7 +351,7 @@
             isa = PBXResourcesBuildPhase;
             buildActionMask = 2147483647;
             files = (
-                B100013B100000100000001 /* Assets.xcassets in Resources */,
+                B100014B100000100000001 /* Assets.xcassets in Resources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -390,6 +406,12 @@
                 B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */,
                 B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */,
                 B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */,
+                B100015B100000100000001 /* CartoonMonthCalendar.swift in Sources */,
+                B100016B100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */,
+                B100017B100000100000001 /* LedgerTransactionKind.swift in Sources */,
+                B100018B100000100000001 /* LedgerCurrencyStore.swift in Sources */,
+                B100019B100000100000001 /* LedgerDayPickerSheet.swift in Sources */,
+                B100020B100000100000001 /* LedgerCurrencyPickerSheet.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
