@@ -1,74 +1,110 @@
 #!/usr/bin/env python3
-"""Generate Twelve app icon: sky + rounded card + stick figure (hollow head, upper body only, fills frame)."""
+"""Twelve app icon: pale blue sky, hand-drawn wobbly stick figure (Draw a Stickman–like), white card."""
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
 
-def lerp(a: float, b: float, t: float) -> float:
-    return a + (b - a) * t
+from icon_hand_drawn import (  # noqa: E402
+    faint_breeze_arcs,
+    fill_sky_gradient,
+    stroke_wobbly_line,
+    stroke_wobbly_ellipse,
+    stroke_wobbly_round_rect,
+)
 
 
 def draw_icon(size: int) -> Image.Image:
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    pix = img.load()
-    c_top = (247, 250, 255)
-    c_bot = (230, 242, 255)
-    for y in range(size):
-        t = y / max(size - 1, 1)
-        r = int(lerp(c_top[0], c_bot[0], t))
-        g = int(lerp(c_top[1], c_bot[1], t))
-        b = int(lerp(c_top[2], c_bot[2], t))
-        for x in range(size):
-            pix[x, y] = (r, g, b, 255)
-
+    fill_sky_gradient(
+        img,
+        top=(240, 249, 255),
+        bottom=(218, 236, 252),
+    )
     draw = ImageDraw.Draw(img)
     s = size / 1024.0
-    pad = int(56 * s)
-    corner_r = int(200 * s)
-    line = max(5, int(17 * s))
-    head_line = max(4, int(13 * s))
-    ink = (28, 52, 110, 255)
-    card_white = (255, 255, 255, 255)
-    rim = (0, 110, 230, 255)
+    scale = s
 
-    draw.rounded_rectangle(
-        [pad, pad, size - pad, size - pad],
-        radius=corner_r,
-        fill=card_white,
-        outline=rim,
-        width=max(4, int(12 * s)),
+    breeze = (255, 255, 255, 70)
+    faint_breeze_arcs(draw, size, scale, breeze, max(2, int(3 * s)))
+
+    pad = int(52 * s)
+    r_card = int(198 * s)
+    card_fill = (255, 255, 255, 255)
+    card_outline = (120, 178, 230, 255)
+    stroke_wobbly_round_rect(
+        draw,
+        float(pad),
+        float(pad),
+        float(size - pad),
+        float(size - pad),
+        float(r_card),
+        fill=card_fill,
+        outline=card_outline,
+        width=max(3, int(10 * s)),
+        scale=scale,
+        phase=0.2,
     )
 
-    cx = size // 2
-    # Inner content area (inside blue rim)
-    inset = pad + int(22 * s)
+    cx = size / 2
+    inset = pad + int(20 * s)
     inner_h = (size - inset) - inset
+    ink = (72, 118, 175, 255)
+    line_w = max(4, int(14 * s))
+    head_w = max(3, int(11 * s))
 
-    # Large hollow head (white interior reads as empty ring on white card)
-    head_r = int(0.19 * inner_h)
-    head_cy = inset + head_r + int(0.04 * inner_h)
-    hb = [
-        cx - head_r,
-        head_cy - head_r,
-        cx + head_r,
-        head_cy + head_r,
-    ]
-    draw.ellipse(hb, fill=card_white, outline=ink, width=head_line)
+    head_r = 0.185 * inner_h
+    head_cy = inset + head_r + 0.035 * inner_h
+    stroke_wobbly_ellipse(
+        draw,
+        cx,
+        head_cy,
+        head_r,
+        head_r * 1.02,
+        fill=card_fill,
+        outline=ink,
+        width=head_w,
+        scale=scale,
+        segments=48,
+        phase=0.7,
+    )
 
-    shoulder_y = head_cy + head_r + int(0.035 * inner_h)
-    torso_bot = size - inset - int(0.06 * inner_h)
+    shoulder_y = head_cy + head_r + 0.03 * inner_h
+    torso_bot = size - inset - 0.055 * inner_h
+    stroke_wobbly_line(
+        draw,
+        cx,
+        shoulder_y,
+        cx + 0.012 * size,
+        torso_bot,
+        fill=ink,
+        width=line_w,
+        scale=scale,
+        steps=32,
+        phase=1.1,
+    )
 
-    # Torso
-    draw.line([(cx, shoulder_y), (cx, torso_bot)], fill=ink, width=line)
-
-    # Arms (one line across chest)
-    arm_y = shoulder_y + int(0.11 * inner_h)
-    arm_half = int(0.36 * (size - 2 * inset) * 0.5)
-    draw.line([(cx - arm_half, arm_y), (cx + arm_half, arm_y)], fill=ink, width=line)
+    arm_y = shoulder_y + 0.10 * inner_h
+    half = 0.34 * (size - 2 * inset) * 0.5
+    stroke_wobbly_line(
+        draw,
+        cx - half,
+        arm_y + 0.008 * size,
+        cx + half,
+        arm_y - 0.006 * size,
+        fill=ink,
+        width=line_w,
+        scale=scale,
+        steps=36,
+        phase=2.0,
+    )
 
     return img
 
@@ -92,7 +128,7 @@ def main() -> None:
     for name, dim in sizes.items():
         base.resize((dim, dim), Image.Resampling.LANCZOS).save(out_dir / name, "PNG")
 
-    print("Wrote Twelve stickman icons to", out_dir)
+    print("Wrote Twelve icons to", out_dir)
 
 
 if __name__ == "__main__":
