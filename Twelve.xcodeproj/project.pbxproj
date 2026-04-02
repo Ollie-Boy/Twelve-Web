@@ -35,6 +35,19 @@
         9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000016A100000100000001 /* DiaryBodyContentView.swift */; };
         9A100016A100000100000001 /* marked.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000018A100000100000001 /* marked.min.js */; };
         9A100017A100000100000001 /* mathjax-tex-svg.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000019A100000100000001 /* mathjax-tex-svg.js */; };
+        B100001B100000100000001 /* LedgerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000001B100000100000001 /* LedgerApp.swift */; };
+        B100002B100000100000001 /* LedgerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000002B100000100000001 /* LedgerRootView.swift */; };
+        B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000003B100000100000001 /* LedgerAddTransactionSheet.swift */; };
+        B100004B100000100000001 /* LedgerEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000004B100000100000001 /* LedgerEntry.swift */; };
+        B100005B100000100000001 /* LedgerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000005B100000100000001 /* LedgerStorage.swift */; };
+        B100006B100000100000001 /* TwelveTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000008A100000100000001 /* TwelveTheme.swift */; };
+        B100007B100000100000001 /* WindyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000BA100000100000001 /* WindyBackgroundView.swift */; };
+        B100008B100000100000001 /* TwelveButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000AA100000100000001 /* TwelveButtonStyles.swift */; };
+        B100009B100000100000001 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000015A100000100000001 /* AppearanceStore.swift */; };
+        B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001DA100000100000001 /* CartoonPanelChrome.swift */; };
+        B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
+        B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001EA100000100000001 /* AppearancePickerSheet.swift */; };
+        B100013B100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A00000CA100000100000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,10 +81,24 @@
         9A000016A100000100000001 /* DiaryBodyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryBodyContentView.swift; sourceTree = "<group>"; };
         9A000018A100000100000001 /* marked.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "marked.min.js"; sourceTree = "<group>"; };
         9A000019A100000100000001 /* mathjax-tex-svg.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "mathjax-tex-svg.js"; sourceTree = "<group>"; };
+        B000001B100000100000001 /* LedgerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerApp.swift; sourceTree = "<group>"; };
+        B000002B100000100000001 /* LedgerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRootView.swift; sourceTree = "<group>"; };
+        B000003B100000100000001 /* LedgerAddTransactionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAddTransactionSheet.swift; sourceTree = "<group>"; };
+        B000004B100000100000001 /* LedgerEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerEntry.swift; sourceTree = "<group>"; };
+        B000005B100000100000001 /* LedgerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStorage.swift; sourceTree = "<group>"; };
+        B000006B100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        B000007B100000100000001 /* Ledger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ledger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
         9A200001A100000100000001 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        B200002B100000100000001 /* Frameworks */ = {
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
             files = (
@@ -85,8 +112,54 @@
             isa = PBXGroup;
             children = (
                 9A300002A100000100000001 /* Twelve */,
+                B300001B100000100000001 /* Ledger */,
                 9A300003A100000100000001 /* Products */,
             );
+            sourceTree = "<group>";
+        };
+        B300001B100000100000001 /* Ledger */ = {
+            isa = PBXGroup;
+            children = (
+                B300002B100000100000001 /* App */,
+                B300003B100000100000001 /* Views */,
+                B300004B100000100000001 /* Models */,
+                B300005B100000100000001 /* Services */,
+                B000006B100000100000001 /* Info.plist */,
+            );
+            path = Ledger;
+            sourceTree = "<group>";
+        };
+        B300002B100000100000001 /* App */ = {
+            isa = PBXGroup;
+            children = (
+                B000001B100000100000001 /* LedgerApp.swift */,
+            );
+            path = App;
+            sourceTree = "<group>";
+        };
+        B300003B100000100000001 /* Views */ = {
+            isa = PBXGroup;
+            children = (
+                B000002B100000100000001 /* LedgerRootView.swift */,
+                B000003B100000100000001 /* LedgerAddTransactionSheet.swift */,
+            );
+            path = Views;
+            sourceTree = "<group>";
+        };
+        B300004B100000100000001 /* Models */ = {
+            isa = PBXGroup;
+            children = (
+                B000004B100000100000001 /* LedgerEntry.swift */,
+            );
+            path = Models;
+            sourceTree = "<group>";
+        };
+        B300005B100000100000001 /* Services */ = {
+            isa = PBXGroup;
+            children = (
+                B000005B100000100000001 /* LedgerStorage.swift */,
+            );
+            path = Services;
             sourceTree = "<group>";
         };
         9A300002A100000100000001 /* Twelve */ = {
@@ -109,6 +182,7 @@
             isa = PBXGroup;
             children = (
                 9A00000EA100000100000001 /* Twelve.app */,
+                B000007B100000100000001 /* Ledger.app */,
             );
             name = Products;
             sourceTree = "<group>";
@@ -193,6 +267,23 @@
             productReference = 9A00000EA100000100000001 /* Twelve.app */;
             productType = "com.apple.product-type.application";
         };
+        B400001B100000100000001 /* Ledger */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = B500005B100000100000001 /* Build configuration list for PBXNativeTarget "Ledger" */;
+            buildPhases = (
+                B600003B100000100000001 /* Sources */,
+                B200002B100000100000001 /* Frameworks */,
+                B600004B100000100000001 /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+            );
+            name = Ledger;
+            productName = Ledger;
+            productReference = B000007B100000100000001 /* Ledger.app */;
+            productType = "com.apple.product-type.application";
+        };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -203,6 +294,9 @@
                 LastUpgradeCheck = 1610;
                 TargetAttributes = {
                     9A400001A100000100000001 = {
+                        CreatedOnToolsVersion = 16.1;
+                    };
+                    B400001B100000100000001 = {
                         CreatedOnToolsVersion = 16.1;
                     };
                 };
@@ -221,6 +315,7 @@
             projectRoot = "";
             targets = (
                 9A400001A100000100000001 /* Twelve */,
+                B400001B100000100000001 /* Ledger */,
             );
         };
 /* End PBXProject section */
@@ -233,6 +328,14 @@
                 9A10000CA100000100000001 /* Assets.xcassets in Resources */,
                 9A100016A100000100000001 /* marked.min.js in Resources */,
                 9A100017A100000100000001 /* mathjax-tex-svg.js in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        B600004B100000100000001 /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                B100013B100000100000001 /* Assets.xcassets in Resources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -268,6 +371,25 @@
                 9A100020A100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */,
                 9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */,
                 9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        B600003B100000100000001 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                B100001B100000100000001 /* LedgerApp.swift in Sources */,
+                B100002B100000100000001 /* LedgerRootView.swift in Sources */,
+                B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */,
+                B100004B100000100000001 /* LedgerEntry.swift in Sources */,
+                B100005B100000100000001 /* LedgerStorage.swift in Sources */,
+                B100006B100000100000001 /* TwelveTheme.swift in Sources */,
+                B100007B100000100000001 /* WindyBackgroundView.swift in Sources */,
+                B100008B100000100000001 /* TwelveButtonStyles.swift in Sources */,
+                B100009B100000100000001 /* AppearanceStore.swift in Sources */,
+                B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */,
+                B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */,
+                B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -447,6 +569,66 @@
             };
             name = Release;
         };
+        B700001B100000100000001 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                ENABLE_PREVIEWS = YES;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = Ledger/Info.plist;
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Ledger;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Debug;
+        };
+        B700002B100000100000001 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                ENABLE_PREVIEWS = YES;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = Ledger/Info.plist;
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Ledger;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Release;
+        };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -464,6 +646,15 @@
             buildConfigurations = (
                 9A700003A100000100000001 /* Debug */,
                 9A700004A100000100000001 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        B500005B100000100000001 /* Build configuration list for PBXNativeTarget "Ledger" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                B700001B100000100000001 /* Debug */,
+                B700002B100000100000001 /* Release */,
             );
             defaultConfigurationIsVisible = 0;
             defaultConfigurationName = Release;
