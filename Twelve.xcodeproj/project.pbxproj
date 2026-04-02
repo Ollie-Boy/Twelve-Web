@@ -13,6 +13,8 @@
         9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
         9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */; };
         9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
+        9A10001AA100000100000001 /* CartoonPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001DA100000100000001 /* CartoonPanelChrome.swift */; };
+        9A10001BA100000100000001 /* AppearancePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001EA100000100000001 /* AppearancePickerSheet.swift */; };
         9A100004A100000100000001 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000004A100000100000001 /* DiaryEntry.swift */; };
         9A100005A100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
         9A100006A100000100000001 /* DiaryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000006A100000100000001 /* DiaryStorage.swift */; };
@@ -40,6 +42,8 @@
         9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
         9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDayPickerSheet.swift; sourceTree = "<group>"; };
         9A00001CA100000100000001 /* SketchToolbarIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchToolbarIcons.swift; sourceTree = "<group>"; };
+        9A00001DA100000100000001 /* CartoonPanelChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartoonPanelChrome.swift; sourceTree = "<group>"; };
+        9A00001EA100000100000001 /* AppearancePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePickerSheet.swift; sourceTree = "<group>"; };
         9A000004A100000100000001 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
         9A000005A100000100000001 /* WeatherOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherOption.swift; sourceTree = "<group>"; };
         9A000006A100000100000001 /* DiaryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryStorage.swift; sourceTree = "<group>"; };
@@ -121,6 +125,7 @@
                 9A000003A100000100000001 /* EntryCardView.swift */,
                 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */,
                 9A00001CA100000100000001 /* SketchToolbarIcons.swift */,
+                9A00001EA100000100000001 /* AppearancePickerSheet.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -157,6 +162,7 @@
                 9A000013A100000100000001 /* DiaryComposerSheet.swift */,
                 9A000014A100000100000001 /* DiaryReaderSheet.swift */,
                 9A000016A100000100000001 /* DiaryBodyContentView.swift */,
+                9A00001DA100000100000001 /* CartoonPanelChrome.swift */,
             );
             path = UI;
             sourceTree = "<group>";
@@ -237,6 +243,8 @@
                 9A100003A100000100000001 /* EntryCardView.swift in Sources */,
                 9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */,
                 9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */,
+                9A10001AA100000100000001 /* CartoonPanelChrome.swift in Sources */,
+                9A10001BA100000100000001 /* AppearancePickerSheet.swift in Sources */,
                 9A100004A100000100000001 /* DiaryEntry.swift in Sources */,
                 9A100005A100000100000001 /* WeatherOption.swift in Sources */,
                 9A100006A100000100000001 /* DiaryStorage.swift in Sources */,

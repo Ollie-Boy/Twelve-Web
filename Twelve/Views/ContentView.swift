@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
     @State private var showDayPickerSheet: Bool = false
+    @State private var showAppearanceSheet: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -89,6 +90,10 @@ struct ContentView: View {
                 selectedEntryForRead = entry
             }
         }
+        .sheet(isPresented: $showAppearanceSheet) {
+            AppearancePickerSheet()
+                .environmentObject(appearance)
+        }
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
@@ -134,28 +139,14 @@ struct ContentView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Jump to date")
 
-                Menu {
-                    ForEach(AppearancePreference.allCases) { option in
-                        Button {
-                            appearance.setPreference(option)
-                        } label: {
-                            HStack {
-                                Text(option.title)
-                                    .font(TwelveTheme.appFont(size: 16))
-                                Spacer(minLength: 10)
-                                if appearance.preference == option {
-                                    Image(systemName: "checkmark")
-                                        .font(TwelveTheme.appFont(size: 14, weight: .bold))
-                                        .foregroundStyle(TwelveTheme.primaryBlue)
-                                }
-                            }
-                        }
-                    }
+                Button {
+                    showAppearanceSheet = true
                 } label: {
                     SketchPaletteIcon(size: 28)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("Appearance")
             }
         }
