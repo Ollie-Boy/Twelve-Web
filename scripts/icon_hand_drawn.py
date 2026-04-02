@@ -74,6 +74,8 @@ def stroke_wobbly_ellipse(
     scale: float,
     segments: int = 56,
     phase: float = 0.0,
+    wobble_mult: float = 1.0,
+    tilt: float = 0.0,
 ) -> None:
     poly: List[Point] = []
     for i in range(segments + 1):
@@ -81,9 +83,13 @@ def stroke_wobbly_ellipse(
         w = (
             math.sin(ang * 3 + phase) * 3.8 * scale
             + math.sin(ang * 7 + phase * 2.1) * 1.4 * scale
-        )
-        rr = 1.0 + w * 0.012 / max(rx, ry, 1)
-        poly.append((cx + math.cos(ang) * rx * rr, cy + math.sin(ang) * ry * rr))
+            + math.sin(ang * 11 + phase * 0.9) * 2.8 * scale * max(0, wobble_mult - 1.0) * 0.35
+        ) * wobble_mult
+        rr = 1.0 + w * 0.014 / max(rx, ry, 1)
+        ex = math.cos(ang) * rx * rr
+        ey = math.sin(ang) * ry * rr
+        ca, sa = math.cos(tilt), math.sin(tilt)
+        poly.append((cx + ex * ca - ey * sa, cy + ex * sa + ey * ca))
     if fill is not None:
         draw.polygon(poly, fill=fill, outline=outline, width=width)
     else:

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Ledger app icon: pale sky + hand-drawn simple notebook + soft wobbly coin ring."""
+"""Ledger app icon: pale sky + hand-drawn notepad + clear '+' (add entry / money in)."""
 
 from __future__ import annotations
 
-import math
 import sys
 from pathlib import Path
 
@@ -17,7 +16,6 @@ from icon_hand_drawn import (  # noqa: E402
     faint_breeze_arcs,
     fill_sky_gradient,
     stroke_wobbly_line,
-    stroke_wobbly_ellipse,
     stroke_wobbly_round_rect,
 )
 
@@ -56,55 +54,71 @@ def draw_ledger_icon(size: int) -> Image.Image:
     line_color = (170, 205, 238, 255)
     line_w = max(2, int(5 * s))
     ink = (72, 118, 175, 255)
-    ink_bold = max(3, int(8 * s))
+    ink_bold = max(3, int(9 * s))
 
-    y0 = inner + int(120 * s)
-    gap = int(52 * s)
-    xl, xr = inner + int(40 * s), inner_r - int(40 * s)
+    # Note area on the left (~62% width) — ruled lines + margin
+    xl = inner + int(38 * s)
+    xm = inner + int(400 * s)
+    y0 = inner + int(128 * s)
+    gap = int(50 * s)
     for i in range(5):
         y = y0 + i * gap
         stroke_wobbly_line(
             draw,
             xl,
             y + (i % 3) * 1.5 * s,
-            xr,
+            xm,
             y - (i % 2) * 2 * s,
             fill=line_color,
             width=line_w,
             scale=scale,
-            steps=22,
-            phase=0.4 + i * 0.3,
+            steps=20,
+            phase=0.4 + i * 0.28,
         )
 
-    bx = inner + int(34 * s)
-    by0 = y0 - int(8 * s)
-    by1 = y0 + gap * 4 + int(8 * s)
-    stroke_wobbly_line(draw, bx, by0, bx, by1, fill=ink, width=ink_bold, scale=scale, steps=26, phase=1.0)
-
-    cx = size * 0.67
-    cy = size * 0.52
-    coin_r = int(108 * s)
-    stroke_wobbly_ellipse(
+    bx = inner + int(32 * s)
+    stroke_wobbly_line(
         draw,
-        cx,
-        cy,
-        float(coin_r),
-        float(coin_r * 1.03),
-        fill=None,
-        outline=ink,
+        bx,
+        y0 - int(10 * s),
+        bx + 2 * s,
+        y0 + gap * 4 + int(14 * s),
+        fill=ink,
         width=ink_bold,
         scale=scale,
-        segments=40,
-        phase=1.8,
+        steps=26,
+        phase=1.0,
     )
-    # Loose "S" curve — hand-drawn tally feel
-    pts: list[tuple[float, float]] = []
-    for i in range(17):
-        t = i / 16
-        ang = 0.7 + t * 1.5
-        rr = coin_r * (0.35 + 0.22 * math.sin(t * math.pi))
-        pts.append((cx + math.cos(ang) * rr, cy + math.sin(ang) * rr * 0.95 + (t - 0.5) * 8 * s))
-    draw.line(pts, fill=ink, width=max(3, int(7 * s)), joint="curve")
+
+    # Large hand-drawn '+' on the right = "add" / ledger (readable at a glance)
+    pcx = inner + int(560 * s)
+    pcy = size / 2 + int(8 * s)
+    half_h = int(118 * s)
+    half_w = int(112 * s)
+    stroke_wobbly_line(
+        draw,
+        pcx,
+        pcy - half_h,
+        pcx + 5 * s,
+        pcy + half_h,
+        fill=ink,
+        width=ink_bold,
+        scale=scale,
+        steps=30,
+        phase=1.7,
+    )
+    stroke_wobbly_line(
+        draw,
+        pcx - half_w,
+        pcy + 3 * s,
+        pcx + half_w,
+        pcy - 2 * s,
+        fill=ink,
+        width=ink_bold,
+        scale=scale,
+        steps=30,
+        phase=2.3,
+    )
 
     return img
 
