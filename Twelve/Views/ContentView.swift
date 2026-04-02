@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var selectedEntryForRead: DiaryEntry?
     @State private var selectedEntryForEdit: DiaryEntry?
     @State private var isComposerPresented: Bool = false
+    @State private var showDayPickerSheet: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -83,6 +84,11 @@ struct ContentView: View {
                 }
             )
         }
+        .sheet(isPresented: $showDayPickerSheet) {
+            DiaryDayPickerSheet(entries: entries) { entry in
+                selectedEntryForRead = entry
+            }
+        }
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
@@ -113,6 +119,23 @@ struct ContentView: View {
 
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
+            Button {
+                showDayPickerSheet = true
+            } label: {
+                Image(systemName: "calendar")
+                    .font(TwelveTheme.appFont(size: 20, weight: .medium))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
+                    .frame(width: 44, height: 44)
+                    .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(TwelveTheme.hairline, lineWidth: 1)
+                    )
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Jump to date")
+
             Text("Twelve")
                 .font(TwelveTheme.handwrittenFont(size: 40))
                 .foregroundStyle(TwelveTheme.textPrimary)
