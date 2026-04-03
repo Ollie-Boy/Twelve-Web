@@ -158,7 +158,7 @@ struct LedgerRootView: View {
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
             Text("Ledger")
-                .font(TwelveTheme.handwrittenFont(size: 40))
+                .font(TwelveTheme.appFont(size: 40, weight: .semibold))
                 .foregroundStyle(TwelveTheme.textPrimary)
             Spacer(minLength: 8)
             HStack(spacing: 10) {

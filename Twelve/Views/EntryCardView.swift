@@ -149,7 +149,7 @@ struct EntryCardView: View {
                 Image(systemName: "book.pages.fill")
                     .font(TwelveTheme.appFont(size: 28, weight: .semibold))
                 Text("Twelve")
-                    .font(TwelveTheme.handwrittenFont(size: 20))
+                    .font(TwelveTheme.appFont(size: 20, weight: .semibold))
             }
             .foregroundStyle(TwelveTheme.textPrimary.opacity(0.72))
         }

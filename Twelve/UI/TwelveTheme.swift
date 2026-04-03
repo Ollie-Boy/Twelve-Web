@@ -195,16 +195,6 @@ enum TwelveTheme {
         UIColor(white: 0, alpha: 0.55)
     )
 
-    static func handwrittenFont(size: CGFloat) -> Font {
-        if UIFont(name: "Noteworthy-Bold", size: size) != nil {
-            return .custom("Noteworthy-Bold", size: size)
-        }
-        if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
-            return .custom("ChalkboardSE-Bold", size: size)
-        }
-        return .system(size: size, weight: .semibold, design: .rounded)
-    }
-
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
             switch weight {

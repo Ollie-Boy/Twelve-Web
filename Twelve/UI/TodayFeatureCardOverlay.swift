@@ -291,7 +291,7 @@ struct TodayFeatureCardOverlay: View {
                     .font(TwelveTheme.appFont(size: 11, weight: .semibold))
                     .foregroundStyle(TwelveTheme.textSecondary)
                 Text("Twelve")
-                    .font(TwelveTheme.handwrittenFont(size: 22))
+                    .font(TwelveTheme.appFont(size: 22, weight: .semibold))
                     .foregroundStyle(TwelveTheme.textPrimary)
                 Spacer()
             }
@@ -353,7 +353,7 @@ struct TodayFeatureCardOverlay: View {
                     .foregroundStyle(TwelveTheme.todayCardTextOnImage.opacity(0.92))
                     .matchedGeometryEffect(id: "today.hero.kicker", in: todayCardNamespace)
                 Text("Twelve")
-                    .font(TwelveTheme.handwrittenFont(size: 46))
+                    .font(TwelveTheme.appFont(size: 46, weight: .semibold))
                     .foregroundStyle(TwelveTheme.todayCardTextOnImage)
                     .matchedGeometryEffect(id: "today.hero.title", in: todayCardNamespace)
                 Text("A calm, playful place for your daily stories.")

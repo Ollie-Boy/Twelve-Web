@@ -11,7 +11,7 @@ struct LedgerApp: App {
     var body: some Scene {
         WindowGroup {
             LedgerRootView()
-                .font(TwelveTheme.handwrittenFont(size: 16))
+                .font(TwelveTheme.appFont(size: 16))
                 .environmentObject(appearance)
                 .environmentObject(currency)
                 .preferredColorScheme(appearance.preferredColorScheme)

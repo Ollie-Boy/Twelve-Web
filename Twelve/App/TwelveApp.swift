@@ -7,7 +7,7 @@ struct TwelveApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .font(TwelveTheme.handwrittenFont(size: 16))
+                .font(TwelveTheme.appFont(size: 16))
                 .environmentObject(appearance)
                 .preferredColorScheme(appearance.preferredColorScheme)
         }
