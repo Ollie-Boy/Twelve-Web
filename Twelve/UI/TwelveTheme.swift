@@ -1,3 +1,4 @@
+import CoreText
 import SwiftUI
 import UIKit
 
@@ -196,72 +197,113 @@ enum TwelveTheme {
     )
 
     static func handwrittenFont(size: CGFloat) -> Font {
-        if UIFont(name: "Noteworthy-Bold", size: size) != nil {
-            return .custom("Noteworthy-Bold", size: size)
-        }
-        if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
-            return .custom("ChalkboardSE-Bold", size: size)
-        }
-        return .system(size: size, weight: .semibold, design: .rounded)
+        Font(fontWithUnifiedCascade(size: size, style: .handwritten))
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black:
-                return .custom("ChalkboardSE-Bold", size: size)
-            case .semibold, .medium:
-                return .custom("ChalkboardSE-Bold", size: size)
-            default:
-                return .custom("ChalkboardSE-Regular", size: size)
-            }
-        }
-        if UIFont(name: "Noteworthy-Light", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black, .semibold, .medium:
-                return .custom("Noteworthy-Bold", size: size)
-            default:
-                return .custom("Noteworthy-Light", size: size)
-            }
-        }
-        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
-            return .custom("MarkerFelt-Wide", size: size)
-        }
-        return .system(size: size, weight: weight, design: .rounded)
+        Font(fontWithUnifiedCascade(size: size, style: .app(weight)))
     }
 
     static var appTypographyDesign: Font.Design { .rounded }
 
-    /// UIKit font for pickers etc. (no descriptor cascade — avoids rare EXC_BAD_ACCESS from cascade bridging.)
     static func uiFontForApp(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
-        let useBold = weight >= .semibold
-        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
-            let n = useBold ? "ChalkboardSE-Bold" : "ChalkboardSE-Regular"
-            return UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
+        let fw: Font.Weight
+        switch weight {
+        case .bold, .heavy, .black: fw = .bold
+        case .semibold, .medium: fw = .semibold
+        default: fw = .regular
         }
-        if UIFont(name: "Noteworthy-Light", size: size) != nil {
-            let n = useBold ? "Noteworthy-Bold" : "Noteworthy-Light"
-            return UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
+        return fontWithUnifiedCascade(size: size, style: .app(fw))
+    }
+
+    static func uiFontForApp(size: CGFloat, weight: Font.Weight) -> UIFont {
+        fontWithUnifiedCascade(size: size, style: .app(weight))
+    }
+
+    // MARK: - Unified Latin + CJK (Core Text cascade — stable vs UIFontDescriptor bridging)
+
+    private enum UnifiedFontStyle {
+        case handwritten
+        case app(Font.Weight)
+    }
+
+    /// Single font object: Latin (Chalkboard / Noteworthy / Marker / rounded system) + PingFang cascade for Han.
+    private static func fontWithUnifiedCascade(size: CGFloat, style: UnifiedFontStyle) -> UIFont {
+        let basePS: String?
+        let preferBoldHan: Bool
+        switch style {
+        case .handwritten:
+            preferBoldHan = true
+            if UIFont(name: "Noteworthy-Bold", size: size) != nil {
+                basePS = "Noteworthy-Bold"
+            } else if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
+                basePS = "ChalkboardSE-Bold"
+            } else {
+                basePS = nil
+            }
+        case .app(let w):
+            let bold = [.bold, .heavy, .black, .semibold, .medium].contains(w)
+            preferBoldHan = bold
+            if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
+                basePS = bold ? "ChalkboardSE-Bold" : "ChalkboardSE-Regular"
+            } else if UIFont(name: "Noteworthy-Light", size: size) != nil {
+                basePS = bold ? "Noteworthy-Bold" : "Noteworthy-Light"
+            } else if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
+                basePS = "MarkerFelt-Wide"
+            } else {
+                basePS = nil
+            }
         }
-        if let wide = UIFont(name: "MarkerFelt-Wide", size: size) {
-            return wide
+
+        if let ps = basePS {
+            return uiFontCoreTextCascade(basePostScriptName: ps, size: size, preferBoldHan: preferBoldHan)
         }
-        let sys = UIFont.systemFont(ofSize: size, weight: weight)
+
+        let uw: UIFont.Weight
+        switch style {
+        case .handwritten: uw = .semibold
+        case .app(let w):
+            switch w {
+            case .bold, .heavy, .black: uw = .bold
+            case .semibold, .medium: uw = .semibold
+            default: uw = .regular
+            }
+        }
+        let sys = UIFont.systemFont(ofSize: size, weight: uw)
         if let rounded = sys.fontDescriptor.withDesign(.rounded) {
             return UIFont(descriptor: rounded, size: size)
         }
         return sys
     }
 
-    /// Bridge for `appFont` / SwiftUI `Font.Weight`.
-    static func uiFontForApp(size: CGFloat, weight: Font.Weight) -> UIFont {
-        let uw: UIFont.Weight
-        switch weight {
-        case .bold, .heavy, .black: uw = .bold
-        case .semibold, .medium: uw = .semibold
-        default: uw = .regular
+    private static func uiFontCoreTextCascade(basePostScriptName: String, size: CGFloat, preferBoldHan: Bool) -> UIFont {
+        let hanNames: [String]
+        if preferBoldHan {
+            hanNames = [
+                "PingFangSC-Semibold", "PingFangSC-Medium", "PingFangSC-Regular",
+                "PingFangTC-Semibold", "PingFangTC-Medium", "PingFangTC-Regular",
+            ]
+        } else {
+            hanNames = [
+                "PingFangSC-Regular", "PingFangSC-Light",
+                "PingFangTC-Regular", "PingFangTC-Ultralight",
+            ]
         }
-        return uiFontForApp(size: size, weight: uw)
+
+        var cascadeDicts: [CFDictionary] = []
+        for name in hanNames where UIFont(name: name, size: max(size, 12)) != nil {
+            let d: [String: Any] = [kCTFontNameAttribute as String: name]
+            cascadeDicts.append(d as CFDictionary)
+        }
+
+        var attrs: [String: Any] = [kCTFontNameAttribute as String: basePostScriptName]
+        if !cascadeDicts.isEmpty {
+            attrs[kCTFontCascadeListAttribute as String] = cascadeDicts as CFArray
+        }
+
+        let ctDesc = CTFontDescriptorCreateWithAttributes(attrs as CFDictionary)
+        let ctFont = CTFontCreateWithFontDescriptor(ctDesc, size, nil)
+        return ctFont as UIFont
     }
 
     /// CSS `font-family` for WKWebView: Latin app face + system Chinese (PingFang), then rounded system.
