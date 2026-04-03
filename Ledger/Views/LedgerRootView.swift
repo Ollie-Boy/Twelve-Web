@@ -23,6 +23,21 @@ struct LedgerRootView: View {
         return set.sorted()
     }
 
+    private var todayWeather: WeatherOption {
+        WeatherOption.suggestedForRecognizedAddress("", date: Date())
+    }
+
+    private func transactionCount(for monthStart: Date) -> Int {
+        let cal = Calendar.current
+        return entries.filter { cal.isDate($0.date, equalTo: monthStart, toGranularity: .month) }.count
+    }
+
+    private func summaryMonthSubtitle(for monthStart: Date) -> String {
+        let n = transactionCount(for: monthStart)
+        let noun = n == 1 ? "entry" : "entries"
+        return "\(n) \(noun) · swipe for other months"
+    }
+
     private func monthSummary(for monthStart: Date) -> (income: Decimal, expense: Decimal) {
         let cal = Calendar.current
         var income: Decimal = 0
@@ -157,9 +172,26 @@ struct LedgerRootView: View {
 
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
-            Text("Ledger")
-                .font(TwelveTheme.appFont(size: 40, weight: .semibold))
-                .foregroundStyle(TwelveTheme.textPrimary)
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: todayWeather.symbolName)
+                    .font(TwelveTheme.appFont(size: 26, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
+                    .symbolRenderingMode(.hierarchical)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(todayWeather.title)
+                        .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                        .lineLimit(1)
+                    Text(Date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()))
+                        .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                        .foregroundStyle(TwelveTheme.textSecondary)
+                        .lineLimit(1)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(
+                "\(todayWeather.title), \(Date().formatted(date: .complete, time: .omitted))"
+            )
             Spacer(minLength: 8)
             HStack(spacing: 10) {
                 Button {
@@ -209,7 +241,7 @@ struct LedgerRootView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 168)
+            .frame(height: 198)
         }
         .cartoonPanelChrome()
     }
@@ -218,17 +250,22 @@ struct LedgerRootView: View {
         let s = monthSummary(for: monthStart)
         let net = s.income - s.expense
         return VStack(alignment: .leading, spacing: 12) {
-            Text(monthStart.formatted(.dateTime.month(.wide).year()))
-                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
-                .foregroundStyle(TwelveTheme.textPrimary)
-                .frame(maxWidth: .infinity)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(monthStart.formatted(.dateTime.month(.wide).year()))
+                    .font(TwelveTheme.appFont(size: 22, weight: .bold))
+                    .foregroundStyle(TwelveTheme.textPrimary)
+                Text(summaryMonthSubtitle(for: monthStart))
+                    .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                    .foregroundStyle(TwelveTheme.textSecondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 16) {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
                 summaryChip(title: "Out", value: s.expense, color: TwelveTheme.primaryBlueDark)
             }
             Text("Net \(currency.format(LedgerDecimalFormatting.round(net)))")
-                .font(TwelveTheme.appFont(size: 15, weight: .medium))
+                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -237,10 +274,10 @@ struct LedgerRootView: View {
     private func summaryChip(title: String, value: Decimal, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(TwelveTheme.appFont(size: 12, weight: .medium))
+                .font(TwelveTheme.appFont(size: 13, weight: .medium))
                 .foregroundStyle(TwelveTheme.textTertiary)
             Text(currency.format(value))
-                .font(TwelveTheme.appFont(size: 18, weight: .semibold))
+                .font(TwelveTheme.appFont(size: 20, weight: .semibold))
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

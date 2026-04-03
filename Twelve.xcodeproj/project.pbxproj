@@ -60,6 +60,7 @@
         B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000FB100000100000001 /* LedgerDecimalFormatting.swift */; };
         B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */; };
         B100024B100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
+        B100026B100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -440,6 +441,7 @@
                 B100022B100000100000001 /* LedgerDecimalFormatting.swift in Sources */,
                 B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */,
                 B100024B100000100000001 /* LocationManager.swift in Sources */,
+                B100026B100000100000001 /* WeatherOption.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
