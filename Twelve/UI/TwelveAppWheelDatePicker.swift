@@ -94,38 +94,6 @@ struct TwelveAppWheelDatePicker: UIViewRepresentable {
 }
 
 extension TwelveTheme {
-    /// Preferred UIKit font for picker wheels (mirrors `appFont` family, rounded system fallback).
-    static func uiFontForApp(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
-        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black, .semibold, .medium:
-                return UIFont(name: "ChalkboardSE-Bold", size: size)
-                    ?? .systemFont(ofSize: size, weight: weight)
-            default:
-                return UIFont(name: "ChalkboardSE-Regular", size: size)
-                    ?? .systemFont(ofSize: size, weight: weight)
-            }
-        }
-        if UIFont(name: "Noteworthy-Light", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black, .semibold, .medium:
-                return UIFont(name: "Noteworthy-Bold", size: size)
-                    ?? .systemFont(ofSize: size, weight: weight)
-            default:
-                return UIFont(name: "Noteworthy-Light", size: size)
-                    ?? .systemFont(ofSize: size, weight: weight)
-            }
-        }
-        if let wide = UIFont(name: "MarkerFelt-Wide", size: size) {
-            return wide
-        }
-        let base = UIFont.systemFont(ofSize: size, weight: weight)
-        if let rounded = base.fontDescriptor.withDesign(.rounded) {
-            return UIFont(descriptor: rounded, size: size)
-        }
-        return base
-    }
-
     static func applyAppTypographyToWheelDatePicker(_ picker: UIView) {
         let font = uiFontForApp(size: 20, weight: .medium)
         let textColor = UIColor { traits in

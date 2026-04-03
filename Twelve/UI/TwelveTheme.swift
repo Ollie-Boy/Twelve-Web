@@ -196,53 +196,113 @@ enum TwelveTheme {
     )
 
     static func handwrittenFont(size: CGFloat) -> Font {
+        let base: UIFont
         if UIFont(name: "Noteworthy-Bold", size: size) != nil {
-            return .custom("Noteworthy-Bold", size: size)
+            base = UIFont(name: "Noteworthy-Bold", size: size)!
+        } else if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
+            base = UIFont(name: "ChalkboardSE-Bold", size: size)!
+        } else {
+            let sys = UIFont.systemFont(ofSize: size, weight: .semibold)
+            if let rounded = sys.fontDescriptor.withDesign(.rounded) {
+                base = UIFont(descriptor: rounded, size: size)
+            } else {
+                base = sys
+            }
         }
-        if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
-            return .custom("ChalkboardSE-Bold", size: size)
-        }
-        return .system(size: size, weight: .semibold, design: .rounded)
+        return Font(uiFont: fontByAddingChineseCascade(to: base))
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black:
-                return .custom("ChalkboardSE-Bold", size: size)
-            case .semibold, .medium:
-                return .custom("ChalkboardSE-Bold", size: size)
-            default:
-                return .custom("ChalkboardSE-Regular", size: size)
-            }
-        }
-        if UIFont(name: "Noteworthy-Light", size: size) != nil {
-            switch weight {
-            case .bold, .heavy, .black, .semibold, .medium:
-                return .custom("Noteworthy-Bold", size: size)
-            default:
-                return .custom("Noteworthy-Light", size: size)
-            }
-        }
-        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
-            return .custom("MarkerFelt-Wide", size: size)
-        }
-        return .system(size: size, weight: weight, design: .rounded)
+        Font(uiFont: uiFontForApp(size: size, weight: weight))
     }
 
     static var appTypographyDesign: Font.Design { .rounded }
 
-    /// CSS `font-family` list for WKWebView body text to mirror `appFont` (Chalkboard / Noteworthy / Marker Felt / rounded system).
+    /// UIKit font with Latin stack + CJK cascade (handwriting-style Chinese where available).
+    static func uiFontForApp(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
+        let useBold = weight >= .semibold
+        let base: UIFont
+        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
+            let n = useBold ? "ChalkboardSE-Bold" : "ChalkboardSE-Regular"
+            base = UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
+        } else if UIFont(name: "Noteworthy-Light", size: size) != nil {
+            let n = useBold ? "Noteworthy-Bold" : "Noteworthy-Light"
+            base = UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
+        } else if let wide = UIFont(name: "MarkerFelt-Wide", size: size) {
+            base = wide
+        } else {
+            let sys = UIFont.systemFont(ofSize: size, weight: weight)
+            if let rounded = sys.fontDescriptor.withDesign(.rounded) {
+                base = UIFont(descriptor: rounded, size: size)
+            } else {
+                base = sys
+            }
+        }
+        return fontByAddingChineseCascade(to: base, preferBoldHan: useBold)
+    }
+
+    /// Bridge for `appFont` / SwiftUI `Font.Weight`.
+    static func uiFontForApp(size: CGFloat, weight: Font.Weight) -> UIFont {
+        let uw: UIFont.Weight
+        switch weight {
+        case .bold, .heavy, .black: uw = .bold
+        case .semibold, .medium: uw = .semibold
+        default: uw = .regular
+        }
+        return uiFontForApp(size: size, weight: uw)
+    }
+
+    /// CSS `font-family` for WKWebView: Latin app face + bundled handwriting-style CJK, then rounded system.
     static var webContentFontFamilyCSS: String {
+        let han = "'Hannotate SC', 'HanziPen SC', 'Kaiti SC', 'STKaiti', 'STXingkai', ui-rounded"
         if UIFont(name: "ChalkboardSE-Regular", size: 12) != nil {
-            return #"'Chalkboard SE', ChalkboardSE-Regular, 'ChalkboardSE-Regular', ui-rounded, system-ui, -apple-system, sans-serif"#
+            return "'Chalkboard SE', ChalkboardSE-Regular, \(han), system-ui, -apple-system, sans-serif"
         }
         if UIFont(name: "Noteworthy-Light", size: 12) != nil {
-            return #"'Noteworthy', Noteworthy-Light, 'Noteworthy-Light', ui-rounded, system-ui, -apple-system, sans-serif"#
+            return "'Noteworthy', Noteworthy-Light, \(han), system-ui, -apple-system, sans-serif"
         }
         if UIFont(name: "MarkerFelt-Wide", size: 12) != nil {
-            return #"'Marker Felt', MarkerFelt-Wide, 'MarkerFelt-Wide', ui-rounded, system-ui, -apple-system, sans-serif"#
+            return "'Marker Felt', MarkerFelt-Wide, \(han), system-ui, -apple-system, sans-serif"
         }
-        return "ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, sans-serif"
+        return "\(han), system-ui, -apple-system, sans-serif"
+    }
+
+    // MARK: - CJK cascade (similar casual feel to Chalkboard / Noteworthy)
+
+    private static func chineseFontDescriptor(size: CGFloat, preferBoldHan: Bool) -> UIFontDescriptor? {
+        let boldNames = [
+            "HannotateSC-W7",
+            "STKaitiSC-Bold",
+            "STXingkaiSC-Bold",
+            "HanziPenSC-W5",
+            "KaitiSC-Bold",
+        ]
+        let regularNames = [
+            "HannotateSC-W5",
+            "STKaitiSC-Regular",
+            "STXingkaiSC-Light",
+            "HanziPenSC-W3",
+            "KaitiSC-Regular",
+        ]
+        let names = preferBoldHan ? boldNames + regularNames : regularNames + boldNames
+        for name in names {
+            if let f = UIFont(name: name, size: size) {
+                return f.fontDescriptor
+            }
+        }
+        return nil
+    }
+
+    private static func fontByAddingChineseCascade(to font: UIFont, preferBoldHan: Bool? = nil) -> UIFont {
+        let boldHan = preferBoldHan ?? font.fontDescriptor.symbolicTraits.contains(.traitBold)
+        guard let hanDesc = chineseFontDescriptor(size: font.pointSize, preferBoldHan: boldHan) else {
+            return font
+        }
+        let cascade: [[UIFontDescriptor.AttributeName: Any]] = [
+            [.cascadeSubfonts: [hanDesc], .language: "zh-Hans"],
+            [.cascadeSubfonts: [hanDesc], .language: "zh-Hant"],
+        ]
+        let descriptor = font.fontDescriptor.addingAttributes([.cascadeList: cascade])
+        return UIFont(descriptor: descriptor, size: font.pointSize)
     }
 }
