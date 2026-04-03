@@ -65,6 +65,7 @@ struct DiaryComposerSheet: View {
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
                         .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .wiggleOnInputChange(titleText)
 
                     HStack(alignment: .center, spacing: 8) {
                         Text("Date & Time")
@@ -157,6 +158,7 @@ struct DiaryComposerSheet: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .wiggleOnInputChange(emotion)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -169,6 +171,7 @@ struct DiaryComposerSheet: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .wiggleOnInputChange(tagText)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {

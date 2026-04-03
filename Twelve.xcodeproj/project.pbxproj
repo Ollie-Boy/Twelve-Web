@@ -23,6 +23,7 @@
         9A100007A100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
         9A100008A100000100000001 /* TwelveTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000008A100000100000001 /* TwelveTheme.swift */; };
         9A100009A100000100000001 /* WiggleTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000009A100000100000001 /* WiggleTextEditor.swift */; };
+        9A100031A100000100000001 /* InputWiggleModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000022A100000100000001 /* InputWiggleModifier.swift */; };
         9A10000AA100000100000001 /* TwelveButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000AA100000100000001 /* TwelveButtonStyles.swift */; };
         9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000BA100000100000001 /* WindyBackgroundView.swift */; };
         9A10000CA100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A00000CA100000100000001 /* Assets.xcassets */; };
@@ -78,6 +79,7 @@
         9A000007A100000100000001 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
         9A000008A100000100000001 /* TwelveTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveTheme.swift; sourceTree = "<group>"; };
         9A000009A100000100000001 /* WiggleTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiggleTextEditor.swift; sourceTree = "<group>"; };
+        9A000022A100000100000001 /* InputWiggleModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputWiggleModifier.swift; sourceTree = "<group>"; };
         9A00000AA100000100000001 /* TwelveButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveButtonStyles.swift; sourceTree = "<group>"; };
         9A00000BA100000100000001 /* WindyBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindyBackgroundView.swift; sourceTree = "<group>"; };
         9A00000CA100000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
             children = (
                 9A000008A100000100000001 /* TwelveTheme.swift */,
                 9A000009A100000100000001 /* WiggleTextEditor.swift */,
+                9A000022A100000100000001 /* InputWiggleModifier.swift */,
                 9A00000AA100000100000001 /* TwelveButtonStyles.swift */,
                 9A00000BA100000100000001 /* WindyBackgroundView.swift */,
                 9A00000FA100000100000001 /* TodayFeatureCardOverlay.swift */,
@@ -396,6 +399,7 @@
                 9A100007A100000100000001 /* LocationManager.swift in Sources */,
                 9A100008A100000100000001 /* TwelveTheme.swift in Sources */,
                 9A100009A100000100000001 /* WiggleTextEditor.swift in Sources */,
+                9A100031A100000100000001 /* InputWiggleModifier.swift in Sources */,
                 9A10000AA100000100000001 /* TwelveButtonStyles.swift in Sources */,
                 9A10000BA100000100000001 /* WindyBackgroundView.swift in Sources */,
                 9A10000DA100000100000001 /* TodayFeatureCardOverlay.swift in Sources */,

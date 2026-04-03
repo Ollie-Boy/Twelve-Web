@@ -122,11 +122,32 @@ struct ContentView: View {
         )
     }
 
+    private var todayWeather: WeatherOption {
+        WeatherOption.suggestedForRecognizedAddress("", date: Date())
+    }
+
     private var headerBar: some View {
         HStack(alignment: .center, spacing: 12) {
-            Text("Twelve")
-                .font(TwelveTheme.handwrittenFont(size: 40))
-                .foregroundStyle(TwelveTheme.textPrimary)
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: todayWeather.symbolName)
+                    .font(TwelveTheme.appFont(size: 26, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
+                    .symbolRenderingMode(.hierarchical)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(todayWeather.title)
+                        .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                        .lineLimit(1)
+                    Text(Date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()))
+                        .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                        .foregroundStyle(TwelveTheme.textSecondary)
+                        .lineLimit(1)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(
+                "\(todayWeather.title), \(Date().formatted(date: .complete, time: .omitted))"
+            )
             Spacer(minLength: 8)
             HStack(spacing: 10) {
                 Button {
