@@ -151,6 +151,7 @@ struct DiaryReaderSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
+                        .font(TwelveTheme.appFont(size: 17))
                 }
                 ToolbarItemGroup(placement: .primaryAction) {
                     if let onEdit {
@@ -158,12 +159,14 @@ struct DiaryReaderSheet: View {
                             dismiss()
                             onEdit()
                         }
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                     }
                     if let onDelete {
                         Button("Delete", role: .destructive) {
                             dismiss()
                             onDelete()
                         }
+                        .font(TwelveTheme.appFont(size: 17))
                     }
                 }
             }

@@ -91,12 +91,14 @@ struct ComposerLocationPickerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
+                        .font(TwelveTheme.appFont(size: 17))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("No Address") {
                         onClearAddress()
                         dismiss()
                     }
+                    .font(TwelveTheme.appFont(size: 17))
                 }
             }
             .onAppear {

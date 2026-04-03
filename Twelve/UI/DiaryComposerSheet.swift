@@ -437,6 +437,7 @@ struct DiaryComposerSheet: View {
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button("Done") { showWeatherPicker = false }
+                                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                         }
                     }
                 }
@@ -656,6 +657,7 @@ private struct AudioRecorderSheet: View {
                         recorder.cancelAndDiscard()
                         dismiss()
                     }
+                    .font(TwelveTheme.appFont(size: 17))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Insert") {
@@ -665,7 +667,7 @@ private struct AudioRecorderSheet: View {
                         }
                         dismiss()
                     }
-                    .fontWeight(.semibold)
+                    .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                     .disabled(recorder.recordedURL == nil && !recorder.isRecording)
                 }
             }
