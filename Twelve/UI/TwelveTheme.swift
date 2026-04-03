@@ -196,54 +196,61 @@ enum TwelveTheme {
     )
 
     static func handwrittenFont(size: CGFloat) -> Font {
-        let base: UIFont
         if UIFont(name: "Noteworthy-Bold", size: size) != nil {
-            base = UIFont(name: "Noteworthy-Bold", size: size)!
-        } else if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
-            base = UIFont(name: "ChalkboardSE-Bold", size: size)!
-        } else {
-            let sys = UIFont.systemFont(ofSize: size, weight: .semibold)
-            if let rounded = sys.fontDescriptor.withDesign(.rounded) {
-                base = UIFont(descriptor: rounded, size: size)
-            } else {
-                base = sys
-            }
+            return .custom("Noteworthy-Bold", size: size)
         }
-        return fontFromUIKit(fontByAddingChineseCascade(to: base))
+        if UIFont(name: "ChalkboardSE-Bold", size: size) != nil {
+            return .custom("ChalkboardSE-Bold", size: size)
+        }
+        return .system(size: size, weight: .semibold, design: .rounded)
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        fontFromUIKit(uiFontForApp(size: size, weight: weight))
-    }
-
-    /// SwiftUI `Font` from `UIFont`, preserving descriptor (including CJK cascade).
-    private static func fontFromUIKit(_ font: UIFont) -> Font {
-        Font(font)
+        if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
+            switch weight {
+            case .bold, .heavy, .black:
+                return .custom("ChalkboardSE-Bold", size: size)
+            case .semibold, .medium:
+                return .custom("ChalkboardSE-Bold", size: size)
+            default:
+                return .custom("ChalkboardSE-Regular", size: size)
+            }
+        }
+        if UIFont(name: "Noteworthy-Light", size: size) != nil {
+            switch weight {
+            case .bold, .heavy, .black, .semibold, .medium:
+                return .custom("Noteworthy-Bold", size: size)
+            default:
+                return .custom("Noteworthy-Light", size: size)
+            }
+        }
+        if UIFont(name: "MarkerFelt-Wide", size: size) != nil {
+            return .custom("MarkerFelt-Wide", size: size)
+        }
+        return .system(size: size, weight: weight, design: .rounded)
     }
 
     static var appTypographyDesign: Font.Design { .rounded }
 
-    /// UIKit font with Latin stack + CJK cascade (handwriting-style Chinese where available).
+    /// UIKit font for pickers etc. (no descriptor cascade — avoids rare EXC_BAD_ACCESS from cascade bridging.)
     static func uiFontForApp(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
         let useBold = weight >= .semibold
-        let base: UIFont
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
             let n = useBold ? "ChalkboardSE-Bold" : "ChalkboardSE-Regular"
-            base = UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
-        } else if UIFont(name: "Noteworthy-Light", size: size) != nil {
-            let n = useBold ? "Noteworthy-Bold" : "Noteworthy-Light"
-            base = UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
-        } else if let wide = UIFont(name: "MarkerFelt-Wide", size: size) {
-            base = wide
-        } else {
-            let sys = UIFont.systemFont(ofSize: size, weight: weight)
-            if let rounded = sys.fontDescriptor.withDesign(.rounded) {
-                base = UIFont(descriptor: rounded, size: size)
-            } else {
-                base = sys
-            }
+            return UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
         }
-        return fontByAddingChineseCascade(to: base, preferBoldHan: useBold)
+        if UIFont(name: "Noteworthy-Light", size: size) != nil {
+            let n = useBold ? "Noteworthy-Bold" : "Noteworthy-Light"
+            return UIFont(name: n, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
+        }
+        if let wide = UIFont(name: "MarkerFelt-Wide", size: size) {
+            return wide
+        }
+        let sys = UIFont.systemFont(ofSize: size, weight: weight)
+        if let rounded = sys.fontDescriptor.withDesign(.rounded) {
+            return UIFont(descriptor: rounded, size: size)
+        }
+        return sys
     }
 
     /// Bridge for `appFont` / SwiftUI `Font.Weight`.
@@ -270,36 +277,5 @@ enum TwelveTheme {
             return "'Marker Felt', MarkerFelt-Wide, \(han), system-ui, -apple-system, sans-serif"
         }
         return "\(han), system-ui, -apple-system, sans-serif"
-    }
-
-    // MARK: - CJK cascade (PingFang SC — always present on iOS; matches rounded UI tone)
-
-    /// Keys inside each cascade entry (`UIFontDescriptor.AttributeName.cascadeList`).
-    private static let cascadeSubfontsKey = "UIFontCascadeSubfontsAttribute"
-    private static let cascadeLanguagesKey = "UIFontCascadeLanguagesAttribute"
-
-    private static func pingFangDescriptor(size: CGFloat, preferBold: Bool) -> UIFontDescriptor? {
-        let names = preferBold
-            ? ["PingFangSC-Semibold", "PingFangSC-Medium", "PingFangSC-Regular"]
-            : ["PingFangSC-Regular", "PingFangSC-Light"]
-        for n in names {
-            if let f = UIFont(name: n, size: size) {
-                return f.fontDescriptor
-            }
-        }
-        return nil
-    }
-
-    private static func fontByAddingChineseCascade(to font: UIFont, preferBoldHan: Bool? = nil) -> UIFont {
-        let preferBold = preferBoldHan ?? font.fontDescriptor.symbolicTraits.contains(.traitBold)
-        guard let hanDesc = pingFangDescriptor(size: font.pointSize, preferBold: preferBold) else {
-            return font
-        }
-        let entry: [String: Any] = [
-            cascadeSubfontsKey: [hanDesc],
-            cascadeLanguagesKey: ["zh-Hans", "zh-Hant"],
-        ]
-        let descriptor = font.fontDescriptor.addingAttributes([.cascadeList: [entry]])
-        return UIFont(descriptor: descriptor, size: font.pointSize)
     }
 }
