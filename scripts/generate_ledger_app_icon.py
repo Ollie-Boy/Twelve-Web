@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ledger app icon: sky blue + pencil stick figure (ledger / step pose, ~6 strokes)."""
+"""Ledger app icon: hand-drawn wallet on blue–white gradient, black linework."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
-from icon_pencil_stickman import compose_ledger_icon  # noqa: E402
+from icon_book_wallet import compose_ledger_wallet_icon  # noqa: E402
 
 
 def main() -> None:
@@ -20,7 +20,7 @@ def main() -> None:
     out_dir = root / "Ledger" / "Assets.xcassets" / "AppIcon.appiconset"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    base = compose_ledger_icon(1024)
+    base = compose_ledger_wallet_icon(1024)
     sizes = {
         "LedgerAppIcon-1024.png": 1024,
         "LedgerAppIcon-180.png": 180,
