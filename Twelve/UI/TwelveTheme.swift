@@ -1,4 +1,3 @@
-import CoreText
 import SwiftUI
 import UIKit
 
@@ -219,9 +218,7 @@ enum TwelveTheme {
 
     /// SwiftUI `Font` from `UIFont`, preserving descriptor (including CJK cascade).
     private static func fontFromUIKit(_ font: UIFont) -> Font {
-        let desc = font.fontDescriptor as CTFontDescriptor
-        let ct = CTFontCreateWithFontDescriptor(desc, font.pointSize, nil)
-        return Font(ct)
+        Font(font)
     }
 
     static var appTypographyDesign: Font.Design { .rounded }
@@ -260,9 +257,9 @@ enum TwelveTheme {
         return uiFontForApp(size: size, weight: uw)
     }
 
-    /// CSS `font-family` for WKWebView: Latin app face + bundled handwriting-style CJK, then rounded system.
+    /// CSS `font-family` for WKWebView: Latin app face + system Chinese (PingFang), then rounded system.
     static var webContentFontFamilyCSS: String {
-        let han = "'Hannotate SC', 'HanziPen SC', 'Kaiti SC', 'STKaiti', 'STXingkai', ui-rounded"
+        let han = "'PingFang SC', 'PingFang TC', 'Heiti SC', ui-rounded"
         if UIFont(name: "ChalkboardSE-Regular", size: 12) != nil {
             return "'Chalkboard SE', ChalkboardSE-Regular, \(han), system-ui, -apple-system, sans-serif"
         }
@@ -275,50 +272,34 @@ enum TwelveTheme {
         return "\(han), system-ui, -apple-system, sans-serif"
     }
 
-    // MARK: - CJK cascade (similar casual feel to Chalkboard / Noteworthy)
+    // MARK: - CJK cascade (PingFang SC — always present on iOS; matches rounded UI tone)
 
-    private static func chineseFontDescriptor(size: CGFloat, preferBoldHan: Bool) -> UIFontDescriptor? {
-        let boldNames = [
-            "HannotateSC-W7",
-            "STKaitiSC-Bold",
-            "STXingkaiSC-Bold",
-            "HanziPenSC-W5",
-            "KaitiSC-Bold",
-        ]
-        let regularNames = [
-            "HannotateSC-W5",
-            "STKaitiSC-Regular",
-            "STXingkaiSC-Light",
-            "HanziPenSC-W3",
-            "KaitiSC-Regular",
-        ]
-        let names = preferBoldHan ? boldNames + regularNames : regularNames + boldNames
-        for name in names {
-            if let f = UIFont(name: name, size: size) {
+    /// Keys inside each cascade entry (`UIFontDescriptor.AttributeName.cascadeList`).
+    private static let cascadeSubfontsKey = "UIFontCascadeSubfontsAttribute"
+    private static let cascadeLanguagesKey = "UIFontCascadeLanguagesAttribute"
+
+    private static func pingFangDescriptor(size: CGFloat, preferBold: Bool) -> UIFontDescriptor? {
+        let names = preferBold
+            ? ["PingFangSC-Semibold", "PingFangSC-Medium", "PingFangSC-Regular"]
+            : ["PingFangSC-Regular", "PingFangSC-Light"]
+        for n in names {
+            if let f = UIFont(name: n, size: size) {
                 return f.fontDescriptor
             }
         }
         return nil
     }
 
-    /// Inner keys for `UIFontDescriptor.AttributeName.cascadeList` (not exposed as enum cases on all SDKs).
-    private static let cascadeSubfontsKey = UIFontDescriptor.AttributeName(rawValue: "UIFontCascadeSubfontsAttribute")
-    private static let cascadeLanguagesKey = UIFontDescriptor.AttributeName(rawValue: "UIFontCascadeLanguagesAttribute")
-
     private static func fontByAddingChineseCascade(to font: UIFont, preferBoldHan: Bool? = nil) -> UIFont {
-        let boldHan = preferBoldHan ?? font.fontDescriptor.symbolicTraits.contains(.traitBold)
-        guard let hanDesc = chineseFontDescriptor(size: font.pointSize, preferBoldHan: boldHan) else {
+        let preferBold = preferBoldHan ?? font.fontDescriptor.symbolicTraits.contains(.traitBold)
+        guard let hanDesc = pingFangDescriptor(size: font.pointSize, preferBold: preferBold) else {
             return font
         }
-        let entryHans: [UIFontDescriptor.AttributeName: Any] = [
+        let entry: [String: Any] = [
             cascadeSubfontsKey: [hanDesc],
-            cascadeLanguagesKey: ["zh-Hans"],
+            cascadeLanguagesKey: ["zh-Hans", "zh-Hant"],
         ]
-        let entryHant: [UIFontDescriptor.AttributeName: Any] = [
-            cascadeSubfontsKey: [hanDesc],
-            cascadeLanguagesKey: ["zh-Hant"],
-        ]
-        let descriptor = font.fontDescriptor.addingAttributes([.cascadeList: [entryHans, entryHant]])
+        let descriptor = font.fontDescriptor.addingAttributes([.cascadeList: [entry]])
         return UIFont(descriptor: descriptor, size: font.pointSize)
     }
 }
