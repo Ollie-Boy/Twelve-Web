@@ -95,7 +95,7 @@ struct TwelveAppWheelDatePicker: UIViewRepresentable {
 
 extension TwelveTheme {
     static func applyAppTypographyToWheelDatePicker(_ picker: UIView) {
-        let font = uiFontForApp(size: 20, weight: .medium)
+        let font = uiFontForApp(size: 20, weight: UIFont.Weight.medium)
         let textColor = UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(red: 0.94, green: 0.95, blue: 0.97, alpha: 1)
