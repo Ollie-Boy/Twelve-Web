@@ -258,15 +258,15 @@ struct LedgerSettingsSheet: View {
                     }
                 }
             }
-            HStack {
+            HStack(spacing: 8) {
                 TextField("Amount", text: $recAmount)
                     .keyboardType(.decimalPad)
                     .frame(width: 72)
-                Picker("", selection: $recKind) {
-                    Text("Expense").font(TwelveTheme.Settings.rowPrimary).tag(LedgerTransactionKind.expense)
-                    Text("Income").font(TwelveTheme.Settings.rowPrimary).tag(LedgerTransactionKind.income)
+                Spacer(minLength: 4)
+                HStack(spacing: 6) {
+                    recurringKindPill(.expense)
+                    recurringKindPill(.income)
                 }
-                .pickerStyle(.segmented)
             }
             TextField("Category", text: $recCategory)
                 .textFieldStyle(.plain)
@@ -318,6 +318,32 @@ struct LedgerSettingsSheet: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func recurringKindPill(_ k: LedgerTransactionKind) -> some View {
+        let on = recKind == k
+        return Button {
+            recKind = k
+        } label: {
+            Text(k.title)
+                .font(TwelveTheme.appFont(size: 13, weight: .semibold))
+                .foregroundStyle(on ? Color.white : TwelveTheme.textPrimary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule().fill(
+                        on
+                            ? LinearGradient(
+                                colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                            : LinearGradient(colors: [TwelveTheme.secondarySurface, TwelveTheme.secondarySurface], startPoint: .top, endPoint: .bottom)
+                    )
+                )
+                .overlay(Capsule().stroke(on ? Color.clear : TwelveTheme.strokeSoft, lineWidth: 0.8))
+        }
+        .buttonStyle(.plain)
     }
 
     private func reloadLocalState() {
