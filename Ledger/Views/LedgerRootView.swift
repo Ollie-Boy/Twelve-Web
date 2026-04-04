@@ -366,10 +366,10 @@ struct LedgerRootView: View {
 
     @ViewBuilder
     private var chartSection: some View {
-        let pts = LedgerChartData.last12MonthsNet(bookId: bookStore.activeBookId, entries: bookEntries)
+        let pts = LedgerChartData.monthlyNetSeries(bookId: bookStore.activeBookId, entries: bookEntries)
         if !bookEntries.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Last 12 months (net)")
+                Text("Monthly net (drag sideways)")
                     .font(TwelveTheme.appFont(size: 13, weight: .semibold))
                     .foregroundStyle(TwelveTheme.textSecondary)
                 LedgerMonthChartView(points: pts, formatMoney: { currency.format($0) })

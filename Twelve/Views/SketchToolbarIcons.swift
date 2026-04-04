@@ -79,6 +79,41 @@ struct SketchPaletteIcon: View {
     }
 }
 
+/// Circle + up-arrow sketch (scroll to top), matches other toolbar line icons.
+struct SketchScrollToTopIcon: View {
+    var size: CGFloat = 22
+
+    var body: some View {
+        Canvas { context, canvasSize in
+            let w = canvasSize.width
+            let h = canvasSize.height
+            let cx = w / 2
+            let cy = h * 0.48
+            let r = min(w, h) * 0.38
+
+            var ring = Path()
+            ring.addEllipse(in: CGRect(x: cx - r, y: cy - r, width: r * 2, height: r * 2))
+            context.stroke(ring, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+
+            var shaft = Path()
+            shaft.move(to: CGPoint(x: cx + 0.3, y: cy + r * 0.15))
+            shaft.addQuadCurve(to: CGPoint(x: cx - 0.2, y: cy - r * 0.55), control: CGPoint(x: cx + 1.0, y: cy - r * 0.22))
+            context.stroke(shaft, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+
+            var headL = Path()
+            headL.move(to: CGPoint(x: cx - r * 0.42, y: cy - r * 0.38))
+            headL.addQuadCurve(to: CGPoint(x: cx, y: cy - r * 0.72), control: CGPoint(x: cx - r * 0.38, y: cy - r * 0.58))
+            context.stroke(headL, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+
+            var headR = Path()
+            headR.move(to: CGPoint(x: cx + r * 0.42, y: cy - r * 0.38))
+            headR.addQuadCurve(to: CGPoint(x: cx, y: cy - r * 0.72), control: CGPoint(x: cx + r * 0.38, y: cy - r * 0.58))
+            context.stroke(headR, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 /// Hand-drawn cog (settings), loose strokes to match calendar / palette.
 struct SketchGearIcon: View {
     var size: CGFloat = 26

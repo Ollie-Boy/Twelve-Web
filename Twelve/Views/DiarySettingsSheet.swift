@@ -130,7 +130,7 @@ struct DiarySettingsSheet: View {
             }
         }
         .font(TwelveTheme.Settings.rootBody)
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .sheet(item: $exportPayload) { payload in
             ActivityView(activityItems: [ExportItemSource(text: payload.text, filename: payload.filename)])
         }

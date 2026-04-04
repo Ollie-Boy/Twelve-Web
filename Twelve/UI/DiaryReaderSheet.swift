@@ -85,13 +85,16 @@ struct DiaryReaderSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if !imageAttachments.isEmpty {
-                        topImageCarousel
-                    }
-
+            ScrollViewReader { proxy in
+                ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
+                        Color.clear.frame(height: 1).id("readerTop")
+
+                        if !imageAttachments.isEmpty {
+                            topImageCarousel
+                        }
+
+                        VStack(alignment: .leading, spacing: 16) {
                         Text(entry.title)
                             .font(TwelveTheme.appFont(size: 30, weight: .bold))
                             .foregroundStyle(TwelveTheme.textPrimary)
@@ -139,42 +142,52 @@ struct DiaryReaderSheet: View {
                         including: .gesture
                     )
 
-                    if !nonImageAttachments.isEmpty {
-                        nonImageAttachmentSection
-                    }
-                }
-                .padding(20)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .background(TwelveTheme.background)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                        .font(TwelveTheme.appFont(size: 17))
-                }
-                ToolbarItemGroup(placement: .primaryAction) {
-                    if let onEdit {
-                        Button("Edit") {
-                            dismiss()
-                            onEdit()
+                        if !nonImageAttachments.isEmpty {
+                            nonImageAttachmentSection
                         }
-                        .font(TwelveTheme.appFont(size: 17))
                     }
-                    if let onDelete {
-                        Button("Delete", role: .destructive) {
-                            dismiss()
-                            onDelete()
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .background(TwelveTheme.background)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
+                            .font(TwelveTheme.appFont(size: 17))
+                    }
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        Button {
+                            withAnimation(.easeOut(duration: 0.35)) {
+                                proxy.scrollTo("readerTop", anchor: .top)
+                            }
+                        } label: {
+                            SketchScrollToTopIcon(size: 22)
                         }
-                        .font(TwelveTheme.appFont(size: 17))
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Scroll to top")
+                        if let onEdit {
+                            Button("Edit") {
+                                dismiss()
+                                onEdit()
+                            }
+                            .font(TwelveTheme.appFont(size: 17))
+                        }
+                        if let onDelete {
+                            Button("Delete", role: .destructive) {
+                                dismiss()
+                                onDelete()
+                            }
+                            .font(TwelveTheme.appFont(size: 17))
+                        }
                     }
                 }
-            }
-            .sheet(item: $quickLookURL) { url in
-                QuickLookPreviewControllerRepresentable(url: url)
-            }
-            .sheet(item: $selectedImageURL) { url in
-                FullscreenImageViewer(imageURL: url)
+                .sheet(item: $quickLookURL) { url in
+                    QuickLookPreviewControllerRepresentable(url: url)
+                }
+                .sheet(item: $selectedImageURL) { url in
+                    FullscreenImageViewer(imageURL: url)
+                }
             }
         }
     }
