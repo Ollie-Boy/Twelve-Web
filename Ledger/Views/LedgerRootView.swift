@@ -208,9 +208,10 @@ struct LedgerRootView: View {
                     showCurrencySheet = true
                 } label: {
                     Text(currency.currencyCode)
-                        .font(TwelveTheme.appFont(size: 14, weight: .bold))
+                        .font(TwelveTheme.appFont(size: 18, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(minWidth: 40, minHeight: 44)
+                        .tracking(0.6)
+                        .frame(minWidth: 48, minHeight: 44)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
