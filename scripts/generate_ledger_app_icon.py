@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ledger app icon: hand-drawn wallet on blue–white gradient, black linework."""
+"""Ledger app icon: minimal hand-drawn wallet on white."""
 
 from __future__ import annotations
 

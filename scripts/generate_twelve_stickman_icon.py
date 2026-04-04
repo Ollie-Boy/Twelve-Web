@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Twelve app icon: hand-drawn open book on blue–white gradient."""
+"""Twelve app icon: minimal hand-drawn book on white."""
 
 from __future__ import annotations
 
