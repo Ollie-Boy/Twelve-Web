@@ -61,7 +61,6 @@
         B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */; };
         B100024B100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
         B100026B100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
-        B100027B100000100000001 /* LedgerAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000027B100000100000001 /* LedgerAppShortcuts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -111,7 +110,6 @@
         B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
         B00000EB100000100000001 /* LedgerSwipeActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSwipeActionRow.swift; sourceTree = "<group>"; };
         B00000FB100000100000001 /* LedgerDecimalFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDecimalFormatting.swift; sourceTree = "<group>"; };
-        B000027B100000100000001 /* LedgerAppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAppShortcuts.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,7 +165,6 @@
             isa = PBXGroup;
             children = (
                 B000001B100000100000001 /* LedgerApp.swift */,
-                B000027B100000100000001 /* LedgerAppShortcuts.swift */,
                 B00000BB100000100000001 /* LedgerCurrencyStore.swift */,
             );
             path = App;
@@ -423,7 +420,6 @@
             buildActionMask = 2147483647;
             files = (
                 B100001B100000100000001 /* LedgerApp.swift in Sources */,
-                B100027B100000100000001 /* LedgerAppShortcuts.swift in Sources */,
                 B100002B100000100000001 /* LedgerRootView.swift in Sources */,
                 B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */,
                 B100004B100000100000001 /* LedgerEntry.swift in Sources */,
@@ -646,11 +642,6 @@
                     "@executable_path/Frameworks",
                 );
                 MARKETING_VERSION = 1.0;
-                OTHER_LDFLAGS = (
-                    "$(inherited)",
-                    "-framework",
-                    AppIntents,
-                );
                 PRODUCT_BUNDLE_IDENTIFIER = com.example.Ledger;
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -681,11 +672,6 @@
                     "@executable_path/Frameworks",
                 );
                 MARKETING_VERSION = 1.0;
-                OTHER_LDFLAGS = (
-                    "$(inherited)",
-                    "-framework",
-                    AppIntents,
-                );
                 PRODUCT_BUNDLE_IDENTIFIER = com.example.Ledger;
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
