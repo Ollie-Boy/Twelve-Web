@@ -27,7 +27,7 @@ struct LedgerSettingsSheet: View {
 
     private var monthNow: (y: Int, m: Int) {
         let d = Date()
-        (cal.component(.year, from: d), cal.component(.month, from: d))
+        return (cal.component(.year, from: d), cal.component(.month, from: d))
     }
 
     var body: some View {
