@@ -233,10 +233,13 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             const el = document.getElementById('content');
             if (useMarkdown && typeof marked !== 'undefined') {
               el.innerHTML = marked.parse(raw, { breaks: true, gfm: true });
+              el.style.whiteSpace = 'normal';
             } else if (useMarkdown) {
               el.textContent = raw;
+              el.style.whiteSpace = 'pre-wrap';
             } else {
               el.innerHTML = raw;
+              el.style.whiteSpace = 'normal';
             }
           }
           function runMathJax() {
@@ -264,7 +267,9 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
                 runMathJax();
               } else if (n > 150) {
                 clearInterval(t);
-                document.getElementById('content').textContent = raw;
+                const el = document.getElementById('content');
+                el.textContent = raw;
+                el.style.whiteSpace = 'pre-wrap';
                 notifyHeight();
               }
             }, 20);

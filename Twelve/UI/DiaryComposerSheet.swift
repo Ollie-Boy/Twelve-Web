@@ -52,8 +52,9 @@ struct DiaryComposerSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
                     if case .create = mode, DiaryWritingPromptStore.isEnabled {
                         Text(DiaryWritingPromptStore.prompt(for: entryDate))
                             .font(TwelveTheme.appFont(size: 14, weight: .medium))
@@ -253,8 +254,28 @@ struct DiaryComposerSheet: View {
                     if !attachments.isEmpty {
                         attachmentsSection
                     }
+
+                    Color.clear.frame(height: 120).id("composerScrollBottom")
                 }
                 .padding(18)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: bodyText) { _, _ in
+                    guard bodyFocused else { return }
+                    DispatchQueue.main.async {
+                        withAnimation(.easeOut(duration: 0.22)) {
+                            scrollProxy.scrollTo("composerScrollBottom", anchor: .bottom)
+                        }
+                    }
+                }
+                .onChange(of: bodyFocused) { _, focused in
+                    guard focused else { return }
+                    DispatchQueue.main.async {
+                        withAnimation(.easeOut(duration: 0.22)) {
+                            scrollProxy.scrollTo("composerScrollBottom", anchor: .bottom)
+                        }
+                    }
+                }
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
@@ -454,7 +475,6 @@ struct DiaryComposerSheet: View {
                 .font(TwelveTheme.appFont(size: 16))
                 .presentationDetents([.fraction(0.45), .medium])
             }
-            .scrollDismissesKeyboard(.interactively)
             .contentShape(Rectangle())
             .gesture(
                 TapGesture().onEnded {

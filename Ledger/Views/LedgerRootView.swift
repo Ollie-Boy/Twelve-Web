@@ -286,16 +286,6 @@ struct LedgerRootView: View {
                 .accessibilityLabel("Currency")
 
                 Button {
-                    showSettingsSheet = true
-                } label: {
-                    SketchGearIcon(size: 28)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Ledger settings")
-
-                Button {
                     showAppearanceSheet = true
                 } label: {
                     SketchPaletteIcon(size: 28)
@@ -304,6 +294,16 @@ struct LedgerRootView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Look and feel")
+
+                Button {
+                    showSettingsSheet = true
+                } label: {
+                    SketchGearIcon(size: 28)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Ledger settings")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

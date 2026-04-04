@@ -40,7 +40,7 @@ struct LedgerMonthChartView: View {
     }
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: true) {
+        ScrollView(.horizontal, showsIndicators: false) {
             Chart {
                 ForEach(points) { p in
                     BarMark(
