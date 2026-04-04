@@ -22,6 +22,7 @@ struct LedgerAddTransactionSheet: View {
     @State private var showDatePicker = false
     @State private var showTimePicker = false
     @State private var showMapPicker = false
+    @StateObject private var locationManager = LocationManager()
     @State private var datePickerDraftDate: Date = Date()
     @State private var datePickerDisplayedMonthStart: Date = LedgerAddTransactionSheet.monthAnchor(for: Date())
     @State private var timePickerDraftDate: Date = Date()
@@ -167,6 +168,16 @@ struct LedgerAddTransactionSheet: View {
                 }
             }
             .onAppear { configureFromMode() }
+            .onReceive(locationManager.$currentLocationText) { newValue in
+                guard !newValue.isEmpty else { return }
+                let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.localizedCaseInsensitiveContains("error"),
+                      !trimmed.localizedCaseInsensitiveContains("denied"),
+                      !trimmed.localizedCaseInsensitiveContains("unavailable"),
+                      !trimmed.localizedCaseInsensitiveContains("location found")
+                else { return }
+                locationText = trimmed
+            }
             .sheet(isPresented: $showDatePicker) {
                 datePickerSheet
             }
@@ -230,19 +241,40 @@ struct LedgerAddTransactionSheet: View {
             Text("Location")
                 .font(TwelveTheme.appFont(size: 13, weight: .medium))
                 .foregroundStyle(TwelveTheme.textSecondary)
-            HStack(spacing: 10) {
-                Image(systemName: "mappin.and.ellipse")
-                    .foregroundStyle(TwelveTheme.textSecondary)
-                Text(locationText.isEmpty ? "No address selected" : locationText)
-                    .font(TwelveTheme.appFont(size: 13))
-                    .foregroundStyle(locationText.isEmpty ? TwelveTheme.textTertiary : TwelveTheme.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    Image(systemName: "mappin.and.ellipse")
+                        .foregroundStyle(TwelveTheme.textSecondary)
+                    Text(locationText.isEmpty ? "No address selected" : locationText)
+                        .font(TwelveTheme.appFont(size: 13))
+                        .foregroundStyle(locationText.isEmpty ? TwelveTheme.textTertiary : TwelveTheme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                HStack(spacing: 8) {
+                    Button("Use Current") {
+                        dismissKeyboard()
+                        locationManager.requestCurrentLocation()
+                    }
+                    .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.surfaceTintBlue))
+
+                    Button("Pick on Map") {
+                        dismissKeyboard()
+                        showMapPicker = true
+                    }
+                    .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+
+                    if !locationText.isEmpty {
+                        Button("No Address") {
+                            locationText = ""
+                        }
+                        .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softYellow))
+                    }
+                }
             }
-            Button("Pick on Map") {
-                dismissKeyboard()
-                showMapPicker = true
-            }
-            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 
