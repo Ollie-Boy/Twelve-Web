@@ -8,8 +8,8 @@ struct EntryCardView: View {
     let onDelete: () -> Void
 
     private static let topBandHeight: CGFloat = 154
-    /// 154 image + compact meta block (weather, title, attachments).
-    private static let cardFixedHeight: CGFloat = 288
+    /// 154 image + tighter meta block (weather, title, attachments).
+    private static let cardFixedHeight: CGFloat = 274
 
     @State private var rotatingCoverIndex: Int = 0
     private let coverRotationTimer = Timer.publish(every: 4.0, on: .main, in: .common).autoconnect()
@@ -48,25 +48,26 @@ struct EntryCardView: View {
                         .frame(maxWidth: .infinity)
                         .clipped()
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
                             Label(entry.weather.title, systemImage: entry.weather.symbol)
-                                .font(TwelveTheme.appFont(size: 11, weight: .semibold))
+                                .font(TwelveTheme.appFont(size: 10, weight: .semibold))
                                 .foregroundStyle(TwelveTheme.textPrimary)
+                                .lineLimit(1)
                             Spacer(minLength: 4)
                             Text(entry.selectedDate.formatted(.dateTime.month(.abbreviated).day()))
-                                .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                                .font(TwelveTheme.appFont(size: 11, weight: .semibold))
                                 .foregroundStyle(TwelveTheme.textSecondary)
                         }
 
                         if !entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Text(entry.title)
-                                .font(TwelveTheme.appFont(size: 18, weight: .bold))
+                                .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                                 .foregroundStyle(TwelveTheme.textPrimary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.trailing, 6)
+                                .padding(.trailing, 4)
                         }
 
                         if !entry.attachments.isEmpty {
@@ -74,15 +75,15 @@ struct EntryCardView: View {
                                 Image(systemName: "paperclip")
                                 Text("\(entry.attachments.count) attachment\(entry.attachments.count > 1 ? "s" : "")")
                             }
-                            .font(TwelveTheme.appFont(size: 11, weight: .medium))
+                            .font(TwelveTheme.appFont(size: 10, weight: .medium))
                             .foregroundStyle(TwelveTheme.textTertiary)
                         }
 
                         Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 12)
-                    .padding(.top, 0)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 8)
+                    .padding(.top, 2)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
                 .frame(maxWidth: .infinity)

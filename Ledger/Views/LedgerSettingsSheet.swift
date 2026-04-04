@@ -22,6 +22,7 @@ struct LedgerSettingsSheet: View {
     @State private var recDay = "1"
     @State private var recKind: LedgerTransactionKind = .expense
     @State private var csvPayload: CSVExportItem?
+    @State private var newCategoryShortcut = ""
 
     private var cal: Calendar { Calendar.current }
 
@@ -153,6 +154,25 @@ struct LedgerSettingsSheet: View {
             Text("Category shortcuts")
                 .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
+            HStack(spacing: 8) {
+                TextField("Add category…", text: $newCategoryShortcut)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                Button("Add") {
+                    let t = newCategoryShortcut.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !t.isEmpty else { return }
+                    guard !categories.contains(where: { $0.caseInsensitiveCompare(t) == .orderedSame }) else {
+                        newCategoryShortcut = ""
+                        return
+                    }
+                    categories.append(t)
+                    LedgerCategoryStore.save(categories, for: bookStore.activeBookId)
+                    newCategoryShortcut = ""
+                    reloadLocalState()
+                }
+                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+            }
             ForEach(categories, id: \.self) { c in
                 HStack {
                     Text(c).font(TwelveTheme.Settings.rowPrimary)
@@ -164,7 +184,7 @@ struct LedgerSettingsSheet: View {
                     .font(TwelveTheme.Settings.rowPrimary)
                 }
             }
-            Text("Categories are suggested when you add entries; removing does not delete past rows.")
+            Text("Add your own labels or remove shortcuts; past transactions are unchanged.")
                 .font(TwelveTheme.Settings.finePrint)
                 .foregroundStyle(TwelveTheme.textTertiary)
         }
