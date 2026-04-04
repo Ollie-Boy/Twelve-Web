@@ -39,7 +39,7 @@ struct LedgerMonthChartView: View {
                 .cornerRadius(4)
             }
         }
-        .chartXScale(domain: -0.5...(Double(max(points.map(\.id).max() ?? 0)) + 0.5))
+        .chartXScale(domain: -0.5...(Double(points.map(\.id).max() ?? 0) + 0.5))
         .chartYAxis {
             AxisMarks(position: .leading) { v in
                 AxisGridLine()
