@@ -21,19 +21,23 @@ final class LedgerBookStore: ObservableObject {
     }
 
     init() {
+        let loaded: [LedgerBook]
         if let data = UserDefaults.standard.data(forKey: Self.booksKey),
            let decoded = try? JSONDecoder().decode([LedgerBook].self, from: data),
            !decoded.isEmpty {
-            books = decoded
+            loaded = decoded
         } else {
-            books = [LedgerBook(id: LedgerBook.defaultId, name: LedgerBook.defaultName)]
+            loaded = [LedgerBook(id: LedgerBook.defaultId, name: LedgerBook.defaultName)]
         }
-        if let saved = UserDefaults.standard.string(forKey: Self.activeKey),
-           books.contains(where: { $0.id == saved }) {
-            activeBookId = saved
+        let saved = UserDefaults.standard.string(forKey: Self.activeKey)
+        let initialActive: String
+        if let saved, loaded.contains(where: { $0.id == saved }) {
+            initialActive = saved
         } else {
-            activeBookId = LedgerBook.defaultId
+            initialActive = LedgerBook.defaultId
         }
+        books = loaded
+        activeBookId = initialActive
     }
 
     func addBook(name: String) {
