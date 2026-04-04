@@ -89,7 +89,7 @@ struct LedgerSettingsSheet: View {
             }
             .pickerStyle(.menu)
             Button("Add book…") { showAddBook = true }
-                .font(TwelveTheme.appFont(size: 15, weight: .medium))
+                .font(TwelveTheme.appFont(size: 15))
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,7 +158,7 @@ struct LedgerSettingsSheet: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(b.category)
-                            .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                            .font(TwelveTheme.appFont(size: 15))
                         Text(b.repeatsEveryMonth ? "Every month" : "This month only")
                             .font(TwelveTheme.appFont(size: 11))
                             .foregroundStyle(TwelveTheme.textTertiary)
@@ -177,7 +177,7 @@ struct LedgerSettingsSheet: View {
                 }
             }
             Toggle("New budget repeats every month", isOn: $budgetRepeatsMonthly)
-                .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                .font(TwelveTheme.appFont(size: 14))
                 .tint(TwelveTheme.primaryBlue)
             HStack {
                 TextField("Category", text: $budgetCategory)
@@ -232,7 +232,7 @@ struct LedgerSettingsSheet: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(t.category)
-                            .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                            .font(TwelveTheme.appFont(size: 15))
                         Text("\(t.kind.title) · day \(t.dayOfMonth) · \(currency.format(t.amount))")
                             .font(TwelveTheme.appFont(size: 12))
                             .foregroundStyle(TwelveTheme.textTertiary)

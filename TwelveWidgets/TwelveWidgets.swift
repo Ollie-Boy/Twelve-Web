@@ -3,7 +3,7 @@ import WidgetKit
 
 struct TwelveDiaryWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "TwelveDiaryWidget", provider: TwelveProvider()) { entry in
+        StaticConfiguration(kind: "com.example.Twelve.widget.diary", provider: TwelveProvider()) { entry in
             TwelveDiaryWidgetView(entry: entry)
         }
         .configurationDisplayName("Twelve")
@@ -45,16 +45,16 @@ private struct TwelveDiaryWidgetView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Twelve")
-                .font(.caption.weight(.semibold))
+                .font(.caption)
                 .foregroundStyle(.secondary)
             Text(entry.weather)
-                .font(.headline)
+                .font(.subheadline)
             Text(entry.dateLine)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 0)
             Text(entry.lastTitle)
-                .font(.subheadline.weight(.medium))
+                .font(.footnote)
                 .lineLimit(3)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -67,7 +67,7 @@ private struct TwelveDiaryWidgetView: View {
 
 struct LedgerNetWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "LedgerNetWidget", provider: LedgerProvider()) { entry in
+        StaticConfiguration(kind: "com.example.Twelve.widget.ledgerNet", provider: LedgerProvider()) { entry in
             LedgerNetWidgetView(entry: entry)
         }
         .configurationDisplayName("Ledger")
@@ -108,16 +108,16 @@ private struct LedgerNetWidgetView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Ledger")
-                .font(.caption.weight(.semibold))
+                .font(.caption)
                 .foregroundStyle(.secondary)
             Text("This month")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             Text(entry.net)
-                .font(.title2.weight(.semibold))
+                .font(.title3)
             if !entry.code.isEmpty {
                 Text(entry.code)
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)

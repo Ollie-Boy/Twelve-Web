@@ -50,7 +50,7 @@ struct DiarySettingsSheet: View {
                             .foregroundStyle(TwelveTheme.textSecondary)
                         Toggle(isOn: $promptsOn) {
                             Text("Daily writing prompt")
-                                .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                                .font(TwelveTheme.appFont(size: 16))
                         }
                         .tint(TwelveTheme.primaryBlue)
                         .onChange(of: promptsOn) { _, v in
@@ -73,7 +73,7 @@ struct DiarySettingsSheet: View {
                             exportPayload = ExportPayload(text: md, filename: DiaryExportService.exportFilename())
                         } label: {
                             Label("Export all entries as Markdown", systemImage: "square.and.arrow.up")
-                                .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                                .font(TwelveTheme.appFont(size: 16))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .buttonStyle(.plain)
@@ -97,7 +97,7 @@ struct DiarySettingsSheet: View {
                             showCleanupConfirm = true
                         } label: {
                             Text("Remove orphaned attachment files")
-                                .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                                .font(TwelveTheme.appFont(size: 16))
                         }
                         .buttonStyle(.plain)
                         Text("Deletes files on disk that no diary entry references.")

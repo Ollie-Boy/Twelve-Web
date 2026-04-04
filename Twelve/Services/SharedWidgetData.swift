@@ -8,16 +8,24 @@ enum SharedWidgetData {
         UserDefaults(suiteName: appGroupId)
     }
 
+    private enum Keys {
+        static let twelveWeather = "widget.v2.twelve.weather"
+        static let twelveDate = "widget.v2.twelve.date"
+        static let twelveLastTitle = "widget.v2.twelve.lastTitle"
+        static let ledgerNet = "widget.v2.ledger.monthNet"
+        static let ledgerCurrency = "widget.v2.ledger.currency"
+    }
+
     static func updateTwelveSnapshot(weatherTitle: String, dateSubtitle: String, lastEntryTitle: String?) {
         guard let d = suite else { return }
-        d.set(weatherTitle, forKey: "twelve.weather")
-        d.set(dateSubtitle, forKey: "twelve.date")
-        d.set(lastEntryTitle ?? "", forKey: "twelve.lastTitle")
+        d.set(weatherTitle, forKey: Keys.twelveWeather)
+        d.set(dateSubtitle, forKey: Keys.twelveDate)
+        d.set(lastEntryTitle ?? "", forKey: Keys.twelveLastTitle)
     }
 
     static func updateLedgerSnapshot(monthNetFormatted: String, currencyCode: String) {
         guard let d = suite else { return }
-        d.set(monthNetFormatted, forKey: "ledger.monthNet")
-        d.set(currencyCode, forKey: "ledger.currency")
+        d.set(monthNetFormatted, forKey: Keys.ledgerNet)
+        d.set(currencyCode, forKey: Keys.ledgerCurrency)
     }
 }
