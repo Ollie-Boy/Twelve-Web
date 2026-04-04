@@ -241,17 +241,16 @@ struct ContentView: View {
             isComposerPresented = true
         } label: {
             ZStack {
-                Circle().fill(
-                    LinearGradient(
-                        colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                SketchPlusIcon(size: 30, color: .white, lineWidth: 3.4)
+                Circle()
+                    .fill(TwelveTheme.softBlue)
+                SketchPlusIcon(size: 30, color: TwelveTheme.primaryBlue, lineWidth: 3.4)
             }
             .frame(width: 58, height: 58)
-            .shadow(color: TwelveTheme.primaryBlue.opacity(0.35), radius: 14, y: 8)
+            .overlay(
+                Circle()
+                    .stroke(TwelveTheme.primaryBlue.opacity(0.22), lineWidth: 1)
+            )
+            .shadow(color: TwelveTheme.primaryBlue.opacity(0.18), radius: 12, y: 6)
         }
         .buttonStyle(.plain)
         .padding(.trailing, 20)

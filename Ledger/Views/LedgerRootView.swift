@@ -80,6 +80,7 @@ struct LedgerRootView: View {
             entries = storage.loadEntries()
             sortEntries()
             syncSummaryMonthSelection()
+            LedgerAppShortcuts.registerWithSystem()
         }
         .onChange(of: entries) { _, _ in
             syncSummaryMonthSelection()

@@ -150,7 +150,9 @@ struct LedgerAppShortcuts: AppShortcutsProvider {
                 phrases: [
                     "Log an expense in \(.applicationName)",
                     "Add expense with \(.applicationName)",
-                    "Record spending in \(.applicationName)"
+                    "Record spending in \(.applicationName)",
+                    "在\(.applicationName)记一笔支出",
+                    "用\(.applicationName)记账支出"
                 ],
                 shortTitle: "Log expense",
                 systemImageName: "minus.circle"
@@ -159,7 +161,9 @@ struct LedgerAppShortcuts: AppShortcutsProvider {
                 intent: LogLedgerIncomeIntent(),
                 phrases: [
                     "Log income in \(.applicationName)",
-                    "Add income with \(.applicationName)"
+                    "Add income with \(.applicationName)",
+                    "在\(.applicationName)记一笔收入",
+                    "用\(.applicationName)记账收入"
                 ],
                 shortTitle: "Log income",
                 systemImageName: "plus.circle"
@@ -168,11 +172,19 @@ struct LedgerAppShortcuts: AppShortcutsProvider {
                 intent: OpenLedgerAppIntent(),
                 phrases: [
                     "Open \(.applicationName)",
-                    "Show \(.applicationName)"
+                    "Show \(.applicationName)",
+                    "打开\(.applicationName)"
                 ],
                 shortTitle: "Open Ledger",
                 systemImageName: "wallet.pass"
             )
         ]
+    }
+
+    /// Call when the main screen appears so Shortcuts can index the app (`.task` on launch alone is sometimes too early).
+    static func registerWithSystem() {
+        Task {
+            await updateAppShortcutParameters()
+        }
     }
 }
