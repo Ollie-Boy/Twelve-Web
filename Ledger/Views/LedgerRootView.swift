@@ -129,15 +129,12 @@ struct LedgerRootView: View {
             entries = storage.loadEntries()
             sortEntries()
             syncSummaryMonthSelection()
-            pushWidgetSnapshot()
         }
         .onChange(of: entries) { _, _ in
             syncSummaryMonthSelection()
-            pushWidgetSnapshot()
         }
         .onChange(of: bookStore.activeBookId) { _, _ in
             syncSummaryMonthSelection()
-            pushWidgetSnapshot()
         }
         .sheet(isPresented: $showAddSheet) {
             LedgerAddTransactionSheet(
@@ -190,7 +187,6 @@ struct LedgerRootView: View {
                 onDismissReload: {
                     entries = storage.loadEntries()
                     sortEntries()
-                    pushWidgetSnapshot()
                 }
             )
         }
@@ -205,24 +201,6 @@ struct LedgerRootView: View {
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
-    }
-
-    private func pushWidgetSnapshot() {
-        let cal = Calendar.current
-        let now = Date()
-        let y = cal.component(.year, from: now)
-        let m = cal.component(.month, from: now)
-        var net: Decimal = 0
-        for e in bookEntries {
-            let ey = cal.component(.year, from: e.date)
-            let em = cal.component(.month, from: e.date)
-            guard ey == y, em == m else { continue }
-            net += e.signedNetAmount
-        }
-        net = LedgerDecimalFormatting.round(net)
-        let fmt = currency.format(net)
-        let sign = net >= 0 ? "+" : ""
-        SharedWidgetData.updateLedgerSnapshot(monthNetFormatted: "\(sign)\(fmt)", currencyCode: currency.currencyCode)
     }
 
     private func syncSummaryMonthSelection() {

@@ -48,14 +48,14 @@ struct LedgerSettingsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Ledger settings")
-                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .font(TwelveTheme.Settings.navigationTitle)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         dismiss()
                         onDismissReload()
                     }
-                    .font(TwelveTheme.appFont(size: 17))
+                    .font(TwelveTheme.Settings.navigationDone)
                 }
             }
             .onAppear { reloadLocalState() }
@@ -73,23 +73,23 @@ struct LedgerSettingsSheet: View {
                 ActivityView(activityItems: [item.url])
             }
         }
-        .font(TwelveTheme.appFont(size: 16))
+        .font(TwelveTheme.Settings.rootBody)
         .presentationDetents([.large])
     }
 
     private var booksSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Books")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
             Picker("Active book", selection: $bookStore.activeBookId) {
                 ForEach(bookStore.books) { b in
-                    Text(b.name).tag(b.id)
+                    Text(b.name).font(TwelveTheme.Settings.rowPrimary).tag(b.id)
                 }
             }
             .pickerStyle(.menu)
             Button("Add book…") { showAddBook = true }
-                .font(TwelveTheme.appFont(size: 15))
+                .font(TwelveTheme.Settings.rowPrimary)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -99,18 +99,21 @@ struct LedgerSettingsSheet: View {
     private var iCloudSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("iCloud backup (optional)")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
-            Toggle("Mirror data to iCloud Documents", isOn: $iCloudOn)
-                .tint(TwelveTheme.primaryBlue)
-                .onChange(of: iCloudOn) { _, v in
-                    ICloudDataMirror.ledgerEnabled = v
-                    if v, let data = try? JSONEncoder().encode(entries) {
-                        ICloudDataMirror.mirrorLedgerJSON(data)
-                    }
+            Toggle(isOn: $iCloudOn) {
+                Text("Mirror data to iCloud Documents")
+                    .font(TwelveTheme.Settings.rowPrimary)
+            }
+            .tint(TwelveTheme.primaryBlue)
+            .onChange(of: iCloudOn) { _, v in
+                ICloudDataMirror.ledgerEnabled = v
+                if v, let data = try? JSONEncoder().encode(entries) {
+                    ICloudDataMirror.mirrorLedgerJSON(data)
                 }
+            }
             Text(ICloudDataMirror.ledgerMirrorStatusLine())
-                .font(TwelveTheme.appFont(size: 12))
+                .font(TwelveTheme.Settings.caption)
                 .foregroundStyle(TwelveTheme.textTertiary)
         }
         .padding(14)
@@ -121,21 +124,21 @@ struct LedgerSettingsSheet: View {
     private var categoriesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Category shortcuts")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
             ForEach(categories, id: \.self) { c in
                 HStack {
-                    Text(c).font(TwelveTheme.appFont(size: 15))
+                    Text(c).font(TwelveTheme.Settings.rowPrimary)
                     Spacer()
                     Button("Remove", role: .destructive) {
                         categories.removeAll { $0 == c }
                         LedgerCategoryStore.save(categories, for: bookStore.activeBookId)
                     }
-                    .font(TwelveTheme.appFont(size: 14))
+                    .font(TwelveTheme.Settings.rowPrimary)
                 }
             }
             Text("Categories are suggested when you add entries; removing does not delete past rows.")
-                .font(TwelveTheme.appFont(size: 11))
+                .font(TwelveTheme.Settings.finePrint)
                 .foregroundStyle(TwelveTheme.textTertiary)
         }
         .padding(14)
@@ -149,22 +152,22 @@ struct LedgerSettingsSheet: View {
         let applied = LedgerBudgetStore.budgets(for: bookStore.activeBookId, year: y, month: m)
         return VStack(alignment: .leading, spacing: 10) {
             Text("Monthly budgets (expenses)")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
             Text("Caps follow the month you’re viewing on the main screen; “Every month” rolls with the calendar.")
-                .font(TwelveTheme.appFont(size: 11))
+                .font(TwelveTheme.Settings.finePrint)
                 .foregroundStyle(TwelveTheme.textTertiary)
             ForEach(applied) { b in
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(b.category)
-                            .font(TwelveTheme.appFont(size: 15))
+                            .font(TwelveTheme.Settings.rowPrimary)
                         Text(b.repeatsEveryMonth ? "Every month" : "This month only")
-                            .font(TwelveTheme.appFont(size: 11))
+                            .font(TwelveTheme.Settings.finePrint)
                             .foregroundStyle(TwelveTheme.textTertiary)
                         let spent = LedgerBudgetStore.spent(for: b.category, bookId: bookStore.activeBookId, year: y, month: m, entries: entries)
                         Text("\(currency.format(spent)) / \(currency.format(b.capAmount))")
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     Spacer()
@@ -174,11 +177,14 @@ struct LedgerSettingsSheet: View {
                         LedgerBudgetStore.save(all)
                         reloadLocalState()
                     }
+                    .font(TwelveTheme.Settings.rowPrimary)
                 }
             }
-            Toggle("New budget repeats every month", isOn: $budgetRepeatsMonthly)
-                .font(TwelveTheme.appFont(size: 14))
-                .tint(TwelveTheme.primaryBlue)
+            Toggle(isOn: $budgetRepeatsMonthly) {
+                Text("New budget repeats every month")
+                    .font(TwelveTheme.Settings.rowPrimary)
+            }
+            .tint(TwelveTheme.primaryBlue)
             HStack {
                 TextField("Category", text: $budgetCategory)
                     .textFieldStyle(.plain)
@@ -226,15 +232,15 @@ struct LedgerSettingsSheet: View {
     private var recurringSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Recurring templates")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
             ForEach(recurring.filter { $0.bookId == bookStore.activeBookId }) { t in
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(t.category)
-                            .font(TwelveTheme.appFont(size: 15))
+                            .font(TwelveTheme.Settings.rowPrimary)
                         Text("\(t.kind.title) · day \(t.dayOfMonth) · \(currency.format(t.amount))")
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     Spacer()
@@ -257,8 +263,8 @@ struct LedgerSettingsSheet: View {
                     .keyboardType(.decimalPad)
                     .frame(width: 72)
                 Picker("", selection: $recKind) {
-                    Text("Expense").tag(LedgerTransactionKind.expense)
-                    Text("Income").tag(LedgerTransactionKind.income)
+                    Text("Expense").font(TwelveTheme.Settings.rowPrimary).tag(LedgerTransactionKind.expense)
+                    Text("Income").font(TwelveTheme.Settings.rowPrimary).tag(LedgerTransactionKind.income)
                 }
                 .pickerStyle(.segmented)
             }
@@ -294,7 +300,7 @@ struct LedgerSettingsSheet: View {
     private var exportSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Export")
-                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
             Button {
                 let bookName = bookStore.books.first(where: { $0.id == bookStore.activeBookId })?.name ?? "Ledger"
@@ -305,7 +311,7 @@ struct LedgerSettingsSheet: View {
                 csvPayload = CSVExportItem(url: url)
             } label: {
                 Label("Export this book as CSV", systemImage: "square.and.arrow.up")
-                    .font(TwelveTheme.appFont(size: 16, weight: .medium))
+                    .font(TwelveTheme.Settings.rowPrimary)
             }
             .buttonStyle(.plain)
         }

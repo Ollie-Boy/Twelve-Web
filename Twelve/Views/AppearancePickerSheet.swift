@@ -26,17 +26,17 @@ struct AppearancePickerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Look & feel")
-                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .font(TwelveTheme.Settings.navigationTitle)
                         .foregroundStyle(TwelveTheme.textPrimary)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .font(TwelveTheme.appFont(size: 17))
+                        .font(TwelveTheme.Settings.navigationDone)
                 }
             }
         }
         .presentationDetents([.medium, .large])
-        .font(TwelveTheme.appFont(size: 16))
+        .font(TwelveTheme.Settings.rootBody)
     }
 
     private func appearanceOptionButton(_ option: AppearancePreference) -> some View {
@@ -47,14 +47,14 @@ struct AppearancePickerSheet: View {
         } label: {
             HStack(spacing: 14) {
                 Text(option.title)
-                    .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                    .font(TwelveTheme.Settings.rowPrimary)
                     .foregroundStyle(TwelveTheme.textPrimary)
 
                 Spacer(minLength: 8)
 
                 if isOn {
                     Text("✓")
-                        .font(TwelveTheme.appFont(size: 16, weight: .bold))
+                        .font(TwelveTheme.Settings.rowPrimary)
                         .foregroundStyle(TwelveTheme.primaryBlue)
                 }
             }

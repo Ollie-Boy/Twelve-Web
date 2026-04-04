@@ -195,12 +195,22 @@ enum TwelveTheme {
         UIColor(white: 0, alpha: 0.55)
     )
 
+    /// Shared typography for settings / look-and-feel sheets (one scale, regular weight).
+    enum Settings {
+        static let navigationTitle = TwelveTheme.appFont(size: 17)
+        static let navigationDone = TwelveTheme.appFont(size: 17)
+        static let rootBody = TwelveTheme.appFont(size: 16)
+        static let sectionHeader = TwelveTheme.appFont(size: 13)
+        static let rowPrimary = TwelveTheme.appFont(size: 16)
+        static let rowSecondary = TwelveTheme.appFont(size: 15)
+        static let caption = TwelveTheme.appFont(size: 12)
+        static let finePrint = TwelveTheme.appFont(size: 11)
+    }
+
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
             switch weight {
-            case .bold, .heavy, .black:
-                return .custom("ChalkboardSE-Bold", size: size)
-            case .semibold, .medium:
+            case .bold, .heavy, .black, .semibold:
                 return .custom("ChalkboardSE-Bold", size: size)
             default:
                 return .custom("ChalkboardSE-Regular", size: size)
@@ -208,7 +218,7 @@ enum TwelveTheme {
         }
         if UIFont(name: "Noteworthy-Light", size: size) != nil {
             switch weight {
-            case .bold, .heavy, .black, .semibold, .medium:
+            case .bold, .heavy, .black, .semibold:
                 return .custom("Noteworthy-Bold", size: size)
             default:
                 return .custom("Noteworthy-Light", size: size)
@@ -246,7 +256,7 @@ enum TwelveTheme {
         let uw: UIFont.Weight
         switch weight {
         case .bold, .heavy, .black: uw = .bold
-        case .semibold, .medium: uw = .semibold
+        case .semibold: uw = .semibold
         default: uw = .regular
         }
         return uiFontForApp(size: size, weight: uw)

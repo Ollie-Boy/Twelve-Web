@@ -24,9 +24,9 @@ struct DiarySettingsSheet: View {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("iCloud backup (optional)")
-                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .font(TwelveTheme.Settings.sectionHeader)
                             .foregroundStyle(TwelveTheme.textSecondary)
-                        Toggle("Mirror diary JSON to iCloud", isOn: Binding(
+                        Toggle(isOn: Binding(
                             get: { ICloudDataMirror.twelveEnabled },
                             set: { v in
                                 ICloudDataMirror.twelveEnabled = v
@@ -34,10 +34,13 @@ struct DiarySettingsSheet: View {
                                     ICloudDataMirror.mirrorTwelveDiaryJSON(data)
                                 }
                             }
-                        ))
+                        )) {
+                            Text("Mirror diary JSON to iCloud")
+                                .font(TwelveTheme.Settings.rowPrimary)
+                        }
                         .tint(TwelveTheme.primaryBlue)
                         Text(ICloudDataMirror.twelveMirrorStatusLine())
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     .padding(14)
@@ -46,18 +49,18 @@ struct DiarySettingsSheet: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Writing")
-                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .font(TwelveTheme.Settings.sectionHeader)
                             .foregroundStyle(TwelveTheme.textSecondary)
                         Toggle(isOn: $promptsOn) {
                             Text("Daily writing prompt")
-                                .font(TwelveTheme.appFont(size: 16))
+                                .font(TwelveTheme.Settings.rowPrimary)
                         }
                         .tint(TwelveTheme.primaryBlue)
                         .onChange(of: promptsOn) { _, v in
                             DiaryWritingPromptStore.isEnabled = v
                         }
                         Text("Shows a gentle idea when you start a new entry.")
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     .padding(14)
@@ -66,20 +69,20 @@ struct DiarySettingsSheet: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Export")
-                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .font(TwelveTheme.Settings.sectionHeader)
                             .foregroundStyle(TwelveTheme.textSecondary)
                         Button {
                             let md = DiaryExportService.exportMarkdown(entries: entries)
                             exportPayload = ExportPayload(text: md, filename: DiaryExportService.exportFilename())
                         } label: {
                             Label("Export all entries as Markdown", systemImage: "square.and.arrow.up")
-                                .font(TwelveTheme.appFont(size: 16))
+                                .font(TwelveTheme.Settings.rowPrimary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(TwelveTheme.textPrimary)
                         Text("Attachments are not embedded; only text and metadata.")
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     .padding(14)
@@ -88,20 +91,20 @@ struct DiarySettingsSheet: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Storage")
-                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .font(TwelveTheme.Settings.sectionHeader)
                             .foregroundStyle(TwelveTheme.textSecondary)
                         Text("Attachments use about \(DiaryAttachmentCleanup.humanReadableSize(DiaryAttachmentCleanup.attachmentDirectoryByteSize())).")
-                            .font(TwelveTheme.appFont(size: 14))
+                            .font(TwelveTheme.Settings.rowPrimary)
                             .foregroundStyle(TwelveTheme.textPrimary)
                         Button(role: .destructive) {
                             showCleanupConfirm = true
                         } label: {
                             Text("Remove orphaned attachment files")
-                                .font(TwelveTheme.appFont(size: 16))
+                                .font(TwelveTheme.Settings.rowPrimary)
                         }
                         .buttonStyle(.plain)
                         Text("Deletes files on disk that no diary entry references.")
-                            .font(TwelveTheme.appFont(size: 12))
+                            .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
                     }
                     .padding(14)
@@ -118,15 +121,15 @@ struct DiarySettingsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Diary settings")
-                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .font(TwelveTheme.Settings.navigationTitle)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .font(TwelveTheme.appFont(size: 17))
+                        .font(TwelveTheme.Settings.navigationDone)
                 }
             }
         }
-        .font(TwelveTheme.appFont(size: 16))
+        .font(TwelveTheme.Settings.rootBody)
         .presentationDetents([.medium, .large])
         .sheet(item: $exportPayload) { payload in
             ActivityView(activityItems: [ExportItemSource(text: payload.text, filename: payload.filename)])

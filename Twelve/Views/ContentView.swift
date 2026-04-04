@@ -36,10 +36,6 @@ struct ContentView: View {
         .onAppear {
             entries = storage.loadEntries()
             sortEntries()
-            pushTwelveWidgetSnapshot()
-        }
-        .onChange(of: entries) { _, _ in
-            pushTwelveWidgetSnapshot()
         }
         .alert(item: $pendingDeletionEntry) { entry in
             Alert(
@@ -355,16 +351,6 @@ struct ContentView: View {
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
-    }
-
-    private func pushTwelveWidgetSnapshot() {
-        let w = WeatherOption.suggestedForRecognizedAddress("", date: Date())
-        let subtitle = Date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
-        let lastTitle = entries.sorted { $0.selectedDate > $1.selectedDate }.first.map { e in
-            let t = e.title.trimmingCharacters(in: .whitespacesAndNewlines)
-            return t.isEmpty ? "Untitled" : t
-        }
-        SharedWidgetData.updateTwelveSnapshot(weatherTitle: w.title, dateSubtitle: subtitle, lastEntryTitle: lastTitle)
     }
 }
 
