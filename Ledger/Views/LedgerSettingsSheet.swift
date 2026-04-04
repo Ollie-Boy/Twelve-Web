@@ -10,13 +10,13 @@ struct LedgerSettingsSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var categories: [String] = []
-    @State private var budgets: [LedgerBudget] = []
     @State private var recurring: [LedgerRecurringTemplate] = []
     @State private var iCloudOn = ICloudDataMirror.ledgerEnabled
     @State private var newBookName = ""
     @State private var showAddBook = false
     @State private var budgetCategory = ""
     @State private var budgetCap = ""
+    @State private var budgetRepeatsMonthly = true
     @State private var recAmount = ""
     @State private var recCategory = ""
     @State private var recDay = "1"
@@ -146,15 +146,22 @@ struct LedgerSettingsSheet: View {
     private var budgetsSection: some View {
         let y = monthNow.y
         let m = monthNow.m
+        let applied = LedgerBudgetStore.budgets(for: bookStore.activeBookId, year: y, month: m)
         return VStack(alignment: .leading, spacing: 10) {
             Text("Monthly budgets (expenses)")
                 .font(TwelveTheme.appFont(size: 13, weight: .medium))
                 .foregroundStyle(TwelveTheme.textSecondary)
-            ForEach(budgets.filter { $0.bookId == bookStore.activeBookId && $0.year == y && $0.month == m }) { b in
+            Text("Caps follow the month you’re viewing on the main screen; “Every month” rolls with the calendar.")
+                .font(TwelveTheme.appFont(size: 11))
+                .foregroundStyle(TwelveTheme.textTertiary)
+            ForEach(applied) { b in
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(b.category)
                             .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                        Text(b.repeatsEveryMonth ? "Every month" : "This month only")
+                            .font(TwelveTheme.appFont(size: 11))
+                            .foregroundStyle(TwelveTheme.textTertiary)
                         let spent = LedgerBudgetStore.spent(for: b.category, bookId: bookStore.activeBookId, year: y, month: m, entries: entries)
                         Text("\(currency.format(spent)) / \(currency.format(b.capAmount))")
                             .font(TwelveTheme.appFont(size: 12))
@@ -169,6 +176,9 @@ struct LedgerSettingsSheet: View {
                     }
                 }
             }
+            Toggle("New budget repeats every month", isOn: $budgetRepeatsMonthly)
+                .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                .tint(TwelveTheme.primaryBlue)
             HStack {
                 TextField("Category", text: $budgetCategory)
                     .textFieldStyle(.plain)
@@ -184,7 +194,22 @@ struct LedgerSettingsSheet: View {
                     let cat = budgetCategory.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard let cap = LedgerDecimalFormatting.parseAmount(from: budgetCap), cap > 0, !cat.isEmpty else { return }
                     var all = LedgerBudgetStore.load()
-                    all.append(LedgerBudget(bookId: bookStore.activeBookId, year: y, month: m, category: cat, capAmount: cap))
+                    if budgetRepeatsMonthly {
+                        all.removeAll {
+                            $0.bookId == bookStore.activeBookId && $0.repeatsEveryMonth
+                                && $0.category.caseInsensitiveCompare(cat) == .orderedSame
+                        }
+                    }
+                    all.append(
+                        LedgerBudget(
+                            bookId: bookStore.activeBookId,
+                            year: y,
+                            month: m,
+                            category: cat,
+                            capAmount: cap,
+                            repeatsEveryMonth: budgetRepeatsMonthly
+                        )
+                    )
                     LedgerBudgetStore.save(all)
                     budgetCategory = ""
                     budgetCap = ""
@@ -291,7 +316,6 @@ struct LedgerSettingsSheet: View {
 
     private func reloadLocalState() {
         categories = LedgerCategoryStore.load(for: bookStore.activeBookId)
-        budgets = LedgerBudgetStore.load()
         recurring = LedgerRecurringStore.load()
         iCloudOn = ICloudDataMirror.ledgerEnabled
     }

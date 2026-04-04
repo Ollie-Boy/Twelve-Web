@@ -81,6 +81,7 @@
         B100036B100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
         B100037B100000100000001 /* SharedWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002BA100000100000001 /* SharedWidgetData.swift */; };
         W100001C100000100000001 /* TwelveWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W000001C100000100000001 /* TwelveWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+        W100009C100000100000001 /* TwelveWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W000001C100000100000001 /* TwelveWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
         W100002C100000100000001 /* TwelveWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000002C100000100000001 /* TwelveWidgets.swift */; };
         W100003C100000100000001 /* TwelveWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000003C100000100000001 /* TwelveWidgetsBundle.swift */; };
         W100004C100000100000001 /* TwelveWidgetSnapshotReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000004C100000100000001 /* TwelveWidgetSnapshotReader.swift */; };
@@ -205,10 +206,28 @@
             name = "Embed Foundation Extensions";
             runOnlyForDeploymentPostprocessing = 0;
         };
+        B800001B100000100000001 /* Embed Foundation Extensions */ = {
+            isa = PBXCopyFilesBuildPhase;
+            buildActionMask = 2147483647;
+            dstPath = "";
+            dstSubfolderSpec = 13;
+            files = (
+                W100009C100000100000001 /* TwelveWidgetsExtension.appex in Embed Foundation Extensions */,
+            );
+            name = "Embed Foundation Extensions";
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXContainerItemProxy section */
         W900001C100000100000001 /* PBXContainerItemProxy */ = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 9A500001A100000100000001 /* Project object */;
+            proxyType = 1;
+            remoteGlobalIDString = W400001C100000100000001;
+            remoteInfo = TwelveWidgetsExtension;
+        };
+        B900001B100000100000001 /* PBXContainerItemProxy */ = {
             isa = PBXContainerItemProxy;
             containerPortal = 9A500001A100000100000001 /* Project object */;
             proxyType = 1;
@@ -222,6 +241,11 @@
             isa = PBXTargetDependency;
             target = W400001C100000100000001 /* TwelveWidgetsExtension */;
             targetProxy = W900001C100000100000001 /* PBXContainerItemProxy */;
+        };
+        B900002B100000100000001 /* PBXTargetDependency */ = {
+            isa = PBXTargetDependency;
+            target = W400001C100000100000001 /* TwelveWidgetsExtension */;
+            targetProxy = B900001B100000100000001 /* PBXContainerItemProxy */;
         };
 /* End PBXTargetDependency section */
 
@@ -470,10 +494,12 @@
                 B600003B100000100000001 /* Sources */,
                 B200002B100000100000001 /* Frameworks */,
                 B600004B100000100000001 /* Resources */,
+                B800001B100000100000001 /* Embed Foundation Extensions */,
             );
             buildRules = (
             );
             dependencies = (
+                B900002B100000100000001 /* PBXTargetDependency */,
             );
             name = Ledger;
             productName = Ledger;
