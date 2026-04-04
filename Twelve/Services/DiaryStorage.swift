@@ -36,6 +36,7 @@ final class DiaryStorage {
         do {
             let data = try encoder.encode(entries)
             UserDefaults.standard.set(data, forKey: key)
+            ICloudDataMirror.mirrorTwelveDiaryJSON(data)
         } catch {
             // Keep local-only app resilient even if encoding fails.
         }

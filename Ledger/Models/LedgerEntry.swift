@@ -2,6 +2,8 @@ import Foundation
 
 struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
+    /// Which ledger book this row belongs to.
+    var bookId: String
     var date: Date
     /// Gross amount (always non-negative), stored with 2-decimal precision.
     var amount: Decimal
@@ -14,6 +16,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
 
     init(
         id: UUID = UUID(),
+        bookId: String = LedgerBook.defaultId,
         date: Date = Date(),
         amount: Decimal,
         kind: LedgerTransactionKind,
@@ -23,6 +26,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         location: String? = nil
     ) {
         self.id = id
+        self.bookId = bookId
         self.date = date
         let a = LedgerDecimalFormatting.round(max(0, amount))
         self.amount = a
@@ -49,7 +53,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, date, amount, kind, category, note
+        case id, bookId, date, amount, kind, category, note
         case isExpense
         case refundTotal
         case location
@@ -58,6 +62,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = try c.decode(UUID.self, forKey: .id)
+        bookId = try c.decodeIfPresent(String.self, forKey: .bookId) ?? LedgerBook.defaultId
         date = try c.decode(Date.self, forKey: .date)
         var decodedAmount = LedgerDecimalFormatting.round(max(0, try c.decode(Decimal.self, forKey: .amount)))
         category = try c.decode(String.self, forKey: .category)
@@ -91,6 +96,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
     func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(id, forKey: .id)
+        try c.encode(bookId, forKey: .bookId)
         try c.encode(date, forKey: .date)
         try c.encode(amount, forKey: .amount)
         try c.encode(kind, forKey: .kind)

@@ -9,6 +9,8 @@ struct LedgerAddTransactionSheet: View {
 
     @Binding var isPresented: Bool
     let mode: Mode
+    let bookId: String
+    var categorySuggestions: [String] = []
     var onSave: (LedgerEntry) -> Void
 
     @State private var transactionDate: Date = Date()
@@ -125,6 +127,24 @@ struct LedgerAddTransactionSheet: View {
                         Text("Category")
                             .font(TwelveTheme.appFont(size: 13, weight: .medium))
                             .foregroundStyle(TwelveTheme.textSecondary)
+                        if !categorySuggestions.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(categorySuggestions, id: \.self) { c in
+                                        Button {
+                                            category = c
+                                        } label: {
+                                            Text(c)
+                                                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                                                .padding(.horizontal, 10)
+                                                .padding(.vertical, 6)
+                                                .background(TwelveTheme.softBlue.opacity(0.45), in: Capsule())
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                        }
                         TextField("e.g. Food, Transport", text: $category)
                             .textFieldStyle(.plain)
                             .font(TwelveTheme.appFont(size: 16))
@@ -484,8 +504,16 @@ struct LedgerAddTransactionSheet: View {
         case .edit(let entry):
             id = entry.id
         }
+        let resolvedBookId: String
+        switch mode {
+        case .create:
+            resolvedBookId = bookId
+        case .edit(let existing):
+            resolvedBookId = existing.bookId
+        }
         let entry = LedgerEntry(
             id: id,
+            bookId: resolvedBookId,
             date: transactionDate,
             amount: a,
             kind: kind,
@@ -494,6 +522,7 @@ struct LedgerAddTransactionSheet: View {
             note: n,
             location: loc.isEmpty ? nil : loc
         )
+        LedgerCategoryStore.rememberCategory(cat, bookId: resolvedBookId)
         onSave(entry)
         isPresented = false
     }

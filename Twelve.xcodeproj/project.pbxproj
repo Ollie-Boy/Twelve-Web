@@ -37,6 +37,15 @@
         9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000016A100000100000001 /* DiaryBodyContentView.swift */; };
         9A100016A100000100000001 /* marked.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000018A100000100000001 /* marked.min.js */; };
         9A100017A100000100000001 /* mathjax-tex-svg.js in Resources */ = {isa = PBXBuildFile; fileRef = 9A000019A100000100000001 /* mathjax-tex-svg.js */; };
+        9A100032A100000100000001 /* DiaryWritingPromptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000023A100000100000001 /* DiaryWritingPromptStore.swift */; };
+        9A100033A100000100000001 /* DiaryExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000024A100000100000001 /* DiaryExportService.swift */; };
+        9A100034A100000100000001 /* DiaryAttachmentCleanup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000025A100000100000001 /* DiaryAttachmentCleanup.swift */; };
+        9A100035A100000100000001 /* DiaryOnThisDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000026A100000100000001 /* DiaryOnThisDay.swift */; };
+        9A100036A100000100000001 /* DiarySettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000027A100000100000001 /* DiarySettingsSheet.swift */; };
+        9A100037A100000100000001 /* DiarySearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000028A100000100000001 /* DiarySearchSheet.swift */; };
+        9A100038A100000100000001 /* AppEmptyStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000029A100000100000001 /* AppEmptyStates.swift */; };
+        9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
+        9A100040A100000100000001 /* SharedWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002BA100000100000001 /* SharedWidgetData.swift */; };
         B100001B100000100000001 /* LedgerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000001B100000100000001 /* LedgerApp.swift */; };
         B100002B100000100000001 /* LedgerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000002B100000100000001 /* LedgerRootView.swift */; };
         B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000003B100000100000001 /* LedgerAddTransactionSheet.swift */; };
@@ -61,6 +70,24 @@
         B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000021A100000100000001 /* ComposerLocationPickerSheet.swift */; };
         B100024B100000100000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000007A100000100000001 /* LocationManager.swift */; };
         B100026B100000100000001 /* WeatherOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000005A100000100000001 /* WeatherOption.swift */; };
+        B100028B100000100000001 /* LedgerBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000028B100000100000001 /* LedgerBook.swift */; };
+        B100029B100000100000001 /* LedgerBudget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000029B100000100000001 /* LedgerBudget.swift */; };
+        B100030B100000100000001 /* LedgerRecurringTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000030B100000100000001 /* LedgerRecurringTemplate.swift */; };
+        B100031B100000100000001 /* LedgerCategoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000031B100000100000001 /* LedgerCategoryStore.swift */; };
+        B100032B100000100000001 /* LedgerCSVExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000032B100000100000001 /* LedgerCSVExport.swift */; };
+        B100033B100000100000001 /* LedgerMonthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000033B100000100000001 /* LedgerMonthChartView.swift */; };
+        B100034B100000100000001 /* LedgerSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000034B100000100000001 /* LedgerSettingsSheet.swift */; };
+        B100035B100000100000001 /* AppEmptyStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000029A100000100000001 /* AppEmptyStates.swift */; };
+        B100036B100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
+        B100037B100000100000001 /* SharedWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002BA100000100000001 /* SharedWidgetData.swift */; };
+        W100001C100000100000001 /* TwelveWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W000001C100000100000001 /* TwelveWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+        W100002C100000100000001 /* TwelveWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000002C100000100000001 /* TwelveWidgets.swift */; };
+        W100003C100000100000001 /* TwelveWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000003C100000100000001 /* TwelveWidgetsBundle.swift */; };
+        W100004C100000100000001 /* TwelveWidgetSnapshotReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000004C100000100000001 /* TwelveWidgetSnapshotReader.swift */; };
+        W100005C100000100000001 /* LedgerWidgetSnapshotReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000005C100000100000001 /* LedgerWidgetSnapshotReader.swift */; };
+        W100006C100000100000001 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = W000006C100000100000001 /* WidgetKit.framework */; };
+        W100007C100000100000001 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = W000007C100000100000001 /* SwiftUI.framework */; };
+        W100008C100000100000001 /* WidgetSharedConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = W000010C100000100000001 /* WidgetSharedConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,12 +123,23 @@
         9A000016A100000100000001 /* DiaryBodyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryBodyContentView.swift; sourceTree = "<group>"; };
         9A000018A100000100000001 /* marked.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "marked.min.js"; sourceTree = "<group>"; };
         9A000019A100000100000001 /* mathjax-tex-svg.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "mathjax-tex-svg.js"; sourceTree = "<group>"; };
+        9A000023A100000100000001 /* DiaryWritingPromptStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryWritingPromptStore.swift; sourceTree = "<group>"; };
+        9A000024A100000100000001 /* DiaryExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryExportService.swift; sourceTree = "<group>"; };
+        9A000025A100000100000001 /* DiaryAttachmentCleanup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryAttachmentCleanup.swift; sourceTree = "<group>"; };
+        9A000026A100000100000001 /* DiaryOnThisDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryOnThisDay.swift; sourceTree = "<group>"; };
+        9A000027A100000100000001 /* DiarySettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiarySettingsSheet.swift; sourceTree = "<group>"; };
+        9A000028A100000100000001 /* DiarySearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiarySearchSheet.swift; sourceTree = "<group>"; };
+        9A000029A100000100000001 /* AppEmptyStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEmptyStates.swift; sourceTree = "<group>"; };
+        9A00002AA100000100000001 /* ICloudDataMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudDataMirror.swift; sourceTree = "<group>"; };
+        9A00002BA100000100000001 /* SharedWidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedWidgetData.swift; sourceTree = "<group>"; };
+        9A00002CA100000100000001 /* Twelve.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Twelve.entitlements; sourceTree = "<group>"; };
         B000001B100000100000001 /* LedgerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerApp.swift; sourceTree = "<group>"; };
         B000002B100000100000001 /* LedgerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRootView.swift; sourceTree = "<group>"; };
         B000003B100000100000001 /* LedgerAddTransactionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAddTransactionSheet.swift; sourceTree = "<group>"; };
         B000004B100000100000001 /* LedgerEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerEntry.swift; sourceTree = "<group>"; };
         B000005B100000100000001 /* LedgerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStorage.swift; sourceTree = "<group>"; };
         B000006B100000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        B000038B100000100000001 /* Ledger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ledger.entitlements; sourceTree = "<group>"; };
         B000007B100000100000001 /* Ledger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ledger.app; sourceTree = BUILT_PRODUCTS_DIR; };
         B000009B100000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         B00000AB100000100000001 /* LedgerTransactionKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerTransactionKind.swift; sourceTree = "<group>"; };
@@ -110,6 +148,23 @@
         B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCurrencyPickerSheet.swift; sourceTree = "<group>"; };
         B00000EB100000100000001 /* LedgerSwipeActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSwipeActionRow.swift; sourceTree = "<group>"; };
         B00000FB100000100000001 /* LedgerDecimalFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDecimalFormatting.swift; sourceTree = "<group>"; };
+        B000028B100000100000001 /* LedgerBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerBook.swift; sourceTree = "<group>"; };
+        B000029B100000100000001 /* LedgerBudget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerBudget.swift; sourceTree = "<group>"; };
+        B000030B100000100000001 /* LedgerRecurringTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRecurringTemplate.swift; sourceTree = "<group>"; };
+        B000031B100000100000001 /* LedgerCategoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCategoryStore.swift; sourceTree = "<group>"; };
+        B000032B100000100000001 /* LedgerCSVExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCSVExport.swift; sourceTree = "<group>"; };
+        B000033B100000100000001 /* LedgerMonthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerMonthChartView.swift; sourceTree = "<group>"; };
+        B000034B100000100000001 /* LedgerSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSettingsSheet.swift; sourceTree = "<group>"; };
+        W000001C100000100000001 /* TwelveWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TwelveWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+        W000002C100000100000001 /* TwelveWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveWidgets.swift; sourceTree = "<group>"; };
+        W000003C100000100000001 /* TwelveWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveWidgetsBundle.swift; sourceTree = "<group>"; };
+        W000004C100000100000001 /* TwelveWidgetSnapshotReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwelveWidgetSnapshotReader.swift; sourceTree = "<group>"; };
+        W000005C100000100000001 /* LedgerWidgetSnapshotReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerWidgetSnapshotReader.swift; sourceTree = "<group>"; };
+        W000008C100000100000001 /* TwelveWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TwelveWidgets-Info.plist"; sourceTree = "<group>"; };
+        W000009C100000100000001 /* TwelveWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwelveWidgets.entitlements; sourceTree = "<group>"; };
+        W000010C100000100000001 /* WidgetSharedConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSharedConstants.swift; sourceTree = "<group>"; };
+        W000006C100000100000001 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+        W000007C100000100000001 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,7 +182,48 @@
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
+        W200001C100000100000001 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                W100006C100000100000001 /* WidgetKit.framework in Frameworks */,
+                W100007C100000100000001 /* SwiftUI.framework in Frameworks */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+        W800001C100000100000001 /* Embed Foundation Extensions */ = {
+            isa = PBXCopyFilesBuildPhase;
+            buildActionMask = 2147483647;
+            dstPath = "";
+            dstSubfolderSpec = 13;
+            files = (
+                W100001C100000100000001 /* TwelveWidgetsExtension.appex in Embed Foundation Extensions */,
+            );
+            name = "Embed Foundation Extensions";
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+        W900001C100000100000001 /* PBXContainerItemProxy */ = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 9A500001A100000100000001 /* Project object */;
+            proxyType = 1;
+            remoteGlobalIDString = W400001C100000100000001;
+            remoteInfo = TwelveWidgetsExtension;
+        };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+        W900002C100000100000001 /* PBXTargetDependency */ = {
+            isa = PBXTargetDependency;
+            target = W400001C100000100000001 /* TwelveWidgetsExtension */;
+            targetProxy = W900001C100000100000001 /* PBXContainerItemProxy */;
+        };
+/* End PBXTargetDependency section */
 
 /* Begin PBXGroup section */
         9A300001A100000100000001 = {
@@ -135,8 +231,23 @@
             children = (
                 9A300002A100000100000001 /* Twelve */,
                 B300001B100000100000001 /* Ledger */,
+                W300001C100000100000001 /* TwelveWidgets */,
                 9A300003A100000100000001 /* Products */,
             );
+            sourceTree = "<group>";
+        };
+        W300001C100000100000001 /* TwelveWidgets */ = {
+            isa = PBXGroup;
+            children = (
+                W000002C100000100000001 /* TwelveWidgets.swift */,
+                W000003C100000100000001 /* TwelveWidgetsBundle.swift */,
+                W000004C100000100000001 /* TwelveWidgetSnapshotReader.swift */,
+                W000005C100000100000001 /* LedgerWidgetSnapshotReader.swift */,
+                W000010C100000100000001 /* WidgetSharedConstants.swift */,
+                W000008C100000100000001 /* TwelveWidgets-Info.plist */,
+                W000009C100000100000001 /* TwelveWidgets.entitlements */,
+            );
+            path = TwelveWidgets;
             sourceTree = "<group>";
         };
         B300001B100000100000001 /* Ledger */ = {
@@ -149,6 +260,7 @@
                 B300006B100000100000001 /* Utilities */,
                 B000009B100000100000001 /* Assets.xcassets */,
                 B000006B100000100000001 /* Info.plist */,
+                B000038B100000100000001 /* Ledger.entitlements */,
             );
             path = Ledger;
             sourceTree = "<group>";
@@ -178,6 +290,8 @@
                 B00000CB100000100000001 /* LedgerDayPickerSheet.swift */,
                 B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
                 B00000EB100000100000001 /* LedgerSwipeActionRow.swift */,
+                B000033B100000100000001 /* LedgerMonthChartView.swift */,
+                B000034B100000100000001 /* LedgerSettingsSheet.swift */,
             );
             path = Views;
             sourceTree = "<group>";
@@ -187,6 +301,9 @@
             children = (
                 B000004B100000100000001 /* LedgerEntry.swift */,
                 B00000AB100000100000001 /* LedgerTransactionKind.swift */,
+                B000028B100000100000001 /* LedgerBook.swift */,
+                B000029B100000100000001 /* LedgerBudget.swift */,
+                B000030B100000100000001 /* LedgerRecurringTemplate.swift */,
             );
             path = Models;
             sourceTree = "<group>";
@@ -195,6 +312,8 @@
             isa = PBXGroup;
             children = (
                 B000005B100000100000001 /* LedgerStorage.swift */,
+                B000031B100000100000001 /* LedgerCategoryStore.swift */,
+                B000032B100000100000001 /* LedgerCSVExport.swift */,
             );
             path = Services;
             sourceTree = "<group>";
@@ -206,7 +325,9 @@
                 9A300005A100000100000001 /* Views */,
                 9A300006A100000100000001 /* Models */,
                 9A300007A100000100000001 /* Services */,
+                9A300009A100000100000001 /* Utilities */,
                 9A300008A100000100000001 /* UI */,
+                9A00002CA100000100000001 /* Twelve.entitlements */,
                 9A00000CA100000100000001 /* Assets.xcassets */,
                 9A00000DA100000100000001 /* Info.plist */,
                 9A000018A100000100000001 /* marked.min.js */,
@@ -220,6 +341,7 @@
             children = (
                 9A00000EA100000100000001 /* Twelve.app */,
                 B000007B100000100000001 /* Ledger.app */,
+                W000001C100000100000001 /* TwelveWidgetsExtension.appex */,
             );
             name = Products;
             sourceTree = "<group>";
@@ -238,6 +360,9 @@
             children = (
                 9A000002A100000100000001 /* ContentView.swift */,
                 9A000003A100000100000001 /* EntryCardView.swift */,
+                9A000027A100000100000001 /* DiarySettingsSheet.swift */,
+                9A000028A100000100000001 /* DiarySearchSheet.swift */,
+                9A000029A100000100000001 /* AppEmptyStates.swift */,
                 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */,
                 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */,
                 9A00001CA100000100000001 /* SketchToolbarIcons.swift */,
@@ -262,8 +387,21 @@
                 9A000006A100000100000001 /* DiaryStorage.swift */,
                 9A000007A100000100000001 /* LocationManager.swift */,
                 9A000011A100000100000001 /* AttachmentService.swift */,
+                9A000023A100000100000001 /* DiaryWritingPromptStore.swift */,
+                9A000024A100000100000001 /* DiaryExportService.swift */,
+                9A000025A100000100000001 /* DiaryAttachmentCleanup.swift */,
+                9A00002AA100000100000001 /* ICloudDataMirror.swift */,
+                9A00002BA100000100000001 /* SharedWidgetData.swift */,
             );
             path = Services;
+            sourceTree = "<group>";
+        };
+        9A300009A100000100000001 /* Utilities */ = {
+            isa = PBXGroup;
+            children = (
+                9A000026A100000100000001 /* DiaryOnThisDay.swift */,
+            );
+            path = Utilities;
             sourceTree = "<group>";
         };
         9A300008A100000100000001 /* UI */ = {
@@ -296,15 +434,34 @@
                 9A600001A100000100000001 /* Sources */,
                 9A200001A100000100000001 /* Frameworks */,
                 9A600002A100000100000001 /* Resources */,
+                W800001C100000100000001 /* Embed Foundation Extensions */,
             );
             buildRules = (
             );
             dependencies = (
+                W900002C100000100000001 /* PBXTargetDependency */,
             );
             name = Twelve;
             productName = Twelve;
             productReference = 9A00000EA100000100000001 /* Twelve.app */;
             productType = "com.apple.product-type.application";
+        };
+        W400001C100000100000001 /* TwelveWidgetsExtension */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = W500001C100000100000001 /* Build configuration list for PBXNativeTarget "TwelveWidgetsExtension" */;
+            buildPhases = (
+                W600001C100000100000001 /* Sources */,
+                W200001C100000100000001 /* Frameworks */,
+                W600002C100000100000001 /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+            );
+            name = TwelveWidgetsExtension;
+            productName = TwelveWidgetsExtension;
+            productReference = W000001C100000100000001 /* TwelveWidgetsExtension.appex */;
+            productType = "com.apple.product-type.app-extension";
         };
         B400001B100000100000001 /* Ledger */ = {
             isa = PBXNativeTarget;
@@ -338,6 +495,9 @@
                     B400001B100000100000001 = {
                         CreatedOnToolsVersion = 16.1;
                     };
+                    W400001C100000100000001 = {
+                        CreatedOnToolsVersion = 16.1;
+                    };
                 };
             };
             buildConfigurationList = 9A500003A100000100000001 /* Build configuration list for PBXProject "Twelve" */;
@@ -355,6 +515,7 @@
             targets = (
                 9A400001A100000100000001 /* Twelve */,
                 B400001B100000100000001 /* Ledger */,
+                W400001C100000100000001 /* TwelveWidgetsExtension */,
             );
         };
 /* End PBXProject section */
@@ -375,6 +536,13 @@
             buildActionMask = 2147483647;
             files = (
                 B100014B100000100000001 /* Assets.xcassets in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        W600002C100000100000001 /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -412,6 +580,27 @@
                 9A100020A100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */,
                 9A100012A100000100000001 /* DiaryReaderSheet.swift in Sources */,
                 9A100014A100000100000001 /* DiaryBodyContentView.swift in Sources */,
+                9A100032A100000100000001 /* DiaryWritingPromptStore.swift in Sources */,
+                9A100033A100000100000001 /* DiaryExportService.swift in Sources */,
+                9A100034A100000100000001 /* DiaryAttachmentCleanup.swift in Sources */,
+                9A100035A100000100000001 /* DiaryOnThisDay.swift in Sources */,
+                9A100036A100000100000001 /* DiarySettingsSheet.swift in Sources */,
+                9A100037A100000100000001 /* DiarySearchSheet.swift in Sources */,
+                9A100038A100000100000001 /* AppEmptyStates.swift in Sources */,
+                9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */,
+                9A100040A100000100000001 /* SharedWidgetData.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        W600001C100000100000001 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                W100002C100000100000001 /* TwelveWidgets.swift in Sources */,
+                W100003C100000100000001 /* TwelveWidgetsBundle.swift in Sources */,
+                W100004C100000100000001 /* TwelveWidgetSnapshotReader.swift in Sources */,
+                W100005C100000100000001 /* LedgerWidgetSnapshotReader.swift in Sources */,
+                W100008C100000100000001 /* WidgetSharedConstants.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -442,6 +631,16 @@
                 B100025B100000100000001 /* ComposerLocationPickerSheet.swift in Sources */,
                 B100024B100000100000001 /* LocationManager.swift in Sources */,
                 B100026B100000100000001 /* WeatherOption.swift in Sources */,
+                B100028B100000100000001 /* LedgerBook.swift in Sources */,
+                B100029B100000100000001 /* LedgerBudget.swift in Sources */,
+                B100030B100000100000001 /* LedgerRecurringTemplate.swift in Sources */,
+                B100031B100000100000001 /* LedgerCategoryStore.swift in Sources */,
+                B100032B100000100000001 /* LedgerCSVExport.swift in Sources */,
+                B100033B100000100000001 /* LedgerMonthChartView.swift in Sources */,
+                B100034B100000100000001 /* LedgerSettingsSheet.swift in Sources */,
+                B100035B100000100000001 /* AppEmptyStates.swift in Sources */,
+                B100036B100000100000001 /* ICloudDataMirror.swift in Sources */,
+                B100037B100000100000001 /* SharedWidgetData.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -570,6 +769,7 @@
                 CURRENT_PROJECT_VERSION = 1;
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
+                CODE_SIGN_ENTITLEMENTS = Twelve/Twelve.entitlements;
                 GENERATE_INFOPLIST_FILE = NO;
                 INFOPLIST_FILE = Twelve/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -600,6 +800,7 @@
                 CURRENT_PROJECT_VERSION = 1;
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
+                CODE_SIGN_ENTITLEMENTS = Twelve/Twelve.entitlements;
                 GENERATE_INFOPLIST_FILE = NO;
                 INFOPLIST_FILE = Twelve/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -630,6 +831,7 @@
                 CURRENT_PROJECT_VERSION = 2;
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
+                CODE_SIGN_ENTITLEMENTS = Ledger/Ledger.entitlements;
                 GENERATE_INFOPLIST_FILE = NO;
                 INFOPLIST_FILE = Ledger/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -660,6 +862,7 @@
                 CURRENT_PROJECT_VERSION = 2;
                 DEVELOPMENT_TEAM = "";
                 ENABLE_PREVIEWS = YES;
+                CODE_SIGN_ENTITLEMENTS = Ledger/Ledger.entitlements;
                 GENERATE_INFOPLIST_FILE = NO;
                 INFOPLIST_FILE = Ledger/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -674,6 +877,60 @@
                 MARKETING_VERSION = 1.0;
                 PRODUCT_BUNDLE_IDENTIFIER = com.example.Ledger;
                 PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Release;
+        };
+        W700001C100000100000001 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                CODE_SIGN_ENTITLEMENTS = TwelveWidgets/TwelveWidgets.entitlements;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = TwelveWidgets/TwelveWidgets-Info.plist;
+                INFOPLIST_KEY_CFBundleDisplayName = "Twelve & Ledger";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                    "@executable_path/../../Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Twelve.TwelveWidgets;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SKIP_INSTALL = YES;
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Debug;
+        };
+        W700002C100000100000001 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                CODE_SIGN_ENTITLEMENTS = TwelveWidgets/TwelveWidgets.entitlements;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                DEVELOPMENT_TEAM = "";
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = TwelveWidgets/TwelveWidgets-Info.plist;
+                INFOPLIST_KEY_CFBundleDisplayName = "Twelve & Ledger";
+                IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+                LD_RUNPATH_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "@executable_path/Frameworks",
+                    "@executable_path/../../Frameworks",
+                );
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.example.Twelve.TwelveWidgets;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SKIP_INSTALL = YES;
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 SWIFT_EMIT_LOC_STRINGS = YES;
                 SWIFT_VERSION = 5.0;
@@ -707,6 +964,15 @@
             buildConfigurations = (
                 B700001B100000100000001 /* Debug */,
                 B700002B100000100000001 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        W500001C100000100000001 /* Build configuration list for PBXNativeTarget "TwelveWidgetsExtension" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                W700001C100000100000001 /* Debug */,
+                W700002C100000100000001 /* Release */,
             );
             defaultConfigurationIsVisible = 0;
             defaultConfigurationName = Release;

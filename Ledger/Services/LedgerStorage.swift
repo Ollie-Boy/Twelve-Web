@@ -18,6 +18,7 @@ final class LedgerStorage {
         do {
             let data = try encoder.encode(entries)
             UserDefaults.standard.set(data, forKey: key)
+            ICloudDataMirror.mirrorLedgerJSON(data)
         } catch {}
     }
 }

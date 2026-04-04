@@ -85,88 +85,100 @@ struct DiaryReaderSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if !imageAttachments.isEmpty {
-                        topImageCarousel
-                    }
-
+            ScrollViewReader { proxy in
+                ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(entry.title)
-                            .font(TwelveTheme.appFont(size: 30, weight: .bold))
+                        Color.clear.frame(height: 1).id("readerTop")
+
+                        if !imageAttachments.isEmpty {
+                            topImageCarousel
+                        }
+
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(entry.title)
+                                .font(TwelveTheme.appFont(size: 30, weight: .bold))
+                                .foregroundStyle(TwelveTheme.textPrimary)
+
+                            HStack(spacing: 10) {
+                                if entry.weather != .none {
+                                    Label(entry.weather.title, systemImage: entry.weather.symbolName)
+                                }
+                                if let location = entry.location, !location.isEmpty {
+                                    Label(location, systemImage: "mappin.and.ellipse")
+                                        .lineLimit(1)
+                                }
+                            }
+                            .font(TwelveTheme.appFont(size: 13))
                             .foregroundStyle(TwelveTheme.textPrimary)
 
-                        HStack(spacing: 10) {
-                            if entry.weather != .none {
-                                Label(entry.weather.title, systemImage: entry.weather.symbolName)
-                            }
-                            if let location = entry.location, !location.isEmpty {
-                                Label(location, systemImage: "mappin.and.ellipse")
-                                    .lineLimit(1)
-                            }
-                        }
-                        .font(TwelveTheme.appFont(size: 13))
-                        .foregroundStyle(TwelveTheme.textPrimary)
+                            Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
+                                .font(TwelveTheme.appFont(size: 13))
+                                .foregroundStyle(TwelveTheme.textSecondary)
 
-                        Text(entry.selectedDate.formatted(date: .complete, time: .shortened))
-                            .font(TwelveTheme.appFont(size: 13))
-                            .foregroundStyle(TwelveTheme.textSecondary)
-
-                        if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
-                            HStack(spacing: 8) {
-                                ForEach(entry.tags, id: \.self) { tag in
-                                    Text("#\(tag)")
+                            if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
+                                HStack(spacing: 8) {
+                                    ForEach(entry.tags, id: \.self) { tag in
+                                        Text("#\(tag)")
+                                    }
+                                    if !trimmedEmotion.isEmpty {
+                                        Text(trimmedEmotion)
+                                    }
                                 }
-                                if !trimmedEmotion.isEmpty {
-                                    Text(trimmedEmotion)
-                                }
+                                .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textSecondary)
                             }
-                            .font(TwelveTheme.appFont(size: 12, weight: .semibold))
-                            .foregroundStyle(TwelveTheme.textSecondary)
-                        }
 
-                        if !entry.body.isEmpty {
-                            DiaryBodyContentView(text: entry.body)
+                            if !entry.body.isEmpty {
+                                DiaryBodyContentView(text: entry.body)
+                            }
                         }
-                    }
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 24)
-                            .onEnded { value in
-                                guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                                onHorizontalSwipe?(value.translation.width)
-                            },
-                        including: .gesture
-                    )
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 24)
+                                .onEnded { value in
+                                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                    onHorizontalSwipe?(value.translation.width)
+                                },
+                            including: .gesture
+                        )
 
-                    if !nonImageAttachments.isEmpty {
-                        nonImageAttachmentSection
-                    }
-                }
-                .padding(20)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .background(TwelveTheme.background)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                        .font(TwelveTheme.appFont(size: 17))
-                }
-                ToolbarItemGroup(placement: .primaryAction) {
-                    if let onEdit {
-                        Button("Edit") {
-                            dismiss()
-                            onEdit()
+                        if !nonImageAttachments.isEmpty {
+                            nonImageAttachmentSection
                         }
-                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                     }
-                    if let onDelete {
-                        Button("Delete", role: .destructive) {
-                            dismiss()
-                            onDelete()
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .background(TwelveTheme.background)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
+                            .font(TwelveTheme.appFont(size: 17))
+                    }
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        Button {
+                            withAnimation(.easeOut(duration: 0.35)) {
+                                proxy.scrollTo("readerTop", anchor: .top)
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.circle")
                         }
-                        .font(TwelveTheme.appFont(size: 17))
+                        .accessibilityLabel("Scroll to top")
+                        if let onEdit {
+                            Button("Edit") {
+                                dismiss()
+                                onEdit()
+                            }
+                            .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        }
+                        if let onDelete {
+                            Button("Delete", role: .destructive) {
+                                dismiss()
+                                onDelete()
+                            }
+                            .font(TwelveTheme.appFont(size: 17))
+                        }
                     }
                 }
             }

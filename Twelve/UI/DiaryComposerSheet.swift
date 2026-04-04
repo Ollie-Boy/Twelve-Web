@@ -54,6 +54,16 @@ struct DiaryComposerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    if case .create = mode, DiaryWritingPromptStore.isEnabled {
+                        Text(DiaryWritingPromptStore.prompt(for: entryDate))
+                            .font(TwelveTheme.appFont(size: 14, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(TwelveTheme.softBlue.opacity(0.35), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+
                     TextField("Title", text: $titleText)
                         .textFieldStyle(.plain)
                         .font(TwelveTheme.appFont(size: 20, weight: .semibold))

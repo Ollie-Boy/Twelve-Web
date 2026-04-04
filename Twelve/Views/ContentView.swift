@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var isComposerPresented: Bool = false
     @State private var showDayPickerSheet: Bool = false
     @State private var showAppearanceSheet: Bool = false
+    @State private var showDiarySettings: Bool = false
+    @State private var showSearch: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -20,6 +22,7 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     headerBar
+                    onThisDayCard
                     diaryListSection
                 }
                 .padding(.horizontal, 20)
@@ -33,6 +36,10 @@ struct ContentView: View {
         .onAppear {
             entries = storage.loadEntries()
             sortEntries()
+            pushTwelveWidgetSnapshot()
+        }
+        .onChange(of: entries) { _, _ in
+            pushTwelveWidgetSnapshot()
         }
         .alert(item: $pendingDeletionEntry) { entry in
             Alert(
@@ -94,6 +101,17 @@ struct ContentView: View {
             AppearancePickerSheet()
                 .environmentObject(appearance)
         }
+        .sheet(isPresented: $showDiarySettings) {
+            DiarySettingsSheet(entries: entries) {
+                entries = storage.loadEntries()
+                sortEntries()
+            }
+        }
+        .sheet(isPresented: $showSearch) {
+            DiarySearchSheet(entries: entries) { e in
+                selectedEntryForRead = e
+            }
+        }
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
@@ -151,6 +169,18 @@ struct ContentView: View {
             Spacer(minLength: 8)
             HStack(spacing: 10) {
                 Button {
+                    showSearch = true
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Search diary")
+
+                Button {
                     showDayPickerSheet = true
                 } label: {
                     SketchCalendarIcon(size: 28)
@@ -169,24 +199,79 @@ struct ContentView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Look and feel")
+
+                Button {
+                    showDiarySettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Diary settings")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var onThisDayPastEntries: [DiaryEntry] {
+        DiaryOnThisDay.pastYearEntries(matching: Date(), in: entries)
+    }
+
+    @ViewBuilder
+    private var onThisDayCard: some View {
+        let past = onThisDayPastEntries
+        if !past.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("On this day")
+                    .font(TwelveTheme.appFont(size: 13, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textSecondary)
+                ForEach(past.prefix(3)) { e in
+                    Button {
+                        selectedEntryForRead = e
+                    } label: {
+                        HStack(alignment: .top, spacing: 10) {
+                            Text(e.selectedDate.formatted(.dateTime.year()))
+                                .font(TwelveTheme.appFont(size: 12, weight: .bold))
+                                .foregroundStyle(TwelveTheme.primaryBlue)
+                                .frame(width: 44, alignment: .leading)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(e.title.isEmpty ? "Untitled" : e.title)
+                                    .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                                    .foregroundStyle(TwelveTheme.textPrimary)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(TwelveTheme.hairline, lineWidth: 1)
+            )
+        }
+    }
+
     private var diaryListSection: some View {
         VStack(alignment: .leading, spacing: 18) {
             if entries.isEmpty {
-                Text("No diary yet. Tap + to start writing.")
-                    .font(TwelveTheme.appFont(size: 16))
-                    .foregroundStyle(TwelveTheme.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(20)
-                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(TwelveTheme.hairline, lineWidth: 1)
-                    )
+                DiaryEmptyStateView {
+                    isComposerPresented = true
+                }
             } else {
                 entryListByMonthAndDay
             }
@@ -270,6 +355,16 @@ struct ContentView: View {
 
     private func sortEntries() {
         entries.sort { $0.selectedDate > $1.selectedDate }
+    }
+
+    private func pushTwelveWidgetSnapshot() {
+        let w = WeatherOption.suggestedForRecognizedAddress("", date: Date())
+        let subtitle = Date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+        let lastTitle = entries.sorted { $0.selectedDate > $1.selectedDate }.first.map { e in
+            let t = e.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            return t.isEmpty ? "Untitled" : t
+        }
+        SharedWidgetData.updateTwelveSnapshot(weatherTitle: w.title, dateSubtitle: subtitle, lastEntryTitle: lastTitle)
     }
 }
 

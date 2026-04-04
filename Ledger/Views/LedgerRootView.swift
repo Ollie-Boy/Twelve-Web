@@ -3,6 +3,8 @@ import SwiftUI
 struct LedgerRootView: View {
     @EnvironmentObject private var appearance: AppearanceStore
     @EnvironmentObject private var currency: LedgerCurrencyStore
+    @StateObject private var bookStore = LedgerBookStore()
+
     @State private var entries: [LedgerEntry] = []
     @State private var pendingDeletion: LedgerEntry?
     @State private var showAddSheet = false
@@ -10,14 +12,19 @@ struct LedgerRootView: View {
     @State private var showAppearanceSheet = false
     @State private var showDayPickerSheet = false
     @State private var showCurrencySheet = false
+    @State private var showSettingsSheet = false
     @State private var summaryMonthSelection: Date = LedgerRootView.startOfMonth(for: Date())
 
     private let storage = LedgerStorage()
 
+    private var bookEntries: [LedgerEntry] {
+        entries.filter { $0.bookId == bookStore.activeBookId }
+    }
+
     private var summaryPageMonths: [Date] {
         var set = Set<Date>()
         set.insert(Self.startOfMonth(for: Date()))
-        for e in entries {
+        for e in bookEntries {
             set.insert(Self.startOfMonth(for: e.date))
         }
         return set.sorted()
@@ -29,7 +36,7 @@ struct LedgerRootView: View {
 
     private func transactionCount(for monthStart: Date) -> Int {
         let cal = Calendar.current
-        return entries.filter { cal.isDate($0.date, equalTo: monthStart, toGranularity: .month) }.count
+        return bookEntries.filter { cal.isDate($0.date, equalTo: monthStart, toGranularity: .month) }.count
     }
 
     private func summaryMonthSubtitle(for monthStart: Date) -> String {
@@ -42,7 +49,7 @@ struct LedgerRootView: View {
         let cal = Calendar.current
         var income: Decimal = 0
         var expense: Decimal = 0
-        for e in entries {
+        for e in bookEntries {
             guard cal.isDate(e.date, equalTo: monthStart, toGranularity: .month) else { continue }
             switch e.kind {
             case .expense:
@@ -57,6 +64,47 @@ struct LedgerRootView: View {
         )
     }
 
+    private func budgetsStrip(for monthStart: Date) -> some View {
+        let cal = Calendar.current
+        let y = cal.component(.year, from: monthStart)
+        let m = cal.component(.month, from: monthStart)
+        let list = LedgerBudgetStore.budgets(for: bookStore.activeBookId, year: y, month: m)
+        guard !list.isEmpty else { return AnyView(EmptyView()) }
+        return AnyView(
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Budgets")
+                    .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textTertiary)
+                ForEach(list) { b in
+                    let spent = LedgerBudgetStore.spent(for: b.category, bookId: bookStore.activeBookId, year: y, month: m, entries: bookEntries)
+                    let capD = (b.capAmount as NSDecimalNumber).doubleValue
+                    let spD = (spent as NSDecimalNumber).doubleValue
+                    let frac = capD > 0 ? min(spD / capD, 1.5) : 0
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(b.category)
+                                .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            Spacer()
+                            Text("\(currency.format(spent)) / \(currency.format(b.capAmount))")
+                                .font(TwelveTheme.appFont(size: 12))
+                                .foregroundStyle(TwelveTheme.textSecondary)
+                        }
+                        GeometryReader { g in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(TwelveTheme.secondarySurface)
+                                Capsule()
+                                    .fill(frac > 1 ? Color.orange.opacity(0.7) : TwelveTheme.softBlue)
+                                    .frame(width: g.size.width * CGFloat(min(frac, 1)))
+                            }
+                        }
+                        .frame(height: 6)
+                    }
+                }
+            }
+            .padding(.top, 4)
+        )
+    }
+
     var body: some View {
         ZStack {
             TwelveTheme.background.ignoresSafeArea()
@@ -66,6 +114,7 @@ struct LedgerRootView: View {
                 VStack(spacing: 20) {
                     headerBar
                     summaryPanel
+                    chartSection
                     transactionSection
                 }
                 .padding(.horizontal, 20)
@@ -80,14 +129,22 @@ struct LedgerRootView: View {
             entries = storage.loadEntries()
             sortEntries()
             syncSummaryMonthSelection()
+            pushWidgetSnapshot()
         }
         .onChange(of: entries) { _, _ in
             syncSummaryMonthSelection()
+            pushWidgetSnapshot()
+        }
+        .onChange(of: bookStore.activeBookId) { _, _ in
+            syncSummaryMonthSelection()
+            pushWidgetSnapshot()
         }
         .sheet(isPresented: $showAddSheet) {
             LedgerAddTransactionSheet(
                 isPresented: $showAddSheet,
                 mode: .create,
+                bookId: bookStore.activeBookId,
+                categorySuggestions: LedgerCategoryStore.load(for: bookStore.activeBookId),
                 onSave: { new in
                     entries.insert(new, at: 0)
                     sortEntries()
@@ -102,6 +159,8 @@ struct LedgerRootView: View {
                     set: { if !$0 { entryToEdit = nil } }
                 ),
                 mode: .edit(entry),
+                bookId: bookStore.activeBookId,
+                categorySuggestions: LedgerCategoryStore.load(for: bookStore.activeBookId),
                 onSave: { updated in
                     if let i = entries.firstIndex(where: { $0.id == updated.id }) {
                         entries[i] = updated
@@ -117,10 +176,23 @@ struct LedgerRootView: View {
                 .environmentObject(appearance)
         }
         .sheet(isPresented: $showDayPickerSheet) {
-            LedgerDayPickerSheet(entries: entries, formatMoney: { currency.format($0) })
+            LedgerDayPickerSheet(entries: bookEntries, formatMoney: { currency.format($0) })
         }
         .sheet(isPresented: $showCurrencySheet) {
             LedgerCurrencyPickerSheet(currency: currency)
+        }
+        .sheet(isPresented: $showSettingsSheet) {
+            LedgerSettingsSheet(
+                bookStore: bookStore,
+                entries: $entries,
+                currency: currency,
+                storage: storage,
+                onDismissReload: {
+                    entries = storage.loadEntries()
+                    sortEntries()
+                    pushWidgetSnapshot()
+                }
+            )
         }
         .alert(item: $pendingDeletion) { entry in
             Alert(
@@ -133,6 +205,24 @@ struct LedgerRootView: View {
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
+    }
+
+    private func pushWidgetSnapshot() {
+        let cal = Calendar.current
+        let now = Date()
+        let y = cal.component(.year, from: now)
+        let m = cal.component(.month, from: now)
+        var net: Decimal = 0
+        for e in bookEntries {
+            let ey = cal.component(.year, from: e.date)
+            let em = cal.component(.month, from: e.date)
+            guard ey == y, em == m else { continue }
+            net += e.signedNetAmount
+        }
+        net = LedgerDecimalFormatting.round(net)
+        let fmt = currency.format(net)
+        let sign = net >= 0 ? "+" : ""
+        SharedWidgetData.updateLedgerSnapshot(monthNetFormatted: "\(sign)\(fmt)", currencyCode: currency.currencyCode)
     }
 
     private func syncSummaryMonthSelection() {
@@ -218,6 +308,18 @@ struct LedgerRootView: View {
                 .accessibilityLabel("Currency")
 
                 Button {
+                    showSettingsSheet = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Ledger settings")
+
+                Button {
                     showAppearanceSheet = true
                 } label: {
                     SketchPaletteIcon(size: 28)
@@ -242,7 +344,7 @@ struct LedgerRootView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 198)
+            .frame(height: 220)
         }
         .cartoonPanelChrome()
     }
@@ -268,6 +370,8 @@ struct LedgerRootView: View {
             Text("Net \(currency.format(LedgerDecimalFormatting.round(net)))")
                 .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
+
+            budgetsStrip(for: monthStart)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -284,21 +388,34 @@ struct LedgerRootView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    @ViewBuilder
+    private var chartSection: some View {
+        let pts = LedgerChartData.last12MonthsNet(bookId: bookStore.activeBookId, entries: bookEntries)
+        if !bookEntries.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Last 12 months (net)")
+                    .font(TwelveTheme.appFont(size: 13, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textSecondary)
+                LedgerMonthChartView(points: pts, formatMoney: { currency.format($0) })
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(TwelveTheme.hairline, lineWidth: 1)
+            )
+        }
+    }
+
     private var transactionSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if entries.isEmpty {
-                Text("No transactions yet. Tap + to add one.")
-                    .font(TwelveTheme.appFont(size: 16))
-                    .foregroundStyle(TwelveTheme.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(20)
-                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(TwelveTheme.hairline, lineWidth: 1)
-                    )
+            if bookEntries.isEmpty {
+                LedgerEmptyStateView {
+                    showAddSheet = true
+                }
             } else {
-                let grouped = Dictionary(grouping: entries) { e in
+                let grouped = Dictionary(grouping: bookEntries) { e in
                     let c = Calendar.current.dateComponents([.year, .month], from: e.date)
                     return Calendar.current.date(from: c) ?? e.date
                 }
