@@ -288,9 +288,7 @@ struct LedgerRootView: View {
                 Button {
                     showSettingsSheet = true
                 } label: {
-                    Image(systemName: "gearshape")
-                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
-                        .foregroundStyle(TwelveTheme.primaryBlue)
+                    SketchGearIcon(size: 28)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }

@@ -167,9 +167,7 @@ struct ContentView: View {
                 Button {
                     showSearch = true
                 } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
-                        .foregroundStyle(TwelveTheme.primaryBlue)
+                    SketchSearchIcon(size: 28)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
@@ -199,9 +197,7 @@ struct ContentView: View {
                 Button {
                     showDiarySettings = true
                 } label: {
-                    Image(systemName: "gearshape")
-                        .font(TwelveTheme.appFont(size: 22, weight: .medium))
-                        .foregroundStyle(TwelveTheme.primaryBlue)
+                    SketchGearIcon(size: 28)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }

@@ -79,6 +79,77 @@ struct SketchPaletteIcon: View {
     }
 }
 
+/// Hand-drawn cog (settings), loose strokes to match calendar / palette.
+struct SketchGearIcon: View {
+    var size: CGFloat = 26
+
+    var body: some View {
+        Canvas { context, canvasSize in
+            let w = canvasSize.width
+            let h = canvasSize.height
+            let cx = w / 2
+            let cy = h / 2
+            let n = 6
+            let rTip = min(w, h) * 0.40
+            let rValley = min(w, h) * 0.26
+            var gear = Path()
+            for i in 0..<n {
+                let a0 = CGFloat(i) / CGFloat(n) * 2 * .pi - .pi / 2
+                let a1 = a0 + .pi / CGFloat(n) * 0.38
+                let a2 = a0 + .pi / CGFloat(n) * 0.62
+                let a3 = a0 + .pi / CGFloat(n)
+                let p0 = CGPoint(x: cx + cos(a0) * rValley, y: cy + sin(a0) * rValley)
+                let p1 = CGPoint(x: cx + cos(a1) * rTip, y: cy + sin(a1) * rTip)
+                let p2 = CGPoint(x: cx + cos(a2) * rTip, y: cy + sin(a2) * rTip)
+                let p3 = CGPoint(x: cx + cos(a3) * rValley, y: cy + sin(a3) * rValley)
+                if i == 0 {
+                    gear.move(to: p0)
+                } else {
+                    gear.addLine(to: p0)
+                }
+                gear.addQuadCurve(to: p2, control: p1)
+                gear.addQuadCurve(to: p3, control: CGPoint(x: (p2.x + p3.x) / 2 + 0.4, y: (p2.y + p3.y) / 2))
+            }
+            gear.closeSubpath()
+            context.stroke(gear, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+
+            let rHub = min(w, h) * 0.15
+            var hub = Path()
+            hub.addEllipse(in: CGRect(x: cx - rHub, y: cy - rHub, width: rHub * 2, height: rHub * 2))
+            context.stroke(hub, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+/// Hand-drawn magnifying glass for search.
+struct SketchSearchIcon: View {
+    var size: CGFloat = 26
+
+    var body: some View {
+        Canvas { context, canvasSize in
+            let w = canvasSize.width
+            let h = canvasSize.height
+            let cx = w * 0.38
+            let cy = h * 0.38
+            let lensR = min(w, h) * 0.26
+
+            var ring = Path()
+            ring.addEllipse(in: CGRect(x: cx - lensR, y: cy - lensR, width: lensR * 2, height: lensR * 2))
+            context.stroke(ring, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+
+            var handle = Path()
+            handle.move(to: CGPoint(x: cx + lensR * 0.65, y: cy + lensR * 0.72))
+            handle.addQuadCurve(
+                to: CGPoint(x: w * 0.88, y: h * 0.90),
+                control: CGPoint(x: cx + lensR * 1.35, y: cy + lensR * 1.05)
+            )
+            context.stroke(handle, with: .color(SketchToolbarIcons.strokeColor), style: SketchToolbarIcons.style)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 struct SketchPlusIcon: View {
     var size: CGFloat = 28
     var color: Color = .white

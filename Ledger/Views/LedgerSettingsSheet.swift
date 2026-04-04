@@ -30,6 +30,10 @@ struct LedgerSettingsSheet: View {
         return (cal.component(.year, from: d), cal.component(.month, from: d))
     }
 
+    private var activeBookName: String {
+        bookStore.books.first(where: { $0.id == bookStore.activeBookId })?.name ?? "—"
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -82,12 +86,35 @@ struct LedgerSettingsSheet: View {
             Text("Books")
                 .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
-            Picker("Active book", selection: $bookStore.activeBookId) {
+            Menu {
                 ForEach(bookStore.books) { b in
-                    Text(b.name).font(TwelveTheme.Settings.rowPrimary).tag(b.id)
+                    Button {
+                        bookStore.activeBookId = b.id
+                    } label: {
+                        HStack {
+                            Text(b.name)
+                            if b.id == bookStore.activeBookId {
+                                Spacer(minLength: 8)
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
                 }
+            } label: {
+                HStack {
+                    Text(activeBookName)
+                        .font(TwelveTheme.Settings.rowPrimary)
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(TwelveTheme.appFont(size: 11))
+                        .foregroundStyle(TwelveTheme.textTertiary)
+                }
+                .padding(.vertical, 2)
+                .contentShape(Rectangle())
             }
-            .pickerStyle(.menu)
+            .accessibilityLabel("Active book")
+            .accessibilityValue(activeBookName)
             Button("Add book…") { showAddBook = true }
                 .font(TwelveTheme.Settings.rowPrimary)
         }
