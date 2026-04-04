@@ -23,6 +23,7 @@ struct LedgerSettingsSheet: View {
     @State private var recKind: LedgerTransactionKind = .expense
     @State private var csvPayload: CSVExportItem?
     @State private var newCategoryShortcut = ""
+    @State private var showBookPicker = false
 
     private var cal: Calendar { Calendar.current }
 
@@ -77,9 +78,66 @@ struct LedgerSettingsSheet: View {
             .sheet(item: $csvPayload) { item in
                 ActivityView(activityItems: [item.url])
             }
+            .sheet(isPresented: $showBookPicker) {
+                bookPickerSheet
+            }
         }
         .font(TwelveTheme.Settings.rootBody)
         .presentationDetents([.large])
+    }
+
+    private var bookPickerSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(bookStore.books.enumerated()), id: \.element.id) { _, b in
+                        let on = b.id == bookStore.activeBookId
+                        Button {
+                            bookStore.activeBookId = b.id
+                            showBookPicker = false
+                        } label: {
+                            HStack(spacing: 10) {
+                                Text(b.name)
+                                    .font(TwelveTheme.Settings.rowPrimary)
+                                    .foregroundStyle(TwelveTheme.textPrimary)
+                                    .multilineTextAlignment(.leading)
+                                Spacer(minLength: 8)
+                                if on {
+                                    Image(systemName: "checkmark")
+                                        .font(TwelveTheme.appFont(size: 15))
+                                        .foregroundStyle(TwelveTheme.primaryBlue)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                on ? TwelveTheme.softBlue.opacity(0.22) : Color.clear,
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.vertical, 4)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+            }
+            .background(TwelveTheme.background)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Choose book")
+                        .font(TwelveTheme.Settings.navigationTitle)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { showBookPicker = false }
+                        .font(TwelveTheme.Settings.navigationDone)
+                }
+            }
+        }
+        .font(TwelveTheme.Settings.rootBody)
+        .presentationDetents([.medium, .large])
     }
 
     private var booksSection: some View {
@@ -87,20 +145,8 @@ struct LedgerSettingsSheet: View {
             Text("Books")
                 .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
-            Menu {
-                ForEach(bookStore.books) { b in
-                    Button {
-                        bookStore.activeBookId = b.id
-                    } label: {
-                        HStack {
-                            Text(b.name)
-                            if b.id == bookStore.activeBookId {
-                                Spacer(minLength: 8)
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
-                }
+            Button {
+                showBookPicker = true
             } label: {
                 HStack {
                     Text(activeBookName)
@@ -114,6 +160,7 @@ struct LedgerSettingsSheet: View {
                 .padding(.vertical, 2)
                 .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
             .accessibilityLabel("Active book")
             .accessibilityValue(activeBookName)
             Button("Add book…") { showAddBook = true }
