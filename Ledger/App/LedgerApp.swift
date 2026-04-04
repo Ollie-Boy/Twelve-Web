@@ -15,6 +15,9 @@ struct LedgerApp: App {
                 .environmentObject(appearance)
                 .environmentObject(currency)
                 .preferredColorScheme(appearance.preferredColorScheme)
+                .task {
+                    await LedgerAppShortcuts.updateAppShortcutParameters()
+                }
         }
     }
 }
