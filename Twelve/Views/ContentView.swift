@@ -151,81 +151,83 @@ struct ContentView: View {
         WeatherOption.suggestedForRecognizedAddress("", date: Date())
     }
 
+    private let headerIconTap: CGFloat = 40
+
     private var headerBar: some View {
-        HStack(alignment: .center, spacing: 12) {
-            HStack(alignment: .center, spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 8) {
                 Image(systemName: todayWeather.symbolName)
-                    .font(TwelveTheme.appFont(size: 26, weight: .semibold))
+                    .font(TwelveTheme.appFont(size: 24, weight: .semibold))
                     .foregroundStyle(TwelveTheme.primaryBlue)
                     .symbolRenderingMode(.hierarchical)
+                    .frame(width: 28, alignment: .center)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(todayWeather.title)
                         .font(TwelveTheme.appFont(size: 15, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textPrimary)
-                        .lineLimit(1)
-                    Text(Date().formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(Date().formatted(.dateTime.weekday(.wide).month(.abbreviated).day()))
                         .font(TwelveTheme.appFont(size: 13, weight: .medium))
                         .foregroundStyle(TwelveTheme.textSecondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(
                 "\(todayWeather.title), \(Date().formatted(date: .complete, time: .omitted))"
             )
-            Spacer(minLength: 8)
-            HStack(spacing: 10) {
+
+            HStack(spacing: 6) {
+                Spacer(minLength: 0)
                 Button {
                     showSearch = true
                 } label: {
-                    SketchSearchIcon(size: 28)
-                        .frame(width: 44, height: 44)
+                    SketchSearchIcon(size: 24)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Search diary")
 
                 Button {
-                    showDiaryInsights = true
-                } label: {
-                    Image(systemName: "chart.bar.xaxis")
-                        .font(TwelveTheme.appFont(size: 20, weight: .semibold))
-                        .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Mood and weather stats")
-
-                Button {
                     showDayPickerSheet = true
                 } label: {
-                    SketchCalendarIcon(size: 28)
-                        .frame(width: 44, height: 44)
+                    SketchCalendarIcon(size: 24)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Jump to date")
 
-                Button {
-                    showAppearanceSheet = true
+                Menu {
+                    Button {
+                        showDiaryInsights = true
+                    } label: {
+                        Label("Mood & weather stats", systemImage: "chart.bar.xaxis")
+                    }
+                    Button {
+                        showAppearanceSheet = true
+                    } label: {
+                        Label("Look & feel", systemImage: "paintpalette")
+                    }
+                    Button {
+                        showDiarySettings = true
+                    } label: {
+                        Label("Diary settings", systemImage: "gearshape")
+                    }
                 } label: {
-                    SketchPaletteIcon(size: 28)
-                        .frame(width: 44, height: 44)
+                    Image(systemName: "ellipsis.circle")
+                        .font(TwelveTheme.appFont(size: 22, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Look and feel")
-
-                Button {
-                    showDiarySettings = true
-                } label: {
-                    SketchGearIcon(size: 28)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Diary settings")
+                .accessibilityLabel("More diary actions")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
