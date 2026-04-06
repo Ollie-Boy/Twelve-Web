@@ -260,13 +260,18 @@ struct LedgerRootView: View {
         .ignoresSafeArea(edges: .top)
     }
 
+    private let headerIconTap: CGFloat = 40
+    private let headerWeatherSymbolSize: CGFloat = 24
+    private let headerActionSymbolSize: CGFloat = 22
+
     private var headerBar: some View {
-        HStack(alignment: .center, spacing: 12) {
-            HStack(alignment: .center, spacing: 10) {
+        HStack(alignment: .center, spacing: 8) {
+            HStack(alignment: .center, spacing: 8) {
                 Image(systemName: todayWeather.symbolName)
-                    .font(TwelveTheme.sfSymbolIconFont(size: 26, weight: .semibold))
+                    .font(TwelveTheme.sfSymbolIconFont(size: headerWeatherSymbolSize, weight: .semibold))
                     .foregroundStyle(TwelveTheme.primaryBlue)
                     .symbolRenderingMode(.hierarchical)
+                    .frame(width: 28, alignment: .center)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(todayWeather.title)
                         .font(TwelveTheme.appFont(size: 15, weight: .semibold))
@@ -278,19 +283,20 @@ struct LedgerRootView: View {
                         .lineLimit(1)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(
                 "\(todayWeather.title), \(Date().formatted(date: .complete, time: .omitted))"
             )
-            Spacer(minLength: 8)
-            HStack(spacing: 10) {
+
+            HStack(spacing: 2) {
                 Button {
                     showDayPickerSheet = true
                 } label: {
                     Image(systemName: "calendar")
-                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(width: 44, height: 44)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -300,10 +306,10 @@ struct LedgerRootView: View {
                     showCurrencySheet = true
                 } label: {
                     Text(currency.currencyCode)
-                        .font(TwelveTheme.appFont(size: 18, weight: .semibold))
+                        .font(TwelveTheme.appFont(size: 16, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .tracking(0.6)
-                        .frame(minWidth: 48, minHeight: 44)
+                        .frame(minWidth: headerIconTap, minHeight: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -313,9 +319,9 @@ struct LedgerRootView: View {
                     showAppearanceSheet = true
                 } label: {
                     Image(systemName: "paintpalette")
-                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(width: 44, height: 44)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -325,9 +331,9 @@ struct LedgerRootView: View {
                     showSettingsSheet = true
                 } label: {
                     Image(systemName: "gearshape")
-                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
-                        .frame(width: 44, height: 44)
+                        .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -577,19 +583,18 @@ struct LedgerRootView: View {
             showAddSheet = true
         } label: {
             ZStack {
-                Circle().fill(
-                    LinearGradient(
-                        colors: [TwelveTheme.primaryBlue, TwelveTheme.primaryBlueDark],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                Circle()
+                    .fill(TwelveTheme.softBlue)
                 Image(systemName: "plus")
                     .font(TwelveTheme.sfSymbolIconFont(size: 28, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(TwelveTheme.primaryBlue)
             }
             .frame(width: 58, height: 58)
-            .shadow(color: TwelveTheme.primaryBlue.opacity(0.35), radius: 14, y: 8)
+            .overlay(
+                Circle()
+                    .stroke(TwelveTheme.primaryBlue.opacity(0.22), lineWidth: 1)
+            )
+            .shadow(color: TwelveTheme.primaryBlue.opacity(0.18), radius: 12, y: 6)
         }
         .buttonStyle(.plain)
         .padding(.trailing, 20)

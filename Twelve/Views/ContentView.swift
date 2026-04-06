@@ -213,17 +213,35 @@ struct ContentView: View {
                     Button {
                         showDiaryInsights = true
                     } label: {
-                        Label("Mood & weather stats", systemImage: "chart.bar.xaxis")
+                        HStack(spacing: 10) {
+                            Image(systemName: "chart.bar.xaxis")
+                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
+                                .frame(width: 22, alignment: .center)
+                            Text("Mood & weather stats")
+                                .font(TwelveTheme.appFont(size: 16))
+                        }
                     }
                     Button {
                         showAppearanceSheet = true
                     } label: {
-                        Label("Look & feel", systemImage: "paintpalette")
+                        HStack(spacing: 10) {
+                            Image(systemName: "paintpalette")
+                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
+                                .frame(width: 22, alignment: .center)
+                            Text("Look & feel")
+                                .font(TwelveTheme.appFont(size: 16))
+                        }
                     }
                     Button {
                         showDiarySettings = true
                     } label: {
-                        Label("Diary settings", systemImage: "gearshape")
+                        HStack(spacing: 10) {
+                            Image(systemName: "gearshape")
+                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
+                                .frame(width: 22, alignment: .center)
+                            Text("Diary settings")
+                                .font(TwelveTheme.appFont(size: 16))
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
