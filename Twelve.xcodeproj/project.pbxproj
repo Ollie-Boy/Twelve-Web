@@ -235,9 +235,7 @@
             isa = PBXGroup;
             children = (
                 B000001B100000100000001 /* LedgerApp.swift */,
-                B00000BB100000100000001 /* LedgerCurrencyStore.swift */,
-                9A000040A100000100000001 /* AppFontScale.swift */,
-                9A000041A100000100000001 /* TypographyRefreshNotifier.swift */);
+                B00000BB100000100000001 /* LedgerCurrencyStore.swift */);
             path = App;
             sourceTree = "<group>";
         };
@@ -276,8 +274,7 @@
                 B000035B100000100000001 /* LedgerSimpleGoalStore.swift */,
                 B000039B100000100000001 /* LedgerFXService.swift */,
                 B000040B100000100000001 /* LedgerReminderStore.swift */,
-                B000041B100000100000001 /* LedgerFixedExpenseScheduler.swift */,
-                9A000042A100000100000001 /* BackupStatusStore.swift */);
+                B000041B100000100000001 /* LedgerFixedExpenseScheduler.swift */);
             path = Services;
             sourceTree = "<group>";
         };
