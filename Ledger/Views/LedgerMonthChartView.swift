@@ -14,10 +14,19 @@ struct LedgerMonthChartView: View {
 
     /// Horizontal space per month so bars stay readable when scrolling.
     private let monthColumnWidth: CGFloat = 44
+    /// Extra vertical room so top Y-axis currency labels are not clipped.
+    private let chartPlotHeight: CGFloat = 200
+    private let chartTopGutter: CGFloat = 14
 
     private var chartContentWidth: CGFloat {
         let n = max(points.count, 1)
         return CGFloat(n) * monthColumnWidth
+    }
+
+    /// Changes when series length or latest month data changes (re-scroll to trailing).
+    private var chartScrollIdentity: String {
+        guard let last = points.last else { return "empty" }
+        return "\(points.count)-\(last.id)-\(last.net)-\(last.label)"
     }
 
     private var xAxisIndices: [Int] {
@@ -40,45 +49,70 @@ struct LedgerMonthChartView: View {
     }
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            Chart {
-                ForEach(points) { p in
-                    BarMark(
-                        x: .value("Month", p.id),
-                        y: .value("Net", Double(truncating: p.net as NSDecimalNumber))
-                    )
-                    .foregroundStyle((p.net as NSDecimalNumber).doubleValue >= 0 ? TwelveTheme.primaryBlue : TwelveTheme.primaryBlueDark)
-                    .cornerRadius(4)
-                }
-            }
-            .chartXScale(domain: -0.5...(Double(points.map(\.id).max() ?? 0) + 0.5))
-            .chartYAxis {
-                AxisMarks(position: .leading) { v in
-                    AxisGridLine()
-                    AxisValueLabel {
-                        if let d = v.as(Double.self) {
-                            Text(formatMoney(Decimal(d)))
-                                .font(TwelveTheme.appFont(size: 10))
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 0) {
+                    Chart {
+                        ForEach(points) { p in
+                            BarMark(
+                                x: .value("Month", p.id),
+                                y: .value("Net", Double(truncating: p.net as NSDecimalNumber))
+                            )
+                            .foregroundStyle((p.net as NSDecimalNumber).doubleValue >= 0 ? TwelveTheme.primaryBlue : TwelveTheme.primaryBlueDark)
+                            .cornerRadius(4)
                         }
                     }
-                }
-            }
-            .chartXAxis {
-                AxisMarks(values: xAxisIndices) { v in
-                    AxisValueLabel(centered: true) {
-                        if let idx = v.as(Int.self),
-                           let p = points.first(where: { $0.id == idx }) {
-                            Text(p.label)
-                                .font(TwelveTheme.appFont(size: 9))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
+                    .chartXScale(domain: -0.5...(Double(points.map(\.id).max() ?? 0) + 0.5))
+                    .chartYAxis {
+                        AxisMarks(position: .leading) { v in
+                            AxisGridLine()
+                            AxisValueLabel(anchor: .topLeading) {
+                                if let d = v.as(Double.self) {
+                                    Text(formatMoney(Decimal(d)))
+                                        .font(TwelveTheme.appFont(size: 10))
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.75)
+                                }
+                            }
                         }
                     }
+                    .chartXAxis {
+                        AxisMarks(values: xAxisIndices) { v in
+                            AxisValueLabel(centered: true) {
+                                if let idx = v.as(Int.self),
+                                   let p = points.first(where: { $0.id == idx }) {
+                                    Text(p.label)
+                                        .font(TwelveTheme.appFont(size: 9))
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.7)
+                                }
+                            }
+                        }
+                    }
+                    .chartYScale(domain: .automatic(includesZero: true))
+                    .padding(.top, chartTopGutter)
+                    .frame(width: chartContentWidth, height: chartPlotHeight + chartTopGutter)
+                    Color.clear
+                        .frame(width: 1, height: 1)
+                        .id("ledgerChartTrailingAnchor")
                 }
             }
-            .frame(width: chartContentWidth, height: 220)
+            .frame(height: chartPlotHeight + chartTopGutter)
+            .onAppear {
+                scrollChartToLatest(proxy: proxy)
+            }
+            .onChange(of: chartScrollIdentity) { _, _ in
+                scrollChartToLatest(proxy: proxy)
+            }
         }
-        .frame(height: 220)
+    }
+
+    private func scrollChartToLatest(proxy: ScrollViewProxy) {
+        DispatchQueue.main.async {
+            withAnimation(.easeOut(duration: 0.2)) {
+                proxy.scrollTo("ledgerChartTrailingAnchor", anchor: .trailing)
+            }
+        }
     }
 }
 

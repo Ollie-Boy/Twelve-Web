@@ -96,13 +96,8 @@ struct EntryCardView: View {
                     .padding(.bottom, 10)
                     .allowsHitTesting(false)
             }
-            .background(TwelveTheme.cardSurface)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(TwelveTheme.cardBorder, lineWidth: 1)
-            )
-            .shadow(color: TwelveTheme.cardShadow, radius: 18, y: 10)
+            .stickerPanelBackground(cornerRadius: 24)
             .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         }
         .buttonStyle(.plain)

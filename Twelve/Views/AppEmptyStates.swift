@@ -22,11 +22,7 @@ struct DiaryEmptyStateView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(22)
-        .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(TwelveTheme.hairline, lineWidth: 1)
-        )
+        .stickerPanelBackground(cornerRadius: 20)
     }
 }
 
@@ -52,10 +48,6 @@ struct LedgerEmptyStateView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(22)
-        .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(TwelveTheme.hairline, lineWidth: 1)
-        )
+        .stickerPanelBackground(cornerRadius: 20)
     }
 }

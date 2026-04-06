@@ -356,7 +356,8 @@ struct LedgerRootView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(height: 220)
         }
-        .cartoonPanelChrome()
+        .padding(16)
+        .stickerPanelBackground(cornerRadius: 22)
     }
 
     private func summaryPageContent(monthStart: Date) -> some View {
@@ -439,11 +440,7 @@ struct LedgerRootView: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(TwelveTheme.hairline, lineWidth: 1)
-            )
+            .stickerPanelBackground(cornerRadius: 18)
         }
     }
 
@@ -524,11 +521,7 @@ struct LedgerRootView: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(TwelveTheme.hairline, lineWidth: 1)
-            )
+            .stickerPanelBackground(cornerRadius: 16)
         }
     }
 

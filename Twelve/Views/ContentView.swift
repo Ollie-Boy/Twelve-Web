@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var showDiarySettings: Bool = false
     @State private var showSearch: Bool = false
     @State private var showDiaryInsights: Bool = false
+    @State private var showHeaderMoreSheet: Bool = false
     @State private var memoriesEntryID: UUID?
 
     private let storage = DiaryStorage()
@@ -119,6 +120,9 @@ struct ContentView: View {
                 selectedEntryForRead = e
             }
         }
+        .sheet(isPresented: $showHeaderMoreSheet) {
+            diaryHeaderMoreSheet
+        }
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
@@ -209,40 +213,8 @@ struct ContentView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Jump to date")
 
-                Menu {
-                    Button {
-                        showDiaryInsights = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "chart.bar.xaxis")
-                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
-                                .frame(width: 22, alignment: .center)
-                            Text("Mood & weather stats")
-                                .font(TwelveTheme.appFont(size: 16))
-                        }
-                    }
-                    Button {
-                        showAppearanceSheet = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "paintpalette")
-                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
-                                .frame(width: 22, alignment: .center)
-                            Text("Look & feel")
-                                .font(TwelveTheme.appFont(size: 16))
-                        }
-                    }
-                    Button {
-                        showDiarySettings = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "gearshape")
-                                .font(TwelveTheme.sfSymbolIconFont(size: 17, weight: .semibold))
-                                .frame(width: 22, alignment: .center)
-                            Text("Diary settings")
-                                .font(TwelveTheme.appFont(size: 16))
-                        }
-                    }
+                Button {
+                    showHeaderMoreSheet = true
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
@@ -250,10 +222,82 @@ struct ContentView: View {
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("More diary actions")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var diaryHeaderMoreSheet: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 0) {
+                headerMoreRow(
+                    title: "Mood & weather stats",
+                    systemImage: "chart.bar.xaxis",
+                    action: {
+                        showHeaderMoreSheet = false
+                        showDiaryInsights = true
+                    }
+                )
+                Divider().padding(.leading, 52)
+                headerMoreRow(
+                    title: "Look & feel",
+                    systemImage: "paintpalette",
+                    action: {
+                        showHeaderMoreSheet = false
+                        showAppearanceSheet = true
+                    }
+                )
+                Divider().padding(.leading, 52)
+                headerMoreRow(
+                    title: "Diary settings",
+                    systemImage: "gearshape",
+                    action: {
+                        showHeaderMoreSheet = false
+                        showDiarySettings = true
+                    }
+                )
+                Spacer(minLength: 0)
+            }
+            .padding(.top, 8)
+            .background(TwelveTheme.background)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("More")
+                        .font(TwelveTheme.Settings.navigationTitle)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { showHeaderMoreSheet = false }
+                        .font(TwelveTheme.Settings.navigationDone)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func headerMoreRow(title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(TwelveTheme.sfSymbolIconFont(size: 20, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
+                    .frame(width: 28, alignment: .center)
+                Text(title)
+                    .font(TwelveTheme.appFont(size: 16))
+                    .foregroundStyle(TwelveTheme.textPrimary)
+                    .multilineTextAlignment(.leading)
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(TwelveTheme.sfSymbolIconFont(size: 14, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textTertiary)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private var onThisDayPastEntries: [DiaryEntry] {
@@ -288,11 +332,7 @@ struct ContentView: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(TwelveTheme.hairline, lineWidth: 1)
-            )
+            .stickerPanelBackground(cornerRadius: 18)
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Writing habit. \(streak == 0 ? "No streak yet" : "\(streak) day streak"). \(weekCount) entries this week.")
         }
@@ -363,11 +403,7 @@ struct ContentView: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(TwelveTheme.hairline, lineWidth: 1)
-            )
+            .stickerPanelBackground(cornerRadius: 18)
         }
     }
 
@@ -421,11 +457,7 @@ struct ContentView: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(TwelveTheme.hairline, lineWidth: 1)
-            )
+            .stickerPanelBackground(cornerRadius: 18)
         }
     }
 
