@@ -11,16 +11,20 @@ final class LedgerCurrencyStore: ObservableObject {
     @Published private(set) var reportCurrencyCode: String
 
     init() {
+        let initialBook: String
         if let saved = UserDefaults.standard.string(forKey: Self.key), !saved.isEmpty {
-            currencyCode = saved
+            initialBook = saved
         } else {
-            currencyCode = Locale.current.currency?.identifier ?? "USD"
+            initialBook = Locale.current.currency?.identifier ?? "USD"
         }
+        let initialReport: String
         if let r = UserDefaults.standard.string(forKey: Self.reportKey), !r.isEmpty {
-            reportCurrencyCode = r.uppercased()
+            initialReport = r.uppercased()
         } else {
-            reportCurrencyCode = currencyCode
+            initialReport = initialBook
         }
+        currencyCode = initialBook
+        reportCurrencyCode = initialReport
     }
 
     func setCurrencyCode(_ code: String) {
