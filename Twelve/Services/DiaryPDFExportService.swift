@@ -10,7 +10,7 @@ enum DiaryPDFExportService {
         let sorted = entries.sorted { $0.selectedDate > $1.selectedDate }
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(pdfFilename())
         let metaFont = TwelveTheme.uiFontForApp(size: 11)
-        let titleFont = TwelveTheme.uiFontForApp(size: 20, weight: .semibold)
+        let titleFont = TwelveTheme.uiFontForApp(size: 20, weight: UIFont.Weight.semibold)
         let bodyFont = TwelveTheme.uiFontForApp(size: 13)
 
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageW, height: pageH))
