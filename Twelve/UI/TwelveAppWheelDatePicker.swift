@@ -138,3 +138,74 @@ extension TwelveTheme {
         tintScrollViews(in: picker)
     }
 }
+
+// MARK: - Settings typography (replaces segmented picker & compact DatePicker)
+
+/// Compact / Standard / Large using app fonts (UISegmentedControl ignores SwiftUI `.font`).
+struct SettingsFontScaleControl: View {
+    @Binding var fontScale: AppFontScale
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(AppFontScale.allCases) { scale in
+                let on = fontScale == scale
+                Button {
+                    fontScale = scale
+                } label: {
+                    Text(scale.title)
+                        .font(TwelveTheme.appFont(size: 14, weight: on ? .semibold : .medium))
+                        .foregroundStyle(on ? TwelveTheme.primaryBlue : TwelveTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(on ? TwelveTheme.softBlue.opacity(0.42) : TwelveTheme.surface)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(
+                                    on ? TwelveTheme.primaryBlue.opacity(0.38) : TwelveTheme.hairline,
+                                    lineWidth: on ? 1.5 : 1
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(scale.title + (on ? ", selected" : ""))
+            }
+        }
+    }
+}
+
+/// Wheel time picker styled like composer date/time (compact `DatePicker` stays system font on newer iOS).
+struct SettingsReminderTimeWheel: View {
+    @Binding var hour: Int
+    @Binding var minute: Int
+
+    private var selectionBinding: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(from: DateComponents(hour: hour, minute: minute)) ?? Date()
+            },
+            set: { d in
+                let c = Calendar.current.dateComponents([.hour, .minute], from: d)
+                hour = c.hour ?? hour
+                minute = c.minute ?? minute
+            }
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Time")
+                .font(TwelveTheme.Settings.rowPrimary)
+                .foregroundStyle(TwelveTheme.textPrimary)
+            TwelveAppWheelDatePicker(selection: selectionBinding, mode: .time, minuteInterval: 1)
+                .frame(height: 188)
+                .frame(maxWidth: .infinity)
+        }
+    }
+}

@@ -257,16 +257,11 @@ struct LedgerSettingsSheet: View {
             Text("Text size")
                 .font(TwelveTheme.Settings.sectionHeader)
                 .foregroundStyle(TwelveTheme.textSecondary)
-            Picker("Scale", selection: $fontScale) {
-                ForEach(AppFontScale.allCases) { s in
-                    Text(s.title).tag(s)
+            SettingsFontScaleControl(fontScale: $fontScale)
+                .onChange(of: fontScale) { _, v in
+                    AppFontScale.setCurrent(v)
+                    NotificationCenter.default.post(name: .appFontScaleDidChange, object: nil)
                 }
-            }
-            .pickerStyle(.segmented)
-            .onChange(of: fontScale) { _, v in
-                AppFontScale.setCurrent(v)
-                NotificationCenter.default.post(name: .appFontScaleDidChange, object: nil)
-            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -288,23 +283,17 @@ struct LedgerSettingsSheet: View {
                 if v { Task { await LedgerReminderStore.schedule() } }
             }
             if reminderOn {
-                DatePicker(
-                    "Time",
-                    selection: Binding(
-                        get: {
-                            Calendar.current.date(from: DateComponents(hour: reminderHour, minute: reminderMinute)) ?? Date()
-                        },
-                        set: { d in
-                            let c = Calendar.current.dateComponents([.hour, .minute], from: d)
-                            reminderHour = c.hour ?? 19
-                            reminderMinute = c.minute ?? 0
-                            LedgerReminderStore.hour = reminderHour
-                            LedgerReminderStore.minute = reminderMinute
-                            Task { await LedgerReminderStore.schedule() }
-                        }
-                    ),
-                    displayedComponents: .hourAndMinute
-                )
+                SettingsReminderTimeWheel(hour: $reminderHour, minute: $reminderMinute)
+                    .onChange(of: reminderHour) { _, _ in
+                        LedgerReminderStore.hour = reminderHour
+                        LedgerReminderStore.minute = reminderMinute
+                        Task { await LedgerReminderStore.schedule() }
+                    }
+                    .onChange(of: reminderMinute) { _, _ in
+                        LedgerReminderStore.hour = reminderHour
+                        LedgerReminderStore.minute = reminderMinute
+                        Task { await LedgerReminderStore.schedule() }
+                    }
             }
             Text("When you turn this on, iOS may ask to allow notifications. If you chose Don’t Allow earlier, open Settings → Ledger → Notifications and turn on Allow Notifications so reminders can appear.")
                 .font(TwelveTheme.Settings.caption)
