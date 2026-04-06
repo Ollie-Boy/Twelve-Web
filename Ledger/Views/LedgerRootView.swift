@@ -13,6 +13,7 @@ struct LedgerRootView: View {
     @State private var showDayPickerSheet = false
     @State private var showCurrencySheet = false
     @State private var showSettingsSheet = false
+    @State private var showMonthReviewSheet = false
     @State private var summaryMonthSelection: Date = LedgerRootView.startOfMonth(for: Date())
 
     private let storage = LedgerStorage()
@@ -178,6 +179,14 @@ struct LedgerRootView: View {
         .sheet(isPresented: $showCurrencySheet) {
             LedgerCurrencyPickerSheet(currency: currency)
         }
+        .sheet(isPresented: $showMonthReviewSheet) {
+            LedgerMonthReviewSheet(
+                monthStart: summaryMonthSelection,
+                bookId: bookStore.activeBookId,
+                entries: bookEntries,
+                formatMoney: { currency.format($0) }
+            )
+        }
         .sheet(isPresented: $showSettingsSheet) {
             LedgerSettingsSheet(
                 bookStore: bookStore,
@@ -328,6 +337,8 @@ struct LedgerRootView: View {
     private func summaryPageContent(monthStart: Date) -> some View {
         let s = monthSummary(for: monthStart)
         let net = s.income - s.expense
+        let roundedNet = LedgerDecimalFormatting.round(net)
+        let goal = LedgerSimpleGoalStore.savingsTarget(for: bookStore.activeBookId)
         return VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(monthStart.formatted(.dateTime.month(.wide).year()))
@@ -343,9 +354,31 @@ struct LedgerRootView: View {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
                 summaryChip(title: "Out", value: s.expense, color: TwelveTheme.primaryBlueDark)
             }
-            Text("Net \(currency.format(LedgerDecimalFormatting.round(net)))")
+            Text("Net \(currency.format(roundedNet))")
                 .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
+
+            if let g = goal {
+                let met = roundedNet >= g
+                HStack(spacing: 8) {
+                    Text("Goal ≥ \(currency.format(g))")
+                        .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textSecondary)
+                    Spacer(minLength: 4)
+                    Text(met ? "On track" : "Below goal")
+                        .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                        .foregroundStyle(met ? TwelveTheme.primaryBlue : Color.orange.opacity(0.9))
+                }
+            }
+
+            Button {
+                showMonthReviewSheet = true
+            } label: {
+                Text("Month review")
+                    .font(TwelveTheme.appFont(size: 14, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.surfaceTintBlue))
 
             budgetsStrip(for: monthStart)
         }

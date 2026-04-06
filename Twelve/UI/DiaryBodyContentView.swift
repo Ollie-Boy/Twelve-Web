@@ -7,6 +7,8 @@ struct DiaryBodyContentView: View {
     let text: String
     /// When set, fixed clip height; no scroll; touches pass through to parent (list card tap).
     var compactMaxHeight: CGFloat?
+    /// When set, WKWebView scrolls to `#id` then clears (reader outline).
+    var scrollToFragmentID: Binding<String?> = .constant(nil)
     @Environment(\.colorScheme) private var colorScheme
     @State private var richWebHeight: CGFloat = 160
 
@@ -24,7 +26,8 @@ struct DiaryBodyContentView: View {
             isDark: colorScheme == .dark,
             includeMathJax: containsLaTeXDelimiters(text),
             isCompactPreview: compactMaxHeight != nil,
-            contentHeight: $richWebHeight
+            contentHeight: $richWebHeight,
+            scrollToFragmentID: scrollToFragmentID
         )
         .frame(height: displayHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,6 +89,7 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
     /// List/card preview: fixed clip, no internal scrolling.
     var isCompactPreview: Bool
     @Binding var contentHeight: CGFloat
+    @Binding var scrollToFragmentID: String?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -116,6 +120,8 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
         webView.scrollView.isScrollEnabled = !isCompactPreview
         webView.scrollView.bounces = !isCompactPreview
         webView.scrollView.showsVerticalScrollIndicator = !isCompactPreview
+
+        context.coordinator.performScrollIfNeeded(webView: webView)
 
         if context.coordinator.lastRawText == rawText,
            context.coordinator.lastMode == mode,
@@ -229,31 +235,41 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
             const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
             window.webkit.messageHandlers.bodyHeight.postMessage(h);
           }
+          function assignHeadingIds() {
+            const root = document.getElementById('content');
+            if (!root) return;
+            let i = 0;
+            root.querySelectorAll('h1, h2, h3, h4').forEach(function(h) {
+              h.id = 'twelve-h-' + (i++);
+            });
+          }
           function renderCore() {
             const el = document.getElementById('content');
             if (useMarkdown && typeof marked !== 'undefined') {
               el.innerHTML = marked.parse(raw, { breaks: true, gfm: true });
               el.style.whiteSpace = 'normal';
+              assignHeadingIds();
             } else if (useMarkdown) {
               el.textContent = raw;
               el.style.whiteSpace = 'pre-wrap';
             } else {
               el.innerHTML = raw;
               el.style.whiteSpace = 'normal';
+              assignHeadingIds();
             }
           }
           function runMathJax() {
-            if (!useMathJax) { notifyHeight(); return; }
+            if (!useMathJax) { assignHeadingIds(); notifyHeight(); return; }
             if (window.MathJax && MathJax.typesetPromise) {
-              MathJax.typesetPromise([document.getElementById('content')]).then(notifyHeight).catch(notifyHeight);
+              MathJax.typesetPromise([document.getElementById('content')]).then(function() { assignHeadingIds(); notifyHeight(); }).catch(function() { assignHeadingIds(); notifyHeight(); });
             } else {
               let n = 0;
               const t = setInterval(function() {
                 n++;
                 if (window.MathJax && MathJax.typesetPromise) {
                   clearInterval(t);
-                  MathJax.typesetPromise([document.getElementById('content')]).then(notifyHeight).catch(notifyHeight);
-                } else if (n > 150) { clearInterval(t); notifyHeight(); }
+                  MathJax.typesetPromise([document.getElementById('content')]).then(function() { assignHeadingIds(); notifyHeight(); }).catch(function() { assignHeadingIds(); notifyHeight(); });
+                } else if (n > 150) { clearInterval(t); assignHeadingIds(); notifyHeight(); }
               }, 40);
             }
           }
@@ -300,6 +316,21 @@ struct DiaryBodyRichWebView: UIViewRepresentable {
 
         init(_ parent: DiaryBodyRichWebView) {
             self.parent = parent
+        }
+
+        func performScrollIfNeeded(webView: WKWebView) {
+            guard let id = parent.scrollToFragmentID, !id.isEmpty else { return }
+            let safe = id.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
+            let js = """
+            (function(){
+              var el = document.getElementById("\(safe)");
+              if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            })();
+            """
+            webView.evaluateJavaScript(js, completionHandler: nil)
+            DispatchQueue.main.async {
+                self.parent.scrollToFragmentID = nil
+            }
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

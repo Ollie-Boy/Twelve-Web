@@ -70,6 +70,21 @@ struct DiaryReaderSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var quickLookURL: URL?
     @State private var selectedImageURL: URL?
+    @State private var bodyScrollFragmentID: String?
+    @State private var showOutlineSheet = false
+
+    private var outlineItems: [DiaryMarkdownOutline.Item] {
+        guard DiaryMarkdownOutline.showsOutline(for: entry.body) else { return [] }
+        return DiaryMarkdownOutline.headings(from: entry.body)
+    }
+
+    private var estimatedReadMinutes: Int? {
+        let b = entry.body
+        guard b.count > 120 else { return nil }
+        let words = b.split { $0.isWhitespace || $0.isNewline }.filter { !$0.isEmpty }.count
+        let m = max(1, Int(ceil(Double(words) / 200.0)))
+        return m >= 2 ? m : nil
+    }
 
     private var imageAttachments: [DiaryAttachment] {
         entry.attachments.filter { $0.kind == .image || $0.kind == .gif }
@@ -115,6 +130,12 @@ struct DiaryReaderSheet: View {
                             .font(TwelveTheme.appFont(size: 13))
                             .foregroundStyle(TwelveTheme.textSecondary)
 
+                        if let mins = estimatedReadMinutes {
+                            Text("About \(mins) min read")
+                                .font(TwelveTheme.appFont(size: 12))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
+
                         if !entry.tags.isEmpty || !trimmedEmotion.isEmpty {
                             HStack(spacing: 8) {
                                 ForEach(entry.tags, id: \.self) { tag in
@@ -129,7 +150,7 @@ struct DiaryReaderSheet: View {
                         }
 
                         if !entry.body.isEmpty {
-                            DiaryBodyContentView(text: entry.body)
+                            DiaryBodyContentView(text: entry.body, scrollToFragmentID: $bodyScrollFragmentID)
                         }
                     }
                     .contentShape(Rectangle())
@@ -157,6 +178,17 @@ struct DiaryReaderSheet: View {
                             .font(TwelveTheme.appFont(size: 17))
                     }
                     ToolbarItemGroup(placement: .primaryAction) {
+                        if !outlineItems.isEmpty {
+                            Button {
+                                showOutlineSheet = true
+                            } label: {
+                                Image(systemName: "list.bullet")
+                                    .font(TwelveTheme.appFont(size: 17))
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(TwelveTheme.primaryBlue)
+                            .accessibilityLabel("Section outline")
+                        }
                         Button {
                             withAnimation(.easeOut(duration: 0.35)) {
                                 proxy.scrollTo("readerTop", anchor: .top)
@@ -187,6 +219,47 @@ struct DiaryReaderSheet: View {
                 }
                 .sheet(item: $selectedImageURL) { url in
                     FullscreenImageViewer(imageURL: url)
+                }
+                .sheet(isPresented: $showOutlineSheet) {
+                    NavigationStack {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 0) {
+                                ForEach(outlineItems) { item in
+                                    Button {
+                                        bodyScrollFragmentID = "twelve-h-\(item.id)"
+                                        showOutlineSheet = false
+                                    } label: {
+                                        HStack {
+                                            Text(String(repeating: "  ", count: max(0, item.level - 1)) + item.title)
+                                                .font(TwelveTheme.appFont(size: 16))
+                                                .foregroundStyle(TwelveTheme.textPrimary)
+                                                .multilineTextAlignment(.leading)
+                                            Spacer(minLength: 8)
+                                        }
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 12)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                        }
+                        .background(TwelveTheme.background)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .principal) {
+                                Text("Sections")
+                                    .font(TwelveTheme.Settings.navigationTitle)
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button("Done") { showOutlineSheet = false }
+                                    .font(TwelveTheme.Settings.navigationDone)
+                            }
+                        }
+                    }
+                    .font(TwelveTheme.Settings.rootBody)
+                    .presentationDetents([.medium, .large])
                 }
             }
         }

@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showAppearanceSheet: Bool = false
     @State private var showDiarySettings: Bool = false
     @State private var showSearch: Bool = false
+    @State private var showDiaryInsights: Bool = false
 
     private let storage = DiaryStorage()
 
@@ -97,6 +98,9 @@ struct ContentView: View {
             AppearancePickerSheet()
                 .environmentObject(appearance)
         }
+        .sheet(isPresented: $showDiaryInsights) {
+            DiaryInsightsSheet(entries: entries)
+        }
         .sheet(isPresented: $showDiarySettings) {
             DiarySettingsSheet(entries: entries) {
                 entries = storage.loadEntries()
@@ -173,6 +177,18 @@ struct ContentView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Search diary")
+
+                Button {
+                    showDiaryInsights = true
+                } label: {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(TwelveTheme.appFont(size: 20, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Mood and weather stats")
 
                 Button {
                     showDayPickerSheet = true

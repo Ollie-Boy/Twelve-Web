@@ -45,6 +45,9 @@
         9A100037A100000100000001 /* DiarySearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000028A100000100000001 /* DiarySearchSheet.swift */; };
         9A100038A100000100000001 /* AppEmptyStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000029A100000100000001 /* AppEmptyStates.swift */; };
         9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
+        9A10003AA100000100000001 /* DiaryInsightsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002DA100000100000001 /* DiaryInsightsEngine.swift */; };
+        9A10003BA100000100000001 /* DiaryMarkdownOutline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */; };
+        9A10003CA100000100000001 /* DiaryInsightsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002FA100000100000001 /* DiaryInsightsSheet.swift */; };
         B100001B100000100000001 /* LedgerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000001B100000100000001 /* LedgerApp.swift */; };
         B100002B100000100000001 /* LedgerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000002B100000100000001 /* LedgerRootView.swift */; };
         B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000003B100000100000001 /* LedgerAddTransactionSheet.swift */; };
@@ -78,6 +81,8 @@
         B100034B100000100000001 /* LedgerSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000034B100000100000001 /* LedgerSettingsSheet.swift */; };
         B100035B100000100000001 /* AppEmptyStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000029A100000100000001 /* AppEmptyStates.swift */; };
         B100036B100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
+        B100037B100000100000001 /* LedgerSimpleGoalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000035B100000100000001 /* LedgerSimpleGoalStore.swift */; };
+        B100038B100000100000001 /* LedgerMonthReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000036B100000100000001 /* LedgerMonthReviewSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -121,6 +126,9 @@
         9A000028A100000100000001 /* DiarySearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiarySearchSheet.swift; sourceTree = "<group>"; };
         9A000029A100000100000001 /* AppEmptyStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEmptyStates.swift; sourceTree = "<group>"; };
         9A00002AA100000100000001 /* ICloudDataMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudDataMirror.swift; sourceTree = "<group>"; };
+        9A00002DA100000100000001 /* DiaryInsightsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryInsightsEngine.swift; sourceTree = "<group>"; };
+        9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryMarkdownOutline.swift; sourceTree = "<group>"; };
+        9A00002FA100000100000001 /* DiaryInsightsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryInsightsSheet.swift; sourceTree = "<group>"; };
         9A00002CA100000100000001 /* Twelve.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Twelve.entitlements; sourceTree = "<group>"; };
         B000001B100000100000001 /* LedgerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerApp.swift; sourceTree = "<group>"; };
         B000002B100000100000001 /* LedgerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRootView.swift; sourceTree = "<group>"; };
@@ -144,6 +152,8 @@
         B000032B100000100000001 /* LedgerCSVExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCSVExport.swift; sourceTree = "<group>"; };
         B000033B100000100000001 /* LedgerMonthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerMonthChartView.swift; sourceTree = "<group>"; };
         B000034B100000100000001 /* LedgerSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSettingsSheet.swift; sourceTree = "<group>"; };
+        B000035B100000100000001 /* LedgerSimpleGoalStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSimpleGoalStore.swift; sourceTree = "<group>"; };
+        B000036B100000100000001 /* LedgerMonthReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerMonthReviewSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,7 +220,8 @@
                 B00000DB100000100000001 /* LedgerCurrencyPickerSheet.swift */,
                 B00000EB100000100000001 /* LedgerSwipeActionRow.swift */,
                 B000033B100000100000001 /* LedgerMonthChartView.swift */,
-                B000034B100000100000001 /* LedgerSettingsSheet.swift */);
+                B000034B100000100000001 /* LedgerSettingsSheet.swift */,
+                B000036B100000100000001 /* LedgerMonthReviewSheet.swift */);
             path = Views;
             sourceTree = "<group>";
         };
@@ -230,7 +241,8 @@
             children = (
                 B000005B100000100000001 /* LedgerStorage.swift */,
                 B000031B100000100000001 /* LedgerCategoryStore.swift */,
-                B000032B100000100000001 /* LedgerCSVExport.swift */);
+                B000032B100000100000001 /* LedgerCSVExport.swift */,
+                B000035B100000100000001 /* LedgerSimpleGoalStore.swift */);
             path = Services;
             sourceTree = "<group>";
         };
@@ -278,7 +290,8 @@
                 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */,
                 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */,
                 9A00001CA100000100000001 /* SketchToolbarIcons.swift */,
-                9A00001EA100000100000001 /* AppearancePickerSheet.swift */);
+                9A00001EA100000100000001 /* AppearancePickerSheet.swift */,
+                9A00002FA100000100000001 /* DiaryInsightsSheet.swift */);
             path = Views;
             sourceTree = "<group>";
         };
@@ -307,7 +320,9 @@
         9A300009A100000100000001 /* Utilities */ = {
             isa = PBXGroup;
             children = (
-                9A000026A100000100000001 /* DiaryOnThisDay.swift */);
+                9A000026A100000100000001 /* DiaryOnThisDay.swift */,
+                9A00002DA100000100000001 /* DiaryInsightsEngine.swift */,
+                9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */);
             path = Utilities;
             sourceTree = "<group>";
         };
@@ -457,7 +472,10 @@
                 9A100036A100000100000001 /* DiarySettingsSheet.swift in Sources */,
                 9A100037A100000100000001 /* DiarySearchSheet.swift in Sources */,
                 9A100038A100000100000001 /* AppEmptyStates.swift in Sources */,
-                9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */);
+                9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */,
+                9A10003AA100000100000001 /* DiaryInsightsEngine.swift in Sources */,
+                9A10003BA100000100000001 /* DiaryMarkdownOutline.swift in Sources */,
+                9A10003CA100000100000001 /* DiaryInsightsSheet.swift in Sources */);
             runOnlyForDeploymentPostprocessing = 0;
         };
         B600003B100000100000001 /* Sources */ = {
@@ -495,7 +513,9 @@
                 B100033B100000100000001 /* LedgerMonthChartView.swift in Sources */,
                 B100034B100000100000001 /* LedgerSettingsSheet.swift in Sources */,
                 B100035B100000100000001 /* AppEmptyStates.swift in Sources */,
-                B100036B100000100000001 /* ICloudDataMirror.swift in Sources */);
+                B100036B100000100000001 /* ICloudDataMirror.swift in Sources */,
+                B100037B100000100000001 /* LedgerSimpleGoalStore.swift in Sources */,
+                B100038B100000100000001 /* LedgerMonthReviewSheet.swift in Sources */);
             runOnlyForDeploymentPostprocessing = 0;
         };
 /* End PBXSourcesBuildPhase section */

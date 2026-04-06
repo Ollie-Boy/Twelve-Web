@@ -24,6 +24,7 @@ struct LedgerSettingsSheet: View {
     @State private var csvPayload: CSVExportItem?
     @State private var newCategoryShortcut = ""
     @State private var showBookPicker = false
+    @State private var savingsTargetText = ""
 
     private var cal: Calendar { Calendar.current }
 
@@ -41,6 +42,7 @@ struct LedgerSettingsSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     booksSection
+                    savingsGoalSection
                     iCloudSection
                     categoriesSection
                     budgetsSection
@@ -65,6 +67,7 @@ struct LedgerSettingsSheet: View {
                 }
             }
             .onAppear { reloadLocalState() }
+            .onChange(of: bookStore.activeBookId) { _, _ in reloadLocalState() }
             .alert("New book", isPresented: $showAddBook) {
                 TextField("Name", text: $newBookName)
                 Button("Cancel", role: .cancel) {}
@@ -165,6 +168,40 @@ struct LedgerSettingsSheet: View {
             .accessibilityValue(activeBookName)
             Button("Add book…") { showAddBook = true }
                 .font(TwelveTheme.Settings.rowPrimary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var savingsGoalSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Savings goal (optional)")
+                .font(TwelveTheme.Settings.sectionHeader)
+                .foregroundStyle(TwelveTheme.textSecondary)
+            Text("Aim to keep net income minus spending at or above this amount each month (same month as the summary cards). Leave empty to turn off.")
+                .font(TwelveTheme.Settings.finePrint)
+                .foregroundStyle(TwelveTheme.textTertiary)
+            HStack(spacing: 8) {
+                TextField("e.g. 500", text: $savingsTargetText)
+                    .keyboardType(.decimalPad)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                Button("Save") {
+                    LedgerSimpleGoalStore.setSavingsTargetString(savingsTargetText, for: bookStore.activeBookId)
+                    reloadLocalState()
+                }
+                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+            }
+            Button("Clear goal") {
+                savingsTargetText = ""
+                LedgerSimpleGoalStore.setSavingsTargetString("", for: bookStore.activeBookId)
+                reloadLocalState()
+            }
+            .font(TwelveTheme.Settings.rowPrimary)
+            .buttonStyle(.plain)
+            .foregroundStyle(TwelveTheme.textTertiary)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -444,6 +481,11 @@ struct LedgerSettingsSheet: View {
         categories = LedgerCategoryStore.load(for: bookStore.activeBookId)
         recurring = LedgerRecurringStore.load()
         iCloudOn = ICloudDataMirror.ledgerEnabled
+        if let d = LedgerSimpleGoalStore.savingsTarget(for: bookStore.activeBookId) {
+            savingsTargetText = LedgerDecimalFormatting.displayString(for: d)
+        } else {
+            savingsTargetText = ""
+        }
     }
 
     private func postTemplate(_ t: LedgerRecurringTemplate) {
