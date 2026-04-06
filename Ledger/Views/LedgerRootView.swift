@@ -264,7 +264,7 @@ struct LedgerRootView: View {
         HStack(alignment: .center, spacing: 12) {
             HStack(alignment: .center, spacing: 10) {
                 Image(systemName: todayWeather.symbolName)
-                    .font(TwelveTheme.appFont(size: 26, weight: .semibold))
+                    .font(TwelveTheme.sfSymbolIconFont(size: 26, weight: .semibold))
                     .foregroundStyle(TwelveTheme.primaryBlue)
                     .symbolRenderingMode(.hierarchical)
                 VStack(alignment: .leading, spacing: 2) {
@@ -288,7 +288,7 @@ struct LedgerRootView: View {
                     showDayPickerSheet = true
                 } label: {
                     Image(systemName: "calendar")
-                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -313,7 +313,7 @@ struct LedgerRootView: View {
                     showAppearanceSheet = true
                 } label: {
                     Image(systemName: "paintpalette")
-                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -325,7 +325,7 @@ struct LedgerRootView: View {
                     showSettingsSheet = true
                 } label: {
                     Image(systemName: "gearshape")
-                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .font(TwelveTheme.sfSymbolIconFont(size: 24, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -585,7 +585,7 @@ struct LedgerRootView: View {
                     )
                 )
                 Image(systemName: "plus")
-                    .font(TwelveTheme.toolbarIconFont(size: 28))
+                    .font(TwelveTheme.sfSymbolIconFont(size: 28, weight: .semibold))
                     .foregroundStyle(.white)
             }
             .frame(width: 58, height: 58)

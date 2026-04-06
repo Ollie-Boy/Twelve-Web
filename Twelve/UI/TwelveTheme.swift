@@ -207,10 +207,10 @@ enum TwelveTheme {
         static let finePrint = TwelveTheme.appFont(size: 11)
     }
 
-    /// SF Symbols: system rounded + light weight so strokes stay thin next to custom body text.
-    static func toolbarIconFont(size: CGFloat) -> Font {
+    /// SF Symbols in headers/toolbars: system rounded, default semibold to match weather icon weight.
+    static func sfSymbolIconFont(size: CGFloat, weight: Font.Weight = .semibold) -> Font {
         let s = size * AppFontScale.multiplierForCurrentApp
-        return .system(size: s, weight: .light, design: .rounded)
+        return .system(size: s, weight: weight, design: .rounded)
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

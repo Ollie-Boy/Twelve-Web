@@ -152,12 +152,14 @@ struct ContentView: View {
     }
 
     private let headerIconTap: CGFloat = 40
+    private let headerWeatherSymbolSize: CGFloat = 24
+    private let headerActionSymbolSize: CGFloat = 22
 
     private var headerBar: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        HStack(alignment: .center, spacing: 8) {
             HStack(alignment: .center, spacing: 8) {
                 Image(systemName: todayWeather.symbolName)
-                    .font(TwelveTheme.appFont(size: 24, weight: .semibold))
+                    .font(TwelveTheme.sfSymbolIconFont(size: headerWeatherSymbolSize, weight: .semibold))
                     .foregroundStyle(TwelveTheme.primaryBlue)
                     .symbolRenderingMode(.hierarchical)
                     .frame(width: 28, alignment: .center)
@@ -175,20 +177,19 @@ struct ContentView: View {
                         .minimumScaleFactor(0.85)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(
                 "\(todayWeather.title), \(Date().formatted(date: .complete, time: .omitted))"
             )
 
-            HStack(spacing: 6) {
-                Spacer(minLength: 0)
+            HStack(spacing: 2) {
                 Button {
                     showSearch = true
                 } label: {
                     Image(systemName: "magnifyingglass")
-                        .font(TwelveTheme.toolbarIconFont(size: 22))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
@@ -200,7 +201,7 @@ struct ContentView: View {
                     showDayPickerSheet = true
                 } label: {
                     Image(systemName: "calendar")
-                        .font(TwelveTheme.toolbarIconFont(size: 22))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
@@ -226,7 +227,7 @@ struct ContentView: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .font(TwelveTheme.toolbarIconFont(size: 22))
+                        .font(TwelveTheme.sfSymbolIconFont(size: headerActionSymbolSize, weight: .semibold))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
@@ -473,7 +474,7 @@ struct ContentView: View {
                 Circle()
                     .fill(TwelveTheme.softBlue)
                 Image(systemName: "plus")
-                    .font(TwelveTheme.toolbarIconFont(size: 28))
+                    .font(TwelveTheme.sfSymbolIconFont(size: 28, weight: .semibold))
                     .foregroundStyle(TwelveTheme.primaryBlue)
             }
             .frame(width: 58, height: 58)

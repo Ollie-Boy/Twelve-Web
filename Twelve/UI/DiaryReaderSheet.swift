@@ -183,7 +183,7 @@ struct DiaryReaderSheet: View {
                                 showOutlineSheet = true
                             } label: {
                                 Image(systemName: "list.bullet")
-                                    .font(TwelveTheme.toolbarIconFont(size: 20))
+                                    .font(TwelveTheme.sfSymbolIconFont(size: 20, weight: .semibold))
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(TwelveTheme.primaryBlue)
@@ -195,7 +195,7 @@ struct DiaryReaderSheet: View {
                             }
                         } label: {
                             Image(systemName: "arrow.up.circle")
-                                .font(TwelveTheme.toolbarIconFont(size: 22))
+                                .font(TwelveTheme.sfSymbolIconFont(size: 22, weight: .semibold))
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(TwelveTheme.primaryBlue)

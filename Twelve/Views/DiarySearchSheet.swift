@@ -80,7 +80,7 @@ struct DiarySearchSheet: View {
             VStack(spacing: 12) {
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .font(TwelveTheme.toolbarIconFont(size: 18))
+                        .font(TwelveTheme.sfSymbolIconFont(size: 18, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textTertiary)
                     TextField("Title, body, tag…", text: $query)
                         .textFieldStyle(.plain)
