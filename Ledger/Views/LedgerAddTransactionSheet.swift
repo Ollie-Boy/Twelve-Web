@@ -7,6 +7,7 @@ struct LedgerAddTransactionSheet: View {
         case edit(LedgerEntry)
     }
 
+    @EnvironmentObject private var currency: LedgerCurrencyStore
     @Binding var isPresented: Bool
     let mode: Mode
     let bookId: String
@@ -20,6 +21,7 @@ struct LedgerAddTransactionSheet: View {
     @State private var category: String = ""
     @State private var note: String = ""
     @State private var locationText: String = ""
+    @State private var lineCurrencyText: String = ""
 
     @State private var showDatePicker = false
     @State private var showTimePicker = false
@@ -77,6 +79,22 @@ struct LedgerAddTransactionSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     kindRow
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Line currency (optional)")
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                        TextField(currency.currencyCode, text: $lineCurrencyText)
+                            .textFieldStyle(.plain)
+                            .textInputAutocapitalization(.characters)
+                            .font(TwelveTheme.appFont(size: 14))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        Text("Leave blank to use \(currency.currencyCode). Set another ISO code (e.g. EUR) for this row only.")
+                            .font(TwelveTheme.appFont(size: 11))
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                    }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount")
@@ -467,6 +485,7 @@ struct LedgerAddTransactionSheet: View {
             category = ""
             note = ""
             locationText = ""
+            lineCurrencyText = ""
         case .edit(let entry):
             transactionDate = entry.date
             kind = entry.kind
@@ -475,6 +494,7 @@ struct LedgerAddTransactionSheet: View {
             category = entry.category
             note = entry.note
             locationText = entry.location ?? ""
+            lineCurrencyText = entry.currencyCode ?? ""
         }
     }
 
@@ -511,6 +531,13 @@ struct LedgerAddTransactionSheet: View {
         case .edit(let existing):
             resolvedBookId = existing.bookId
         }
+        let rawCC = lineCurrencyText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let resolvedLineCC: String?
+        if rawCC.isEmpty || rawCC == currency.currencyCode.uppercased() {
+            resolvedLineCC = nil
+        } else {
+            resolvedLineCC = rawCC
+        }
         let entry = LedgerEntry(
             id: id,
             bookId: resolvedBookId,
@@ -520,7 +547,8 @@ struct LedgerAddTransactionSheet: View {
             refundTotal: refundPortion,
             category: cat,
             note: n,
-            location: loc.isEmpty ? nil : loc
+            location: loc.isEmpty ? nil : loc,
+            currencyCode: resolvedLineCC
         )
         LedgerCategoryStore.rememberCategory(cat, bookId: resolvedBookId)
         onSave(entry)

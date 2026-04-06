@@ -2,7 +2,7 @@ import Foundation
 
 enum LedgerCSVExport {
     static func csvString(entries: [LedgerEntry], bookName: String) -> String {
-        var lines = ["Book,\"\(escape(bookName))\"", "Date,Kind,Category,Amount,Refund,Note,Location"]
+        var lines = ["Book,\"\(escape(bookName))\"", "Date,Kind,Category,Amount,Refund,Currency,Note,Location"]
         let sorted = entries.sorted { $0.date > $1.date }
         let df = ISO8601DateFormatter()
         df.formatOptions = [.withInternetDateTime]
@@ -14,6 +14,7 @@ enum LedgerCSVExport {
                 escape(e.category),
                 "\(e.amount)",
                 "\(e.refundTotal)",
+                escape(e.currencyCode ?? ""),
                 escape(e.note),
                 escape(e.location ?? "")
             ].joined(separator: ",")

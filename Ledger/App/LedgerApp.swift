@@ -7,6 +7,7 @@ struct LedgerApp: App {
         legacyStorageKey: nil
     )
     @StateObject private var currency = LedgerCurrencyStore()
+    @ObservedObject private var typeRefresh = TypographyRefreshNotifier.shared
 
     var body: some Scene {
         WindowGroup {
@@ -15,6 +16,7 @@ struct LedgerApp: App {
                 .environmentObject(appearance)
                 .environmentObject(currency)
                 .preferredColorScheme(appearance.preferredColorScheme)
+                .id(typeRefresh.generation)
         }
     }
 }

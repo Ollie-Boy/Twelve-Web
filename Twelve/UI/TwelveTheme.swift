@@ -208,6 +208,7 @@ enum TwelveTheme {
     }
 
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        let size = size * AppFontScale.multiplierForCurrentApp
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
             switch weight {
             case .bold, .heavy, .black, .semibold:
@@ -233,6 +234,7 @@ enum TwelveTheme {
     static var appTypographyDesign: Font.Design { .rounded }
 
     static func uiFontForApp(size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
+        let size = size * AppFontScale.multiplierForCurrentApp
         let useBold = weight >= .semibold
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {
             let n = useBold ? "ChalkboardSE-Bold" : "ChalkboardSE-Regular"

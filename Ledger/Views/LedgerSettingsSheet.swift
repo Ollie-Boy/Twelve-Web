@@ -25,6 +25,16 @@ struct LedgerSettingsSheet: View {
     @State private var newCategoryShortcut = ""
     @State private var showBookPicker = false
     @State private var savingsTargetText = ""
+    @State private var fontScale: AppFontScale = AppFontScale.current
+    @State private var reminderOn = LedgerReminderStore.isEnabled
+    @State private var reminderHour = LedgerReminderStore.hour
+    @State private var reminderMinute = LedgerReminderStore.minute
+    @State private var reportCodeDraft = ""
+    @State private var manualFromCode = ""
+    @State private var manualRateText = ""
+    @State private var fixedItems: [LedgerFixedExpense] = []
+    @State private var newFixedTitle = ""
+    @State private var newFixedDay = "1"
 
     private var cal: Calendar { Calendar.current }
 
@@ -43,6 +53,10 @@ struct LedgerSettingsSheet: View {
                 VStack(alignment: .leading, spacing: 18) {
                     booksSection
                     savingsGoalSection
+                    typographySection
+                    ledgerReminderSection
+                    reportCurrencySection
+                    fixedBillsSection
                     iCloudSection
                     categoriesSection
                     budgetsSection
@@ -227,6 +241,177 @@ struct LedgerSettingsSheet: View {
             Text(ICloudDataMirror.ledgerMirrorStatusLine())
                 .font(TwelveTheme.Settings.caption)
                 .foregroundStyle(TwelveTheme.textTertiary)
+            if let line = BackupStatusStore.ledgerMirrorLine() {
+                Text(line)
+                    .font(TwelveTheme.Settings.finePrint)
+                    .foregroundStyle(TwelveTheme.textTertiary)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var typographySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Text size")
+                .font(TwelveTheme.Settings.sectionHeader)
+                .foregroundStyle(TwelveTheme.textSecondary)
+            Picker("Scale", selection: $fontScale) {
+                ForEach(AppFontScale.allCases) { s in
+                    Text(s.title).tag(s)
+                }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: fontScale) { _, v in
+                AppFontScale.setCurrent(v)
+                NotificationCenter.default.post(name: .appFontScaleDidChange, object: nil)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var ledgerReminderSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Daily reminder")
+                .font(TwelveTheme.Settings.sectionHeader)
+                .foregroundStyle(TwelveTheme.textSecondary)
+            Toggle(isOn: $reminderOn) {
+                Text("Gentle nudge to log spending")
+                    .font(TwelveTheme.Settings.rowPrimary)
+            }
+            .tint(TwelveTheme.primaryBlue)
+            .onChange(of: reminderOn) { _, v in
+                LedgerReminderStore.isEnabled = v
+                if v { Task { await LedgerReminderStore.schedule() } }
+            }
+            if reminderOn {
+                DatePicker(
+                    "Time",
+                    selection: Binding(
+                        get: {
+                            Calendar.current.date(from: DateComponents(hour: reminderHour, minute: reminderMinute)) ?? Date()
+                        },
+                        set: { d in
+                            let c = Calendar.current.dateComponents([.hour, .minute], from: d)
+                            reminderHour = c.hour ?? 19
+                            reminderMinute = c.minute ?? 0
+                            LedgerReminderStore.hour = reminderHour
+                            LedgerReminderStore.minute = reminderMinute
+                            Task { await LedgerReminderStore.schedule() }
+                        }
+                    ),
+                    displayedComponents: .hourAndMinute
+                )
+            }
+            Text("When you turn this on, iOS may ask to allow notifications. If you chose Don’t Allow earlier, open Settings → Ledger → Notifications and turn on Allow Notifications so reminders can appear.")
+                .font(TwelveTheme.Settings.caption)
+                .foregroundStyle(TwelveTheme.textTertiary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var reportCurrencySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Report currency")
+                .font(TwelveTheme.Settings.sectionHeader)
+                .foregroundStyle(TwelveTheme.textSecondary)
+            Text("Charts and month summary convert into this code. Entry lines still show their own currency when set.")
+                .font(TwelveTheme.Settings.finePrint)
+                .foregroundStyle(TwelveTheme.textTertiary)
+            HStack {
+                TextField("e.g. USD", text: $reportCodeDraft)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                Button("Apply") {
+                    currency.setReportCurrencyCode(reportCodeDraft)
+                }
+                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+            }
+            Text("Manual rate: 1 unit of “from” → how many in \(currency.reportCurrencyCode)? Leave empty to try ECB (Frankfurter) when online.")
+                .font(TwelveTheme.Settings.caption)
+                .foregroundStyle(TwelveTheme.textTertiary)
+            HStack(spacing: 8) {
+                TextField("From", text: $manualFromCode)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .frame(width: 72)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                TextField("Rate", text: $manualRateText)
+                    .keyboardType(.decimalPad)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                Button("Save rate") {
+                    currency.setManualRate(from: manualFromCode, to: currency.reportCurrencyCode, rateText: manualRateText)
+                    manualFromCode = ""
+                    manualRateText = ""
+                }
+                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.surfaceTintBlue))
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var fixedBillsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Fixed bills (reminders)")
+                .font(TwelveTheme.Settings.sectionHeader)
+                .foregroundStyle(TwelveTheme.textSecondary)
+            Text("Monthly notification on day 1–28 for this book.")
+                .font(TwelveTheme.Settings.finePrint)
+                .foregroundStyle(TwelveTheme.textTertiary)
+            ForEach(fixedItems.filter { $0.bookId == bookStore.activeBookId }) { item in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.title).font(TwelveTheme.Settings.rowPrimary)
+                        Text("Day \(item.dayOfMonth)")
+                            .font(TwelveTheme.Settings.caption)
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                    }
+                    Spacer()
+                    Button("Remove", role: .destructive) {
+                        var all = LedgerFixedExpenseStore.load()
+                        all.removeAll { $0.id == item.id }
+                        LedgerFixedExpenseStore.save(all)
+                        fixedItems = all
+                        Task { await LedgerFixedExpenseScheduler.rescheduleAll(items: all) }
+                    }
+                    .font(TwelveTheme.Settings.rowPrimary)
+                }
+            }
+            HStack(spacing: 8) {
+                TextField("Title", text: $newFixedTitle)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                TextField("Day", text: $newFixedDay)
+                    .keyboardType(.numberPad)
+                    .frame(width: 56)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                Button("Add") {
+                    let t = newFixedTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let d = min(28, max(1, Int(newFixedDay) ?? 1))
+                    guard !t.isEmpty else { return }
+                    var all = LedgerFixedExpenseStore.load()
+                    all.append(LedgerFixedExpense(bookId: bookStore.activeBookId, title: t, dayOfMonth: d))
+                    LedgerFixedExpenseStore.save(all)
+                    fixedItems = all
+                    newFixedTitle = ""
+                    newFixedDay = "1"
+                    Task { await LedgerFixedExpenseScheduler.rescheduleAll(items: all) }
+                }
+                .buttonStyle(TwelvePillButtonStyle(accent: TwelveTheme.softBlue))
+            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -440,11 +625,17 @@ struct LedgerSettingsSheet: View {
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent(LedgerCSVExport.filename())
                 try? csv.data(using: .utf8)?.write(to: url)
                 csvPayload = CSVExportItem(url: url)
+                BackupStatusStore.markLedgerExportSuccess()
             } label: {
                 Label("Export this book as CSV", systemImage: "square.and.arrow.up")
                     .font(TwelveTheme.Settings.rowPrimary)
             }
             .buttonStyle(.plain)
+            if let line = BackupStatusStore.ledgerExportLine() {
+                Text(line)
+                    .font(TwelveTheme.Settings.finePrint)
+                    .foregroundStyle(TwelveTheme.textTertiary)
+            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -486,6 +677,12 @@ struct LedgerSettingsSheet: View {
         } else {
             savingsTargetText = ""
         }
+        fontScale = AppFontScale.current
+        reminderOn = LedgerReminderStore.isEnabled
+        reminderHour = LedgerReminderStore.hour
+        reminderMinute = LedgerReminderStore.minute
+        reportCodeDraft = currency.reportCurrencyCode
+        fixedItems = LedgerFixedExpenseStore.load()
     }
 
     private func postTemplate(_ t: LedgerRecurringTemplate) {

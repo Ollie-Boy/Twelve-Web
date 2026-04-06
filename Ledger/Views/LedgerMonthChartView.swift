@@ -86,7 +86,7 @@ enum LedgerChartData {
     private static let maxMonthsBack = 72
 
     /// One row per calendar month from oldest relevant month through current month (cap 72 months).
-    static func monthlyNetSeries(bookId: String, entries: [LedgerEntry]) -> [LedgerChartMonthPoint] {
+    static func monthlyNetSeries(bookId: String, entries: [LedgerEntry], signedNetForEntry: (LedgerEntry) -> Decimal = { $0.signedNetAmount }) -> [LedgerChartMonthPoint] {
         let cal = Calendar.current
         let now = Date()
         let bookFiltered = entries.filter { $0.bookId == bookId }
@@ -128,7 +128,7 @@ enum LedgerChartData {
                 let ey = cal.component(.year, from: e.date)
                 let em = cal.component(.month, from: e.date)
                 guard ey == y, em == m else { continue }
-                net += e.signedNetAmount
+                net += signedNetForEntry(e)
             }
             let label: String
             if showYearInLabel {

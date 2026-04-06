@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct TwelveApp: App {
     @StateObject private var appearance = AppearanceStore()
+    @ObservedObject private var typeRefresh = TypographyRefreshNotifier.shared
 
     var body: some Scene {
         WindowGroup {
@@ -10,6 +11,7 @@ struct TwelveApp: App {
                 .font(TwelveTheme.appFont(size: 16))
                 .environmentObject(appearance)
                 .preferredColorScheme(appearance.preferredColorScheme)
+                .id(typeRefresh.generation)
         }
     }
 }

@@ -13,6 +13,8 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
     var category: String
     var note: String
     var location: String?
+    /// ISO 4217 when different from book default; nil = book display currency.
+    var currencyCode: String?
 
     init(
         id: UUID = UUID(),
@@ -23,7 +25,8 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         refundTotal: Decimal = 0,
         category: String,
         note: String = "",
-        location: String? = nil
+        location: String? = nil,
+        currencyCode: String? = nil
     ) {
         self.id = id
         self.bookId = bookId
@@ -36,6 +39,8 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         self.category = category
         self.note = note
         self.location = location
+        let cc = currencyCode?.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() ?? ""
+        self.currencyCode = cc.isEmpty ? nil : cc
     }
 
     /// Net magnitude after refunds (≥ 0).
@@ -57,6 +62,7 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         case isExpense
         case refundTotal
         case location
+        case currencyCode
     }
 
     init(from decoder: Decoder) throws {
@@ -68,6 +74,8 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         category = try c.decode(String.self, forKey: .category)
         note = try c.decodeIfPresent(String.self, forKey: .note) ?? ""
         location = try c.decodeIfPresent(String.self, forKey: .location)
+        currencyCode = try c.decodeIfPresent(String.self, forKey: .currencyCode)?.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if currencyCode?.isEmpty == true { currencyCode = nil }
 
         if let kindStr = try c.decodeIfPresent(String.self, forKey: .kind) {
             switch kindStr {
@@ -104,5 +112,6 @@ struct LedgerEntry: Identifiable, Codable, Equatable, Hashable {
         try c.encode(category, forKey: .category)
         try c.encode(note, forKey: .note)
         try c.encodeIfPresent(location, forKey: .location)
+        try c.encodeIfPresent(currencyCode, forKey: .currencyCode)
     }
 }

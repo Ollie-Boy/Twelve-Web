@@ -25,6 +25,7 @@ enum ICloudDataMirror {
         let url = root.appendingPathComponent("Documents/Twelve/diary-entries.json")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: url, options: .atomic)
+        BackupStatusStore.markTwelveMirrorSuccess()
     }
 
     static func mirrorLedgerJSON(_ data: Data) {
@@ -32,6 +33,7 @@ enum ICloudDataMirror {
         let url = root.appendingPathComponent("Documents/Ledger/transactions.json")
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: url, options: .atomic)
+        BackupStatusStore.markLedgerMirrorSuccess()
     }
 
     static func twelveMirrorStatusLine() -> String {

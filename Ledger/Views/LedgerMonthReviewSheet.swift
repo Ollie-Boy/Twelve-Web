@@ -5,6 +5,8 @@ struct LedgerMonthReviewSheet: View {
     let bookId: String
     let entries: [LedgerEntry]
     let formatMoney: (Decimal) -> String
+    /// Signed amount in report currency (income +, expense −).
+    var signedAmountInReport: (LedgerEntry) -> Decimal = { $0.signedNetAmount }
     @Environment(\.dismiss) private var dismiss
 
     private var cal: Calendar { Calendar.current }
@@ -17,18 +19,18 @@ struct LedgerMonthReviewSheet: View {
 
     private var income: Decimal {
         LedgerDecimalFormatting.round(
-            monthEntries.filter { $0.kind == .income }.reduce(0) { $0 + $1.netAmount }
+            monthEntries.filter { $0.kind == .income }.reduce(0) { $0 + signedAmountInReport($1) }
         )
     }
 
     private var expense: Decimal {
         LedgerDecimalFormatting.round(
-            monthEntries.filter { $0.kind == .expense }.reduce(0) { $0 + $1.netAmount }
+            monthEntries.filter { $0.kind == .expense }.reduce(0) { $0 - signedAmountInReport($1) }
         )
     }
 
     private var net: Decimal {
-        LedgerDecimalFormatting.round(income - expense)
+        LedgerDecimalFormatting.round(monthEntries.reduce(0) { $0 + signedAmountInReport($1) })
     }
 
     private var topExpenseCategories: [(String, Decimal)] {
@@ -36,7 +38,7 @@ struct LedgerMonthReviewSheet: View {
         for e in monthEntries where e.kind == .expense {
             let c = e.category.trimmingCharacters(in: .whitespacesAndNewlines)
             let key = c.isEmpty ? "Uncategorized" : c
-            map[key, default: 0] += e.netAmount
+            map[key, default: 0] += -signedAmountInReport(e)
         }
         return map.map { ($0.key, LedgerDecimalFormatting.round($0.value)) }
             .sorted { ($0.1 as NSDecimalNumber).doubleValue > ($1.1 as NSDecimalNumber).doubleValue }
@@ -47,7 +49,7 @@ struct LedgerMonthReviewSheet: View {
     private var largestExpense: LedgerEntry? {
         monthEntries
             .filter { $0.kind == .expense }
-            .max(by: { $0.netAmount < $1.netAmount })
+            .max(by: { -signedAmountInReport($0) < -signedAmountInReport($1) })
     }
 
     var body: some View {
@@ -96,7 +98,7 @@ struct LedgerMonthReviewSheet: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(big.category)
                                 .font(TwelveTheme.appFont(size: 16, weight: .semibold))
-                            Text(formatMoney(big.netAmount))
+                            Text(formatMoney(-signedAmountInReport(big)))
                                 .font(TwelveTheme.appFont(size: 15))
                                 .foregroundStyle(TwelveTheme.primaryBlueDark)
                             if !big.note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

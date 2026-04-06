@@ -48,6 +48,13 @@
         9A10003AA100000100000001 /* DiaryInsightsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002DA100000100000001 /* DiaryInsightsEngine.swift */; };
         9A10003BA100000100000001 /* DiaryMarkdownOutline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */; };
         9A10003CA100000100000001 /* DiaryInsightsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002FA100000100000001 /* DiaryInsightsSheet.swift */; };
+        9A10003DA100000100000001 /* AppFontScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000040A100000100000001 /* AppFontScale.swift */; };
+        9A10003EA100000100000001 /* TypographyRefreshNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000041A100000100000001 /* TypographyRefreshNotifier.swift */; };
+        9A10003FA100000100000001 /* BackupStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000042A100000100000001 /* BackupStatusStore.swift */; };
+        9A100040A100000100000001 /* DiaryPDFExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000043A100000100000001 /* DiaryPDFExportService.swift */; };
+        9A100041A100000100000001 /* DiaryReminderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000044A100000100000001 /* DiaryReminderStore.swift */; };
+        9A100042A100000100000001 /* DiaryWritingStreak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000045A100000100000001 /* DiaryWritingStreak.swift */; };
+        9A100043A100000100000001 /* DiaryReminisceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000046A100000100000001 /* DiaryReminisceEngine.swift */; };
         B100001B100000100000001 /* LedgerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000001B100000100000001 /* LedgerApp.swift */; };
         B100002B100000100000001 /* LedgerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000002B100000100000001 /* LedgerRootView.swift */; };
         B100003B100000100000001 /* LedgerAddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000003B100000100000001 /* LedgerAddTransactionSheet.swift */; };
@@ -83,6 +90,14 @@
         B100036B100000100000001 /* ICloudDataMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00002AA100000100000001 /* ICloudDataMirror.swift */; };
         B100037B100000100000001 /* LedgerSimpleGoalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000035B100000100000001 /* LedgerSimpleGoalStore.swift */; };
         B100038B100000100000001 /* LedgerMonthReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000036B100000100000001 /* LedgerMonthReviewSheet.swift */; };
+        B100039B100000100000001 /* LedgerFXService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000039B100000100000001 /* LedgerFXService.swift */; };
+        B100040B100000100000001 /* LedgerReminderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000040B100000100000001 /* LedgerReminderStore.swift */; };
+        B100041B100000100000001 /* LedgerFixedExpenseScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000041B100000100000001 /* LedgerFixedExpenseScheduler.swift */; };
+        B100042B100000100000001 /* LedgerFixedExpense.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000042B100000100000001 /* LedgerFixedExpense.swift */; };
+        B100043B100000100000001 /* LedgerReportMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000043B100000100000001 /* LedgerReportMath.swift */; };
+        B100044B100000100000001 /* AppFontScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000040A100000100000001 /* AppFontScale.swift */; };
+        B100045B100000100000001 /* TypographyRefreshNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000041A100000100000001 /* TypographyRefreshNotifier.swift */; };
+        B100046B100000100000001 /* BackupStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000042A100000100000001 /* BackupStatusStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -129,6 +144,13 @@
         9A00002DA100000100000001 /* DiaryInsightsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryInsightsEngine.swift; sourceTree = "<group>"; };
         9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryMarkdownOutline.swift; sourceTree = "<group>"; };
         9A00002FA100000100000001 /* DiaryInsightsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryInsightsSheet.swift; sourceTree = "<group>"; };
+        9A000040A100000100000001 /* AppFontScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFontScale.swift; sourceTree = "<group>"; };
+        9A000041A100000100000001 /* TypographyRefreshNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypographyRefreshNotifier.swift; sourceTree = "<group>"; };
+        9A000042A100000100000001 /* BackupStatusStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupStatusStore.swift; sourceTree = "<group>"; };
+        9A000043A100000100000001 /* DiaryPDFExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryPDFExportService.swift; sourceTree = "<group>"; };
+        9A000044A100000100000001 /* DiaryReminderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryReminderStore.swift; sourceTree = "<group>"; };
+        9A000045A100000100000001 /* DiaryWritingStreak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryWritingStreak.swift; sourceTree = "<group>"; };
+        9A000046A100000100000001 /* DiaryReminisceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryReminisceEngine.swift; sourceTree = "<group>"; };
         9A00002CA100000100000001 /* Twelve.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Twelve.entitlements; sourceTree = "<group>"; };
         B000001B100000100000001 /* LedgerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerApp.swift; sourceTree = "<group>"; };
         B000002B100000100000001 /* LedgerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRootView.swift; sourceTree = "<group>"; };
@@ -154,6 +176,11 @@
         B000034B100000100000001 /* LedgerSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSettingsSheet.swift; sourceTree = "<group>"; };
         B000035B100000100000001 /* LedgerSimpleGoalStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSimpleGoalStore.swift; sourceTree = "<group>"; };
         B000036B100000100000001 /* LedgerMonthReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerMonthReviewSheet.swift; sourceTree = "<group>"; };
+        B000039B100000100000001 /* LedgerFXService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerFXService.swift; sourceTree = "<group>"; };
+        B000040B100000100000001 /* LedgerReminderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerReminderStore.swift; sourceTree = "<group>"; };
+        B000041B100000100000001 /* LedgerFixedExpenseScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerFixedExpenseScheduler.swift; sourceTree = "<group>"; };
+        B000042B100000100000001 /* LedgerFixedExpense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerFixedExpense.swift; sourceTree = "<group>"; };
+        B000043B100000100000001 /* LedgerReportMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerReportMath.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,7 +226,8 @@
         B300006B100000100000001 /* Utilities */ = {
             isa = PBXGroup;
             children = (
-                B00000FB100000100000001 /* LedgerDecimalFormatting.swift */);
+                B00000FB100000100000001 /* LedgerDecimalFormatting.swift */,
+                B000043B100000100000001 /* LedgerReportMath.swift */);
             path = Utilities;
             sourceTree = "<group>";
         };
@@ -207,7 +235,9 @@
             isa = PBXGroup;
             children = (
                 B000001B100000100000001 /* LedgerApp.swift */,
-                B00000BB100000100000001 /* LedgerCurrencyStore.swift */);
+                B00000BB100000100000001 /* LedgerCurrencyStore.swift */,
+                9A000040A100000100000001 /* AppFontScale.swift */,
+                9A000041A100000100000001 /* TypographyRefreshNotifier.swift */);
             path = App;
             sourceTree = "<group>";
         };
@@ -232,7 +262,8 @@
                 B00000AB100000100000001 /* LedgerTransactionKind.swift */,
                 B000028B100000100000001 /* LedgerBook.swift */,
                 B000029B100000100000001 /* LedgerBudget.swift */,
-                B000030B100000100000001 /* LedgerRecurringTemplate.swift */);
+                B000030B100000100000001 /* LedgerRecurringTemplate.swift */,
+                B000042B100000100000001 /* LedgerFixedExpense.swift */);
             path = Models;
             sourceTree = "<group>";
         };
@@ -242,7 +273,11 @@
                 B000005B100000100000001 /* LedgerStorage.swift */,
                 B000031B100000100000001 /* LedgerCategoryStore.swift */,
                 B000032B100000100000001 /* LedgerCSVExport.swift */,
-                B000035B100000100000001 /* LedgerSimpleGoalStore.swift */);
+                B000035B100000100000001 /* LedgerSimpleGoalStore.swift */,
+                B000039B100000100000001 /* LedgerFXService.swift */,
+                B000040B100000100000001 /* LedgerReminderStore.swift */,
+                B000041B100000100000001 /* LedgerFixedExpenseScheduler.swift */,
+                9A000042A100000100000001 /* BackupStatusStore.swift */);
             path = Services;
             sourceTree = "<group>";
         };
@@ -275,7 +310,9 @@
             isa = PBXGroup;
             children = (
                 9A000001A100000100000001 /* TwelveApp.swift */,
-                9A000015A100000100000001 /* AppearanceStore.swift */);
+                9A000015A100000100000001 /* AppearanceStore.swift */,
+                9A000040A100000100000001 /* AppFontScale.swift */,
+                9A000041A100000100000001 /* TypographyRefreshNotifier.swift */);
             path = App;
             sourceTree = "<group>";
         };
@@ -313,7 +350,10 @@
                 9A000023A100000100000001 /* DiaryWritingPromptStore.swift */,
                 9A000024A100000100000001 /* DiaryExportService.swift */,
                 9A000025A100000100000001 /* DiaryAttachmentCleanup.swift */,
-                9A00002AA100000100000001 /* ICloudDataMirror.swift */);
+                9A00002AA100000100000001 /* ICloudDataMirror.swift */,
+                9A000042A100000100000001 /* BackupStatusStore.swift */,
+                9A000043A100000100000001 /* DiaryPDFExportService.swift */,
+                9A000044A100000100000001 /* DiaryReminderStore.swift */);
             path = Services;
             sourceTree = "<group>";
         };
@@ -322,7 +362,9 @@
             children = (
                 9A000026A100000100000001 /* DiaryOnThisDay.swift */,
                 9A00002DA100000100000001 /* DiaryInsightsEngine.swift */,
-                9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */);
+                9A00002EA100000100000001 /* DiaryMarkdownOutline.swift */,
+                9A000045A100000100000001 /* DiaryWritingStreak.swift */,
+                9A000046A100000100000001 /* DiaryReminisceEngine.swift */);
             path = Utilities;
             sourceTree = "<group>";
         };
@@ -475,7 +517,14 @@
                 9A100039A100000100000001 /* ICloudDataMirror.swift in Sources */,
                 9A10003AA100000100000001 /* DiaryInsightsEngine.swift in Sources */,
                 9A10003BA100000100000001 /* DiaryMarkdownOutline.swift in Sources */,
-                9A10003CA100000100000001 /* DiaryInsightsSheet.swift in Sources */);
+                9A10003CA100000100000001 /* DiaryInsightsSheet.swift in Sources */,
+                9A10003DA100000100000001 /* AppFontScale.swift in Sources */,
+                9A10003EA100000100000001 /* TypographyRefreshNotifier.swift in Sources */,
+                9A10003FA100000100000001 /* BackupStatusStore.swift in Sources */,
+                9A100040A100000100000001 /* DiaryPDFExportService.swift in Sources */,
+                9A100041A100000100000001 /* DiaryReminderStore.swift in Sources */,
+                9A100042A100000100000001 /* DiaryWritingStreak.swift in Sources */,
+                9A100043A100000100000001 /* DiaryReminisceEngine.swift in Sources */);
             runOnlyForDeploymentPostprocessing = 0;
         };
         B600003B100000100000001 /* Sources */ = {
@@ -515,7 +564,15 @@
                 B100035B100000100000001 /* AppEmptyStates.swift in Sources */,
                 B100036B100000100000001 /* ICloudDataMirror.swift in Sources */,
                 B100037B100000100000001 /* LedgerSimpleGoalStore.swift in Sources */,
-                B100038B100000100000001 /* LedgerMonthReviewSheet.swift in Sources */);
+                B100038B100000100000001 /* LedgerMonthReviewSheet.swift in Sources */,
+                B100039B100000100000001 /* LedgerFXService.swift in Sources */,
+                B100040B100000100000001 /* LedgerReminderStore.swift in Sources */,
+                B100041B100000100000001 /* LedgerFixedExpenseScheduler.swift in Sources */,
+                B100042B100000100000001 /* LedgerFixedExpense.swift in Sources */,
+                B100043B100000100000001 /* LedgerReportMath.swift in Sources */,
+                B100044B100000100000001 /* AppFontScale.swift in Sources */,
+                B100045B100000100000001 /* TypographyRefreshNotifier.swift in Sources */,
+                B100046B100000100000001 /* BackupStatusStore.swift in Sources */);
             runOnlyForDeploymentPostprocessing = 0;
         };
 /* End PBXSourcesBuildPhase section */

@@ -11,6 +11,12 @@ struct DiarySettingsSheet: View {
     @State private var exportPayload: ExportPayload?
     @State private var showCleanupConfirm = false
     @State private var cleanupMessage: String?
+    @State private var fontScale: AppFontScale = AppFontScale.current
+    @State private var reminderOn = DiaryReminderStore.isEnabled
+    @State private var reminderHour = DiaryReminderStore.hour
+    @State private var reminderMinute = DiaryReminderStore.minute
+    @State private var pdfURL: URL?
+    @State private var pdfError: String?
 
     struct ExportPayload: Identifiable {
         let id = UUID()
@@ -22,6 +28,71 @@ struct DiarySettingsSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Text size")
+                            .font(TwelveTheme.Settings.sectionHeader)
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                        Picker("Scale", selection: $fontScale) {
+                            ForEach(AppFontScale.allCases) { s in
+                                Text(s.title).tag(s)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .onChange(of: fontScale) { _, v in
+                            AppFontScale.setCurrent(v)
+                            NotificationCenter.default.post(name: .appFontScaleDidChange, object: nil)
+                        }
+                        Text("Applies after a moment across the diary UI.")
+                            .font(TwelveTheme.Settings.caption)
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Daily reminder")
+                            .font(TwelveTheme.Settings.sectionHeader)
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                        Toggle(isOn: $reminderOn) {
+                            Text("Gentle nudge to write")
+                                .font(TwelveTheme.Settings.rowPrimary)
+                        }
+                        .tint(TwelveTheme.primaryBlue)
+                        .onChange(of: reminderOn) { _, v in
+                            DiaryReminderStore.isEnabled = v
+                            if v {
+                                Task { await DiaryReminderStore.schedule() }
+                            }
+                        }
+                        if reminderOn {
+                            DatePicker(
+                                "Time",
+                                selection: Binding(
+                                    get: {
+                                        Calendar.current.date(from: DateComponents(hour: reminderHour, minute: reminderMinute)) ?? Date()
+                                    },
+                                    set: { d in
+                                        let c = Calendar.current.dateComponents([.hour, .minute], from: d)
+                                        reminderHour = c.hour ?? 20
+                                        reminderMinute = c.minute ?? 0
+                                        DiaryReminderStore.hour = reminderHour
+                                        DiaryReminderStore.minute = reminderMinute
+                                        Task { await DiaryReminderStore.schedule() }
+                                    }
+                                ),
+                                displayedComponents: .hourAndMinute
+                            )
+                            .font(TwelveTheme.Settings.rowPrimary)
+                        }
+                        Text("When you turn this on, iOS may ask to allow notifications. If you chose Don’t Allow earlier, open Settings → Twelve → Notifications and turn on Allow Notifications so reminders can appear.")
+                            .font(TwelveTheme.Settings.caption)
+                            .foregroundStyle(TwelveTheme.textTertiary)
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
                     VStack(alignment: .leading, spacing: 10) {
                         Text("iCloud backup (optional)")
                             .font(TwelveTheme.Settings.sectionHeader)
@@ -42,6 +113,11 @@ struct DiarySettingsSheet: View {
                         Text(ICloudDataMirror.twelveMirrorStatusLine())
                             .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
+                        if let line = BackupStatusStore.twelveMirrorLine() {
+                            Text(line)
+                                .font(TwelveTheme.Settings.finePrint)
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
                     }
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -74,6 +150,7 @@ struct DiarySettingsSheet: View {
                         Button {
                             let md = DiaryExportService.exportMarkdown(entries: entries)
                             exportPayload = ExportPayload(text: md, filename: DiaryExportService.exportFilename())
+                            BackupStatusStore.markTwelveExportSuccess()
                         } label: {
                             Label("Export all entries as Markdown", systemImage: "square.and.arrow.up")
                                 .font(TwelveTheme.Settings.rowPrimary)
@@ -81,6 +158,25 @@ struct DiarySettingsSheet: View {
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(TwelveTheme.textPrimary)
+                        Button {
+                            do {
+                                pdfURL = try DiaryPDFExportService.exportPDF(entries: entries)
+                                BackupStatusStore.markTwelveExportSuccess()
+                            } catch {
+                                pdfError = "Could not build PDF."
+                            }
+                        } label: {
+                            Label("Export PDF for printing", systemImage: "doc.richtext")
+                                .font(TwelveTheme.Settings.rowPrimary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                        if let line = BackupStatusStore.twelveExportLine() {
+                            Text(line)
+                                .font(TwelveTheme.Settings.finePrint)
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
                         Text("Attachments are not embedded; only text and metadata.")
                             .font(TwelveTheme.Settings.caption)
                             .foregroundStyle(TwelveTheme.textTertiary)
@@ -128,11 +224,28 @@ struct DiarySettingsSheet: View {
                         .font(TwelveTheme.Settings.navigationDone)
                 }
             }
+            .onAppear {
+                fontScale = AppFontScale.current
+                reminderOn = DiaryReminderStore.isEnabled
+                reminderHour = DiaryReminderStore.hour
+                reminderMinute = DiaryReminderStore.minute
+            }
         }
         .font(TwelveTheme.Settings.rootBody)
         .presentationDetents([.large])
         .sheet(item: $exportPayload) { payload in
             ActivityView(activityItems: [ExportItemSource(text: payload.text, filename: payload.filename)])
+        }
+        .sheet(item: Binding(
+            get: { pdfURL.map { PDFShareItem(url: $0) } },
+            set: { if $0 == nil { pdfURL = nil } }
+        )) { item in
+            ActivityView(activityItems: [item.url])
+        }
+        .alert("PDF", isPresented: Binding(get: { pdfError != nil }, set: { if !$0 { pdfError = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(pdfError ?? "")
         }
         .alert("Remove orphaned files?", isPresented: $showCleanupConfirm) {
             Button("Cancel", role: .cancel) {}
@@ -205,4 +318,9 @@ private struct ActivityView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+private struct PDFShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
 }

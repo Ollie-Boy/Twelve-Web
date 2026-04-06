@@ -46,6 +46,15 @@ struct LedgerRootView: View {
         return "\(n) \(noun) · swipe for other months"
     }
 
+    private func signedNetInReport(_ e: LedgerEntry) -> Decimal {
+        LedgerReportMath.signedNetInReportCurrency(
+            entry: e,
+            bookCurrency: currency.currencyCode,
+            reportCurrency: currency.reportCurrencyCode,
+            manualRate: { currency.manualRate(from: $0, to: $1) }
+        )
+    }
+
     private func monthSummary(for monthStart: Date) -> (income: Decimal, expense: Decimal) {
         let cal = Calendar.current
         var income: Decimal = 0
@@ -54,9 +63,9 @@ struct LedgerRootView: View {
             guard cal.isDate(e.date, equalTo: monthStart, toGranularity: .month) else { continue }
             switch e.kind {
             case .expense:
-                expense += e.netAmount
+                expense += -signedNetInReport(e)
             case .income:
-                income += e.netAmount
+                income += signedNetInReport(e)
             }
         }
         return (
@@ -130,6 +139,7 @@ struct LedgerRootView: View {
             entries = storage.loadEntries()
             sortEntries()
             syncSummaryMonthSelection()
+            Task { await LedgerFixedExpenseScheduler.rescheduleAll(items: LedgerFixedExpenseStore.load()) }
         }
         .onChange(of: entries) { _, _ in
             syncSummaryMonthSelection()
@@ -149,6 +159,7 @@ struct LedgerRootView: View {
                     storage.saveEntries(entries)
                 }
             )
+            .environmentObject(currency)
         }
         .sheet(item: $entryToEdit) { entry in
             LedgerAddTransactionSheet(
@@ -168,6 +179,7 @@ struct LedgerRootView: View {
                     entryToEdit = nil
                 }
             )
+            .environmentObject(currency)
         }
         .sheet(isPresented: $showAppearanceSheet) {
             AppearancePickerSheet()
@@ -184,7 +196,8 @@ struct LedgerRootView: View {
                 monthStart: summaryMonthSelection,
                 bookId: bookStore.activeBookId,
                 entries: bookEntries,
-                formatMoney: { currency.format($0) }
+                formatMoney: { currency.formatReport($0) },
+                signedAmountInReport: { signedNetInReport($0) }
             )
         }
         .sheet(isPresented: $showSettingsSheet) {
@@ -354,14 +367,19 @@ struct LedgerRootView: View {
                 summaryChip(title: "In", value: s.income, color: TwelveTheme.primaryBlue)
                 summaryChip(title: "Out", value: s.expense, color: TwelveTheme.primaryBlueDark)
             }
-            Text("Net \(currency.format(roundedNet))")
+            if currency.reportCurrencyCode != currency.currencyCode {
+                Text("Summary in \(currency.reportCurrencyCode)")
+                    .font(TwelveTheme.appFont(size: 11))
+                    .foregroundStyle(TwelveTheme.textTertiary)
+            }
+            Text("Net \(currency.formatReport(roundedNet))")
                 .font(TwelveTheme.appFont(size: 17, weight: .semibold))
                 .foregroundStyle(net >= 0 ? TwelveTheme.textPrimary : TwelveTheme.textSecondary)
 
             if let g = goal {
                 let met = roundedNet >= g
                 HStack(spacing: 8) {
-                    Text("Goal ≥ \(currency.format(g))")
+                    Text("Goal ≥ \(currency.formatReport(g))")
                         .font(TwelveTheme.appFont(size: 12, weight: .semibold))
                         .foregroundStyle(TwelveTheme.textSecondary)
                     Spacer(minLength: 4)
@@ -390,7 +408,7 @@ struct LedgerRootView: View {
             Text(title)
                 .font(TwelveTheme.appFont(size: 13, weight: .medium))
                 .foregroundStyle(TwelveTheme.textTertiary)
-            Text(currency.format(value))
+            Text(currency.formatReport(value))
                 .font(TwelveTheme.appFont(size: 20, weight: .semibold))
                 .foregroundStyle(color)
         }
@@ -399,13 +417,13 @@ struct LedgerRootView: View {
 
     @ViewBuilder
     private var chartSection: some View {
-        let pts = LedgerChartData.monthlyNetSeries(bookId: bookStore.activeBookId, entries: bookEntries)
+        let pts = LedgerChartData.monthlyNetSeries(bookId: bookStore.activeBookId, entries: bookEntries) { signedNetInReport($0) }
         if !bookEntries.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Monthly net (drag sideways)")
                     .font(TwelveTheme.appFont(size: 13, weight: .semibold))
                     .foregroundStyle(TwelveTheme.textSecondary)
-                LedgerMonthChartView(points: pts, formatMoney: { currency.format($0) })
+                LedgerMonthChartView(points: pts, formatMoney: { currency.formatReport($0) })
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -490,17 +508,7 @@ struct LedgerRootView: View {
                         .foregroundStyle(TwelveTheme.textTertiary)
                 }
                 Spacer(minLength: 8)
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(rowAmountLabel(entry))
-                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
-                        .foregroundStyle(rowAmountColor(entry))
-                    if entry.refundTotal > 0, entry.amount > entry.netAmount {
-                        Text("was \(currency.format(entry.amount))")
-                            .font(TwelveTheme.appFont(size: 11))
-                            .foregroundStyle(TwelveTheme.textTertiary)
-                            .strikethrough(true, color: TwelveTheme.textTertiary)
-                    }
-                }
+                transactionRowTrailing(entry)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
@@ -512,12 +520,40 @@ struct LedgerRootView: View {
         }
     }
 
+    @ViewBuilder
+    private func transactionRowTrailing(_ entry: LedgerEntry) -> some View {
+        let lineC = entry.currencyCode ?? currency.currencyCode
+        VStack(alignment: .trailing, spacing: 2) {
+            Text(rowAmountLabel(entry))
+                .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                .foregroundStyle(rowAmountColor(entry))
+            if lineC.uppercased() != currency.reportCurrencyCode.uppercased() {
+                let approx = currency.formatReport(reportDisplayAmount(entry))
+                Text("≈ \(approx)")
+                    .font(TwelveTheme.appFont(size: 10))
+                    .foregroundStyle(TwelveTheme.textTertiary)
+            }
+            if entry.refundTotal > 0, entry.amount > entry.netAmount {
+                Text("was \(currency.format(entry.amount, currencyCode: lineC))")
+                    .font(TwelveTheme.appFont(size: 11))
+                    .foregroundStyle(TwelveTheme.textTertiary)
+                    .strikethrough(true, color: TwelveTheme.textTertiary)
+            }
+        }
+    }
+
+    private func reportDisplayAmount(_ entry: LedgerEntry) -> Decimal {
+        let rep = signedNetInReport(entry)
+        return entry.kind == .expense ? -rep : rep
+    }
+
     private func rowAmountLabel(_ entry: LedgerEntry) -> String {
+        let code = entry.currencyCode ?? currency.currencyCode
         switch entry.kind {
         case .expense:
-            return "−\(currency.format(entry.netAmount))"
+            return "−\(currency.format(entry.netAmount, currencyCode: code))"
         case .income:
-            return "+\(currency.format(entry.netAmount))"
+            return "+\(currency.format(entry.netAmount, currencyCode: code))"
         }
     }
 

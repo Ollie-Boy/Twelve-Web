@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var showDiarySettings: Bool = false
     @State private var showSearch: Bool = false
     @State private var showDiaryInsights: Bool = false
+    @State private var memoriesEntryID: UUID?
 
     private let storage = DiaryStorage()
 
@@ -23,6 +24,8 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     headerBar
+                    writingHabitCard
+                    memoriesCard
                     onThisDayCard
                     diaryListSection
                 }
@@ -37,6 +40,10 @@ struct ContentView: View {
         .onAppear {
             entries = storage.loadEntries()
             sortEntries()
+            refreshMemoriesPickIfNeeded()
+        }
+        .onChange(of: entries.count) { _, _ in
+            refreshMemoriesPickIfNeeded()
         }
         .alert(item: $pendingDeletionEntry) { entry in
             Alert(
@@ -226,6 +233,129 @@ struct ContentView: View {
 
     private var onThisDayPastEntries: [DiaryEntry] {
         DiaryOnThisDay.pastYearEntries(matching: Date(), in: entries)
+    }
+
+    private var memoriesEntry: DiaryEntry? {
+        guard let id = memoriesEntryID else { return nil }
+        return entries.first { $0.id == id }
+    }
+
+    @ViewBuilder
+    private var writingHabitCard: some View {
+        if !entries.isEmpty {
+            let streak = DiaryWritingStreak.currentStreak(entries: entries)
+            let weekCount = DiaryWritingStreak.entriesThisWeekCount(entries: entries)
+            let grid = DiaryWritingStreak.last12WeeksGrid(entries: entries)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Writing habit")
+                    .font(TwelveTheme.appFont(size: 13, weight: .semibold))
+                    .foregroundStyle(TwelveTheme.textSecondary)
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    Text(streak == 0 ? "No streak yet" : "\(streak)-day streak")
+                        .font(TwelveTheme.appFont(size: 17, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textPrimary)
+                    Spacer(minLength: 8)
+                    Text("\(weekCount) this week")
+                        .font(TwelveTheme.appFont(size: 12, weight: .medium))
+                        .foregroundStyle(TwelveTheme.textTertiary)
+                }
+                streakHeatmap(grid: grid)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(TwelveTheme.hairline, lineWidth: 1)
+            )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Writing habit. \(streak == 0 ? "No streak yet" : "\(streak) day streak"). \(weekCount) entries this week.")
+        }
+    }
+
+    private func streakHeatmap(grid: [[Bool]]) -> some View {
+        let cell: CGFloat = 5.5
+        let gap: CGFloat = 2
+        return HStack(spacing: gap) {
+            ForEach(0..<12, id: \.self) { col in
+                VStack(spacing: gap) {
+                    ForEach(0..<7, id: \.self) { row in
+                        let on = col < grid.count && row < grid[col].count && grid[col][row]
+                        Circle()
+                            .fill(on ? TwelveTheme.primaryBlue.opacity(0.72) : TwelveTheme.textTertiary.opacity(0.18))
+                            .frame(width: cell, height: cell)
+                    }
+                }
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var memoriesCard: some View {
+        if let e = memoriesEntry {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Memory lane")
+                        .font(TwelveTheme.appFont(size: 13, weight: .semibold))
+                        .foregroundStyle(TwelveTheme.textSecondary)
+                    Spacer(minLength: 8)
+                    Button("Another") {
+                        memoriesEntryID = nextMemoriesPick(excluding: e.id)
+                    }
+                    .font(TwelveTheme.appFont(size: 12, weight: .medium))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
+                }
+                Button {
+                    selectedEntryForRead = e
+                } label: {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(e.selectedDate.formatted(date: .abbreviated, time: .omitted))
+                            .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                            .foregroundStyle(TwelveTheme.primaryBlue)
+                        Text(e.title.isEmpty ? "Untitled" : e.title)
+                            .font(TwelveTheme.appFont(size: 15, weight: .semibold))
+                            .foregroundStyle(TwelveTheme.textPrimary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                        Text(DiaryReminisceEngine.excerpt(from: e.body))
+                            .font(TwelveTheme.appFont(size: 13, weight: .medium))
+                            .foregroundStyle(TwelveTheme.textSecondary)
+                            .lineLimit(3)
+                            .multilineTextAlignment(.leading)
+                        HStack {
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(TwelveTheme.appFont(size: 12, weight: .semibold))
+                                .foregroundStyle(TwelveTheme.textTertiary)
+                        }
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(TwelveTheme.secondarySurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(TwelveTheme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(TwelveTheme.hairline, lineWidth: 1)
+            )
+        }
+    }
+
+    private func nextMemoriesPick(excluding id: UUID) -> UUID? {
+        let cal = Calendar.current
+        guard let cutoff = cal.date(byAdding: .day, value: -7, to: Date()) else { return nil }
+        let pool = entries.filter { $0.selectedDate < cutoff && $0.id != id }
+        return pool.randomElement()?.id ?? DiaryReminisceEngine.randomPastEntry(entries: entries, minDaysAgo: 7)?.id
+    }
+
+    private func refreshMemoriesPickIfNeeded() {
+        if let id = memoriesEntryID, entries.contains(where: { $0.id == id }) { return }
+        memoriesEntryID = DiaryReminisceEngine.randomPastEntry(entries: entries, minDaysAgo: 7)?.id
     }
 
     @ViewBuilder
