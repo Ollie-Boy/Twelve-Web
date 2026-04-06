@@ -207,6 +207,12 @@ enum TwelveTheme {
         static let finePrint = TwelveTheme.appFont(size: 11)
     }
 
+    /// SF Symbols: system rounded + light weight so strokes stay thin next to custom body text.
+    static func toolbarIconFont(size: CGFloat) -> Font {
+        let s = size * AppFontScale.multiplierForCurrentApp
+        return .system(size: s, weight: .light, design: .rounded)
+    }
+
     static func appFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         let size = size * AppFontScale.multiplierForCurrentApp
         if UIFont(name: "ChalkboardSE-Regular", size: size) != nil {

@@ -287,7 +287,9 @@ struct LedgerRootView: View {
                 Button {
                     showDayPickerSheet = true
                 } label: {
-                    SketchCalendarIcon(size: 28)
+                    Image(systemName: "calendar")
+                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
@@ -310,7 +312,9 @@ struct LedgerRootView: View {
                 Button {
                     showAppearanceSheet = true
                 } label: {
-                    SketchPaletteIcon(size: 28)
+                    Image(systemName: "paintpalette")
+                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
@@ -320,7 +324,9 @@ struct LedgerRootView: View {
                 Button {
                     showSettingsSheet = true
                 } label: {
-                    SketchGearIcon(size: 28)
+                    Image(systemName: "gearshape")
+                        .font(TwelveTheme.toolbarIconFont(size: 24))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
@@ -578,7 +584,9 @@ struct LedgerRootView: View {
                         endPoint: .bottomTrailing
                     )
                 )
-                SketchPlusIcon(size: 30, color: .white, lineWidth: 3.4)
+                Image(systemName: "plus")
+                    .font(TwelveTheme.toolbarIconFont(size: 28))
+                    .foregroundStyle(.white)
             }
             .frame(width: 58, height: 58)
             .shadow(color: TwelveTheme.primaryBlue.opacity(0.35), radius: 14, y: 8)

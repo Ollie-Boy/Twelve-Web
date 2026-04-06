@@ -183,7 +183,7 @@ struct DiaryReaderSheet: View {
                                 showOutlineSheet = true
                             } label: {
                                 Image(systemName: "list.bullet")
-                                    .font(TwelveTheme.appFont(size: 17))
+                                    .font(TwelveTheme.toolbarIconFont(size: 20))
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(TwelveTheme.primaryBlue)
@@ -194,9 +194,11 @@ struct DiaryReaderSheet: View {
                                 proxy.scrollTo("readerTop", anchor: .top)
                             }
                         } label: {
-                            SketchScrollToTopIcon(size: 22)
+                            Image(systemName: "arrow.up.circle")
+                                .font(TwelveTheme.toolbarIconFont(size: 22))
                         }
                         .buttonStyle(.plain)
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .accessibilityLabel("Scroll to top")
                         if let onEdit {
                             Button("Edit") {

@@ -187,7 +187,9 @@ struct ContentView: View {
                 Button {
                     showSearch = true
                 } label: {
-                    SketchSearchIcon(size: 24)
+                    Image(systemName: "magnifyingglass")
+                        .font(TwelveTheme.toolbarIconFont(size: 22))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
@@ -197,7 +199,9 @@ struct ContentView: View {
                 Button {
                     showDayPickerSheet = true
                 } label: {
-                    SketchCalendarIcon(size: 24)
+                    Image(systemName: "calendar")
+                        .font(TwelveTheme.toolbarIconFont(size: 22))
+                        .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
                 }
@@ -222,7 +226,7 @@ struct ContentView: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .font(TwelveTheme.appFont(size: 22, weight: .semibold))
+                        .font(TwelveTheme.toolbarIconFont(size: 22))
                         .foregroundStyle(TwelveTheme.primaryBlue)
                         .frame(width: headerIconTap, height: headerIconTap)
                         .contentShape(Rectangle())
@@ -468,7 +472,9 @@ struct ContentView: View {
             ZStack {
                 Circle()
                     .fill(TwelveTheme.softBlue)
-                SketchPlusIcon(size: 30, color: TwelveTheme.primaryBlue, lineWidth: 3.4)
+                Image(systemName: "plus")
+                    .font(TwelveTheme.toolbarIconFont(size: 28))
+                    .foregroundStyle(TwelveTheme.primaryBlue)
             }
             .frame(width: 58, height: 58)
             .overlay(

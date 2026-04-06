@@ -12,7 +12,6 @@
         9A100002A100000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000002A100000100000001 /* ContentView.swift */; };
         9A100003A100000100000001 /* EntryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000003A100000100000001 /* EntryCardView.swift */; };
         9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */; };
-        9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
         9A10001AA100000100000001 /* CartoonPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001DA100000100000001 /* CartoonPanelChrome.swift */; };
         9A10001BA100000100000001 /* AppearancePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001EA100000100000001 /* AppearancePickerSheet.swift */; };
         9A10001FA100000100000001 /* CartoonMonthCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */; };
@@ -65,7 +64,6 @@
         B100008B100000100000001 /* TwelveButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00000AA100000100000001 /* TwelveButtonStyles.swift */; };
         B100009B100000100000001 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A000015A100000100000001 /* AppearanceStore.swift */; };
         B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001DA100000100000001 /* CartoonPanelChrome.swift */; };
-        B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001CA100000100000001 /* SketchToolbarIcons.swift */; };
         B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001EA100000100000001 /* AppearancePickerSheet.swift */; };
         B100014B100000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B000009B100000100000001 /* Assets.xcassets */; };
         B100015B100000100000001 /* CartoonMonthCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */; };
@@ -106,7 +104,6 @@
         9A000002A100000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
         9A000003A100000100000001 /* EntryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryCardView.swift; sourceTree = "<group>"; };
         9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDayPickerSheet.swift; sourceTree = "<group>"; };
-        9A00001CA100000100000001 /* SketchToolbarIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchToolbarIcons.swift; sourceTree = "<group>"; };
         9A00001DA100000100000001 /* CartoonPanelChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartoonPanelChrome.swift; sourceTree = "<group>"; };
         9A00001EA100000100000001 /* AppearancePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePickerSheet.swift; sourceTree = "<group>"; };
         9A00001FA100000100000001 /* CartoonMonthCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartoonMonthCalendar.swift; sourceTree = "<group>"; };
@@ -323,7 +320,6 @@
                 9A000029A100000100000001 /* AppEmptyStates.swift */,
                 9A00001BA100000100000001 /* DiaryDayPickerSheet.swift */,
                 9A00001FA100000100000001 /* CartoonMonthCalendar.swift */,
-                9A00001CA100000100000001 /* SketchToolbarIcons.swift */,
                 9A00001EA100000100000001 /* AppearancePickerSheet.swift */,
                 9A00002FA100000100000001 /* DiaryInsightsSheet.swift */);
             path = Views;
@@ -483,7 +479,6 @@
                 9A100003A100000100000001 /* EntryCardView.swift in Sources */,
                 9A100018A100000100000001 /* DiaryDayPickerSheet.swift in Sources */,
                 9A10001FA100000100000001 /* CartoonMonthCalendar.swift in Sources */,
-                9A100019A100000100000001 /* SketchToolbarIcons.swift in Sources */,
                 9A10001AA100000100000001 /* CartoonPanelChrome.swift in Sources */,
                 9A10001BA100000100000001 /* AppearancePickerSheet.swift in Sources */,
                 9A100004A100000100000001 /* DiaryEntry.swift in Sources */,
@@ -538,7 +533,6 @@
                 B100008B100000100000001 /* TwelveButtonStyles.swift in Sources */,
                 B100009B100000100000001 /* AppearanceStore.swift in Sources */,
                 B100010B100000100000001 /* CartoonPanelChrome.swift in Sources */,
-                B100011B100000100000001 /* SketchToolbarIcons.swift in Sources */,
                 B100012B100000100000001 /* AppearancePickerSheet.swift in Sources */,
                 B100015B100000100000001 /* CartoonMonthCalendar.swift in Sources */,
                 B100016B100000100000001 /* TwelveAppWheelDatePicker.swift in Sources */,
