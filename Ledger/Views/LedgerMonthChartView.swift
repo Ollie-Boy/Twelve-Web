@@ -17,10 +17,28 @@ struct LedgerMonthChartView: View {
     /// Extra vertical room so top Y-axis currency labels are not clipped.
     private let chartPlotHeight: CGFloat = 200
     private let chartTopGutter: CGFloat = 14
+    /// Fixed column for Y-axis labels (outside horizontal ScrollView so they stay visible).
+    private let yAxisColumnWidth: CGFloat = 68
 
     private var chartContentWidth: CGFloat {
         let n = max(points.count, 1)
         return CGFloat(n) * monthColumnWidth
+    }
+
+    /// Shared Y domain so the fixed-axis chart and scrollable chart stay aligned.
+    private var yScaleDomain: ClosedRange<Double> {
+        guard !points.isEmpty else { return -1...1 }
+        let vals = points.map { ($0.net as NSDecimalNumber).doubleValue }
+        var lo = vals.min() ?? 0
+        var hi = vals.max() ?? 0
+        lo = min(lo, 0)
+        hi = max(hi, 0)
+        if lo == hi {
+            return lo == 0 ? -1...1 : (lo - 1)...(hi + 1)
+        }
+        let span = hi - lo
+        let pad = max(span * 0.06, 1)
+        return (lo - pad)...(hi + pad)
     }
 
     /// Changes when series length or latest month data changes (re-scroll to trailing).
@@ -33,7 +51,6 @@ struct LedgerMonthChartView: View {
         guard !points.isEmpty else { return [] }
         let last = points.count - 1
         if last <= 0 { return [0] }
-        // One label every month for moderate counts; thin out if huge.
         let strideBy: Int
         if last <= 18 { strideBy = 1 }
         else if last <= 36 { strideBy = 2 }
@@ -48,63 +65,95 @@ struct LedgerMonthChartView: View {
         return out
     }
 
+    private var chartTotalHeight: CGFloat { chartPlotHeight + chartTopGutter }
+
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 0) {
-                    Chart {
-                        ForEach(points) { p in
-                            BarMark(
-                                x: .value("Month", p.id),
-                                y: .value("Net", Double(truncating: p.net as NSDecimalNumber))
-                            )
-                            .foregroundStyle((p.net as NSDecimalNumber).doubleValue >= 0 ? TwelveTheme.primaryBlue : TwelveTheme.primaryBlueDark)
-                            .cornerRadius(4)
-                        }
+        HStack(alignment: .top, spacing: 0) {
+            yAxisOnlyChart
+                .frame(width: yAxisColumnWidth, height: chartTotalHeight)
+
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        scrollableChart
+                            .frame(width: chartContentWidth, height: chartTotalHeight)
+                        Color.clear
+                            .frame(width: 1, height: 1)
+                            .id("ledgerChartTrailingAnchor")
                     }
-                    .chartXScale(domain: -0.5...(Double(points.map(\.id).max() ?? 0) + 0.5))
-                    .chartYAxis {
-                        AxisMarks(position: .leading) { v in
-                            AxisGridLine()
-                            AxisValueLabel(anchor: .topLeading) {
-                                if let d = v.as(Double.self) {
-                                    Text(formatMoney(Decimal(d)))
-                                        .font(TwelveTheme.appFont(size: 10))
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.75)
-                                }
-                            }
-                        }
-                    }
-                    .chartXAxis {
-                        AxisMarks(values: xAxisIndices) { v in
-                            AxisValueLabel(centered: true) {
-                                if let idx = v.as(Int.self),
-                                   let p = points.first(where: { $0.id == idx }) {
-                                    Text(p.label)
-                                        .font(TwelveTheme.appFont(size: 9))
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.7)
-                                }
-                            }
-                        }
-                    }
-                    .chartYScale(domain: .automatic(includesZero: true))
-                    .padding(.top, chartTopGutter)
-                    .frame(width: chartContentWidth, height: chartPlotHeight + chartTopGutter)
-                    Color.clear
-                        .frame(width: 1, height: 1)
-                        .id("ledgerChartTrailingAnchor")
+                }
+                .frame(height: chartTotalHeight)
+                .onAppear { scrollChartToLatest(proxy: proxy) }
+                .onChange(of: chartScrollIdentity) { _, _ in
+                    scrollChartToLatest(proxy: proxy)
                 }
             }
-            .frame(height: chartPlotHeight + chartTopGutter)
-            .onAppear {
-                scrollChartToLatest(proxy: proxy)
-            }
-            .onChange(of: chartScrollIdentity) { _, _ in
-                scrollChartToLatest(proxy: proxy)
+        }
+        .frame(height: chartTotalHeight)
+    }
+
+    /// Y-axis labels only (invisible bars keep scale in sync with scrollable chart).
+    private var yAxisOnlyChart: some View {
+        Chart {
+            ForEach(points) { p in
+                BarMark(
+                    x: .value("Month", p.id),
+                    y: .value("Net", Double(truncating: p.net as NSDecimalNumber))
+                )
+                .foregroundStyle(.clear)
+                .cornerRadius(4)
             }
         }
+        .chartXAxis(.hidden)
+        .chartYScale(domain: yScaleDomain)
+        .chartYAxis {
+            AxisMarks(position: .leading) { v in
+                AxisGridLine()
+                AxisValueLabel(anchor: .trailing) {
+                    if let d = v.as(Double.self) {
+                        Text(formatMoney(Decimal(d)))
+                            .font(TwelveTheme.appFont(size: 10))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+            }
+        }
+        .padding(.top, chartTopGutter)
+    }
+
+    private var scrollableChart: some View {
+        Chart {
+            ForEach(points) { p in
+                BarMark(
+                    x: .value("Month", p.id),
+                    y: .value("Net", Double(truncating: p.net as NSDecimalNumber))
+                )
+                .foregroundStyle((p.net as NSDecimalNumber).doubleValue >= 0 ? TwelveTheme.primaryBlue : TwelveTheme.primaryBlueDark)
+                .cornerRadius(4)
+            }
+        }
+        .chartXScale(domain: -0.5...(Double(points.map(\.id).max() ?? 0) + 0.5))
+        .chartYScale(domain: yScaleDomain)
+        .chartYAxis(.hidden)
+        .chartXAxis {
+            AxisMarks(values: xAxisIndices) { v in
+                AxisValueLabel(centered: true) {
+                    if let idx = v.as(Int.self),
+                       let p = points.first(where: { $0.id == idx }) {
+                        Text(p.label)
+                            .font(TwelveTheme.appFont(size: 9))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
+                }
+            }
+        }
+        .chartPlotStyle { plot in
+            plot.padding(.leading, 0)
+        }
+        .padding(.top, chartTopGutter)
     }
 
     private func scrollChartToLatest(proxy: ScrollViewProxy) {
