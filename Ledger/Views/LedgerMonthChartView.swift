@@ -3,8 +3,9 @@ import SwiftUI
 
 struct LedgerChartMonthPoint: Identifiable {
     let id: Int
-    /// Axis label (month, optional year when span is long).
-    let label: String
+    /// Abbreviated month (Jan, Feb, …) for X-axis when same calendar year as previous point.
+    let monthOnlyLabel: String
+    let yearForMonth: Int
     let net: Decimal
 }
 
@@ -44,7 +45,19 @@ struct LedgerMonthChartView: View {
     /// Changes when series length or latest month data changes (re-scroll to trailing).
     private var chartScrollIdentity: String {
         guard let last = points.last else { return "empty" }
-        return "\(points.count)-\(last.id)-\(last.net)-\(last.label)"
+        return "\(points.count)-\(last.id)-\(last.net)-\(last.yearForMonth)-\(last.monthOnlyLabel)"
+    }
+
+    /// Month abbrev under X-axis; show full year on the first month of each calendar year (after the first point).
+    private func xAxisDisplayLabel(at index: Int) -> String {
+        guard index >= 0, index < points.count else { return "" }
+        let p = points[index]
+        if index == 0 { return p.monthOnlyLabel }
+        let prev = points[index - 1]
+        if prev.yearForMonth != p.yearForMonth {
+            return String(p.yearForMonth)
+        }
+        return p.monthOnlyLabel
     }
 
     private var xAxisIndices: [Int] {
@@ -141,8 +154,8 @@ struct LedgerMonthChartView: View {
             AxisMarks(values: xAxisIndices) { v in
                 AxisValueLabel(centered: true) {
                     if let idx = v.as(Int.self),
-                       let p = points.first(where: { $0.id == idx }) {
-                        Text(p.label)
+                       points.contains(where: { $0.id == idx }) {
+                        Text(xAxisDisplayLabel(at: idx))
                             .font(TwelveTheme.appFont(size: 9))
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
@@ -192,16 +205,6 @@ enum LedgerChartData {
         var monthCursor = rangeStart
         var result: [LedgerChartMonthPoint] = []
         var index = 0
-        let showYearInLabel: Bool = {
-            var n = 0
-            var d = rangeStart
-            while d <= endMonth {
-                n += 1
-                guard let nx = cal.date(byAdding: .month, value: 1, to: d) else { break }
-                d = nx
-            }
-            return n >= 12
-        }()
 
         while monthCursor <= endMonth {
             let y = cal.component(.year, from: monthCursor)
@@ -213,13 +216,15 @@ enum LedgerChartData {
                 guard ey == y, em == m else { continue }
                 net += signedNetForEntry(e)
             }
-            let label: String
-            if showYearInLabel {
-                label = monthCursor.formatted(.dateTime.month(.abbreviated).year(.twoDigits))
-            } else {
-                label = monthCursor.formatted(.dateTime.month(.abbreviated))
-            }
-            result.append(LedgerChartMonthPoint(id: index, label: label, net: LedgerDecimalFormatting.round(net)))
+            let monthOnly = monthCursor.formatted(.dateTime.month(.abbreviated))
+            result.append(
+                LedgerChartMonthPoint(
+                    id: index,
+                    monthOnlyLabel: monthOnly,
+                    yearForMonth: y,
+                    net: LedgerDecimalFormatting.round(net)
+                )
+            )
             index += 1
             guard let next = cal.date(byAdding: .month, value: 1, to: monthCursor) else { break }
             monthCursor = next

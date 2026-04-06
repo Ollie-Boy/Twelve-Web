@@ -5,6 +5,8 @@ import UIKit
 /// Subclasses `UIDatePicker` so fonts stay correct while the wheel scrolls (system resets row views during tracking).
 final class TwelveStyledWheelDatePicker: UIDatePicker {
     private var fontRefreshLink: CADisplayLink?
+    /// When false, wheel uses clear backgrounds so it does not cover surrounding SwiftUI (e.g. settings “Time” label).
+    var usesOpaqueWheelChrome: Bool = true
 
     deinit {
         stopFontRefreshLink()
@@ -52,6 +54,8 @@ struct TwelveAppWheelDatePicker: UIViewRepresentable {
     @Binding var selection: Date
     var mode: UIDatePicker.Mode
     var minuteInterval: Int = 1
+    /// Solid panel behind wheels (composer). Clear in settings so the section background shows through.
+    var usesOpaqueWheelChrome: Bool = true
 
     func makeCoordinator() -> Coordinator {
         Coordinator(selection: $selection)
@@ -59,10 +63,11 @@ struct TwelveAppWheelDatePicker: UIViewRepresentable {
 
     func makeUIView(context: Context) -> TwelveStyledWheelDatePicker {
         let picker = TwelveStyledWheelDatePicker()
+        picker.usesOpaqueWheelChrome = usesOpaqueWheelChrome
         picker.datePickerMode = mode
         picker.preferredDatePickerStyle = .wheels
         picker.minuteInterval = minuteInterval
-        picker.backgroundColor = TwelveTheme.backgroundSolidUIColor
+        picker.backgroundColor = usesOpaqueWheelChrome ? TwelveTheme.backgroundSolidUIColor : .clear
         picker.addTarget(context.coordinator, action: #selector(Coordinator.valueChanged(_:)), for: .valueChanged)
         picker.date = selection
         TwelveTheme.applyAppTypographyToWheelDatePicker(picker)
@@ -70,9 +75,10 @@ struct TwelveAppWheelDatePicker: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: TwelveStyledWheelDatePicker, context: Context) {
+        uiView.usesOpaqueWheelChrome = usesOpaqueWheelChrome
         uiView.datePickerMode = mode
         uiView.minuteInterval = minuteInterval
-        uiView.backgroundColor = TwelveTheme.backgroundSolidUIColor
+        uiView.backgroundColor = usesOpaqueWheelChrome ? TwelveTheme.backgroundSolidUIColor : .clear
         if abs(uiView.date.timeIntervalSince(selection)) > 0.5 {
             uiView.date = selection
         }
@@ -127,11 +133,13 @@ extension TwelveTheme {
         }
 
         styleViews(in: picker)
-        picker.backgroundColor = TwelveTheme.backgroundSolidUIColor
+        let opaque = (picker as? TwelveStyledWheelDatePicker)?.usesOpaqueWheelChrome ?? true
+        let chrome = opaque ? TwelveTheme.backgroundSolidUIColor : UIColor.clear
+        picker.backgroundColor = chrome
 
         func tintScrollViews(in view: UIView) {
             if let scroll = view as? UIScrollView {
-                scroll.backgroundColor = TwelveTheme.backgroundSolidUIColor
+                scroll.backgroundColor = chrome
             }
             view.subviews.forEach { tintScrollViews(in: $0) }
         }
@@ -203,9 +211,10 @@ struct SettingsReminderTimeWheel: View {
             Text("Time")
                 .font(TwelveTheme.Settings.rowPrimary)
                 .foregroundStyle(TwelveTheme.textPrimary)
-            TwelveAppWheelDatePicker(selection: selectionBinding, mode: .time, minuteInterval: 1)
+            TwelveAppWheelDatePicker(selection: selectionBinding, mode: .time, minuteInterval: 1, usesOpaqueWheelChrome: false)
                 .frame(height: 188)
                 .frame(maxWidth: .infinity)
+                .clipped()
         }
     }
 }
